@@ -1,0 +1,5326 @@
+[
+  {
+    "name": "Rum Fruit Cup (Difford's Cup No.4)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4207/rum-fruit-cup-diffords-cup-no4",
+    "diffordsGuideId": 4207,
+    "ingredients": [
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Strucchi Rosso Vermouth"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Thomas Henry Ginger Ale"
+      },
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Cola"
+      }
+    ],
+    "primarySpirits": [
+      "Light Gold Rum",
+      "Dry Curaçao",
+      "Rosso Vermouth"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Lemon, orange & strawberry slices, mint sprig & borage",
+    "methodSummary": "Build all ingredients directly into an ice-filled glass, then finish with the citrus, mint, and borage garnish.",
+    "diffordsRank": 1,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Mai Tai (Difford's recipe)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1221/mai-tai-diffords-recipe",
+    "diffordsGuideId": 1221,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple rum"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Adriatico Amaretto Liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "Giffard Menthe Pastille white crème de menthe"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "La Fée Parisienne absinthe"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water)"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean Rum",
+      "Pineapple Rum",
+      "Dry Curaçao"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Half lime shell, mint sprigs bouquet, and fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry)",
+    "methodSummary": "Shake all ingredients with ice and strain into a glass filled with crushed ice, then garnish.",
+    "diffordsRank": 2,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Three Dots and a Dash",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4792/three-dots-and-a-dash",
+    "diffordsGuideId": 4792,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Agricole vieux rhum/Cane juice rum (min 3yo)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Honey syrup (3 parts honey to 1 water by weight)"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Rhum Agricole",
+      "Caribbean Rum",
+      "Falernum"
+    ],
+    "glass": "Tiki mug or collins glass",
+    "garnish": "Skewered fruit (3 blueberries and a long thin pineapple slice)",
+    "methodSummary": "Flash-blend all ingredients with crushed ice, pour into the glass, and add the skewered fruit garnish with a straw.",
+    "diffordsRank": 3,
+    "tried": true,
+    "jbRating": 8.9,
+    "gmRating": 8.71,
+    "jbNotes": "Balance - spicy/intriguing - refreshing - not too sugary",
+    "gmNotes": "Balance - spicy/intriguing - refreshing - not too sugary",
+    "_specSpirits": [
+      "Aged Agricole Rhum",
+      "Aged Rum",
+      "Falernum Liqueur"
+    ]
+  },
+  {
+    "name": "Navy Grog",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4866/navy-grog",
+    "diffordsGuideId": 4866,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally circa 55% alc./vol.)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Demerara/Muscovado/brown sugar syrup (2 sugar to 1 water)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Honey syrup (3 parts honey to 1 water by weight)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415) (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Light White Rum",
+      "Caribbean Rum",
+      "Navy Rum"
+    ],
+    "glass": "Double Old-Fashioned Glass",
+    "garnish": "Ice cone with straw through the centre, lime wedge, mint sprigs bouquet, and flag",
+    "methodSummary": "Dry-blend the ingredients (adding xanthan gum gradually), then blend again with crushed ice and pour into the chilled glass before garnishing.",
+    "diffordsRank": 4,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Firecracker",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/15747/firecracker",
+    "diffordsGuideId": 15747,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "BarSol Mosto Verde Italia Pisco"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Crema de Mezcal"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Agave syrup (agave nectar)"
+      }
+    ],
+    "primarySpirits": [
+      "Pisco",
+      "Crema de Mezcal",
+      "Allspice Dram"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Cinnamon-sugar rim (no additional garnish)",
+    "methodSummary": "Rim the glass with cinnamon sugar, shake all ingredients with ice, and fine strain into the chilled glass.",
+    "diffordsRank": 5,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Mai Tai (Trader Vic's)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1219/mai-tai-trader-vics",
+    "diffordsGuideId": 1219,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean Rum",
+      "Dry Curaçao",
+      "Dark Rum"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Half spent lime shell, mint sprigs bouquet, and fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry)",
+    "methodSummary": "Shake the first five ingredients with ice, strain into a glass of crushed ice, optionally float the dark rum on top, then garnish.",
+    "diffordsRank": 6,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Painkiller",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1454/painkiller",
+    "diffordsGuideId": 1454,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally circa 55% alc./vol.)"
+      },
+      {
+        "amount": "3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cream of coconut (e.g. Coco Lopez, Re'al etc.)"
+      },
+      {
+        "amount": "4",
+        "unit": "drop",
+        "ingredient": "Difford's Daiquiri Bitters (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Navy Rum"
+    ],
+    "glass": "Tiki mug or collins glass",
+    "garnish": "Freshly grated nutmeg dust and a pineapple wedge",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled glass.",
+    "diffordsRank": 7,
+    "tried": true,
+    "jbRating": 8.59,
+    "gmRating": null,
+    "jbNotes": "Huge hit for a group. Easy to batch.",
+    "gmNotes": "Don’t remember notes but was a huge hit for a group. Also easy to batch. Smooth and almost creamy but not in a thick way.",
+    "_specSpirits": [
+      "Navy Rum",
+      "Cream of Coconut",
+      "Overproof Rum"
+    ]
+  },
+  {
+    "name": "Saturn",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4885/saturn",
+    "diffordsGuideId": 4885,
+    "ingredients": [
+      {
+        "amount": "2 1/2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Passion Fruit Syrup"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415)"
+      }
+    ],
+    "primarySpirits": [
+      "London Dry Gin",
+      "Falernum"
+    ],
+    "glass": "Sling glass",
+    "garnish": "Skewered cherry \"planet\" encircled by a lemon zest ring rested across the rim",
+    "methodSummary": "Dry-blend the ingredients (adding xanthan gum gradually), blend again with crushed ice, then pour into the chilled glass and garnish.",
+    "diffordsRank": 8,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Aku Aku",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/513/aku-aku",
+    "diffordsGuideId": 513,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Peach schnapps liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "10",
+        "unit": "leaves",
+        "ingredient": "Fresh mint leaves"
+      }
+    ],
+    "primarySpirits": [
+      "Light White Rum",
+      "Peach Schnapps Liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Skewered pineapple wedge, Luxardo Maraschino Cherry, and mint sprigs bouquet",
+    "methodSummary": "Blend all ingredients with crushed ice and fine strain into the chilled glass, then garnish.",
+    "diffordsRank": 9,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Missionary's Downfall",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1334/missionarys-downfall",
+    "diffordsGuideId": 1334,
+    "ingredients": [
+      {
+        "amount": "15",
+        "unit": "leaves",
+        "ingredient": "Fresh mint leaves"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Peach schnapps liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Honey syrup (3 parts honey to 1 water by weight)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Light Gold Rum",
+      "Peach Schnapps Liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Mint sprigs bouquet and a lime slice wheel",
+    "methodSummary": "Gently muddle mint with the rum, add remaining ingredients, shake with ice, and fine strain into a glass of crushed ice with a straw.",
+    "diffordsRank": 10,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Drunken Helmsman",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/5764/drunken-helmsman",
+    "diffordsGuideId": 5764,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Amaro (e.g. Meletti)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Maple syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof Pot Still Rum",
+      "Amaro",
+      "Falernum"
+    ],
+    "glass": "Double Old-Fashioned Glass",
+    "garnish": "Orange zest twist and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice, strain into a glass of crushed ice, then express the orange zest over the drink as garnish.",
+    "diffordsRank": 11,
+    "tried": true,
+    "jbRating": 8.96,
+    "gmRating": 8.96,
+    "jbNotes": "Yum. Tastes like a tiki bar. Balance of sweet and tart. Subtle butterscotch flavor.",
+    "gmNotes": "Yum. Tastes like a tiki bar. Balance of sweet and tart. Subtle butterscotch flavor.",
+    "_specSpirits": [
+      "Overproof Rum",
+      "Amaro Meletti",
+      "Falernum Liqueur"
+    ]
+  },
+  {
+    "name": "Elusive Dreams",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/15746/elusive-dreams",
+    "diffordsGuideId": 15746,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple rum"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Giffard Banane du Brésil liqueur"
+      }
+    ],
+    "primarySpirits": [
+      "Pineapple Rum",
+      "Light White Rum",
+      "Banane du Brésil Liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Pineapple wedge on the rim",
+    "methodSummary": "Shake all ingredients with ice and fine strain into the chilled glass, then garnish.",
+    "diffordsRank": 12,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Tiki Max",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1956/tiki-max",
+    "diffordsGuideId": 1956,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally 54.5% alc./vol.)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Grand Marnier or other cognac orange liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Luxardo Apricot Albicocca Liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "6",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally 54.5% alc./vol.) (float)"
+      }
+    ],
+    "primarySpirits": [
+      "Navy Rum",
+      "Light White Rum",
+      "Grand Marnier"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lime wedge and mint sprigs bouquet",
+    "methodSummary": "Shake the first nine ingredients with ice, strain into a glass of crushed ice, float the extra navy rum on top, then garnish.",
+    "diffordsRank": 13,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": 9.41,
+    "jbNotes": "Quintessential tiki flavor. Tropical and delicious.",
+    "gmNotes": "The quintessential tiki flavor. Tropical and yummy and you have no idea it’s mostly booze. Yes.",
+    "_specSpirits": [
+      "Navy Rum",
+      "Apricot Liqueur",
+      "Overproof Rum"
+    ]
+  },
+  {
+    "name": "Undead Gentleman",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/16367/undead-gentleman",
+    "diffordsGuideId": 16367,
+    "ingredients": [
+      {
+        "amount": "1/24",
+        "unit": "fl oz",
+        "ingredient": "La Fée Absinthe Blanche"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean Rum",
+      "Overproof Pot Still Rum",
+      "Falernum"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Grapefruit zest twist (expressed and discarded) and a lime wedge on the rim",
+    "methodSummary": "Rinse a chilled glass with absinthe, shake the remaining ingredients with ice, fine strain into the rinsed glass, express and discard a grapefruit twist, then garnish.",
+    "diffordsRank": 14,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Jungle Bird",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1082/jungle-bird",
+    "diffordsGuideId": 1082,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Italian red bitter liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Dark Rum",
+      "Italian Red Bitter Liqueur"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Pineapple wedge and Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and strain into a glass of crushed ice, then garnish.",
+    "diffordsRank": 15,
+    "tried": true,
+    "jbRating": 8.4,
+    "gmRating": 7.87,
+    "jbNotes": "Bitter forward at first but liked it - grew on us at the end. Smoothed out after a few sips.",
+    "gmNotes": "Bitter forward at first but liked it - grew on us at the end. Smoothed out after a few sips.",
+    "_specSpirits": [
+      "Black Rum",
+      "Campari",
+      "Dark Rum"
+    ]
+  },
+  {
+    "name": "Nuclear Daiquiri",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2719/nuclear-daiquiri",
+    "diffordsGuideId": 2719,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Green Chartreuse (or alternative herbal liqueur)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Chilled water/mineral water (omit if using wet ice)"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof White Rum",
+      "Green Chartreuse",
+      "Falernum"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lime wedge on the rim",
+    "methodSummary": "Shake all ingredients with ice and fine strain into the chilled glass, then garnish.",
+    "diffordsRank": 16,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Tia Mia",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/9786/tia-mia",
+    "diffordsGuideId": 9786,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Vida Clásico Mezcal"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Mezcal",
+      "Caribbean Rum",
+      "Dry Curaçao"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Half lime shell, mint sprigs bouquet, and fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry)",
+    "methodSummary": "Shake all ingredients with ice and strain into a glass of crushed ice, then garnish.",
+    "diffordsRank": 17,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Hawaiian Stone Sour",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/3284/hawaiian-stone-sour",
+    "diffordsGuideId": 3284,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Pimento bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Bourbon Whiskey"
+    ],
+    "glass": "Old-Fashioned Glass",
+    "garnish": "Skewered pineapple wedge or dehydrated pineapple slice, and Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and fine strain into an ice-filled glass, then garnish.",
+    "diffordsRank": 18,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Pineapple Daiquiri (on-the-rocks)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1533/pineapple-daiquiri-on-the-rocks",
+    "diffordsGuideId": 1533,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1 1/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Light White Rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Skewered pineapple wedge (or dehydrated slice) and Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and fine strain into an ice-filled glass, then garnish.",
+    "diffordsRank": 19,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Mr. Bali Hai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/6568/mr-bali-hai",
+    "diffordsGuideId": 6568,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Crossfire Hurricane Jamaican Rum"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Galliano Espresso Coffee liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican Rum",
+      "Light White Rum",
+      "Galliano Espresso Liqueur"
+    ],
+    "glass": "Tiki mug or Collins glass",
+    "garnish": "Pineapple wedge, mint sprigs bouquet, and 3 coffee beans",
+    "methodSummary": "Shake all ingredients with ice and strain into a tiki mug or glass filled with crushed ice, then garnish.",
+    "diffordsRank": 20,
+    "tried": true,
+    "jbRating": 7.1,
+    "gmRating": 7.39,
+    "jbNotes": "Grows on you. A little darker/more bitter or liquor forward.",
+    "gmNotes": "Grows on you. A little darker/more bitter or liquor forward.",
+    "_specSpirits": [
+      "Dark Rum",
+      "Light Rum",
+      "Coffee Liqueur"
+    ]
+  },
+  {
+    "name": "Zombie",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2131/zombie",
+    "diffordsGuideId": 2131,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Crossfire Hurricane Jamaican Rum"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "Monin Passion Fruit Syrup"
+      },
+      {
+        "amount": "4",
+        "unit": "dash",
+        "ingredient": "La Fée Parisienne absinthe"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "3",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water) or merest pinch of salt (optional)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415) (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Overproof aged pot still rum",
+      "Crossfire Hurricane Jamaican Rum"
+    ],
+    "glass": "Zombie or Collins glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "Blend all ingredients except the xanthan gum without ice, blend again while gradually adding the xanthan gum, then add crushed ice and blend once more before pouring unstrained into a chilled glass.",
+    "diffordsRank": 21,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Fog Cutter (Bramble style)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/779/fog-cutter-bramble-style",
+    "diffordsGuideId": 779,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Cherry (brandy) liqueur"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Cognac",
+      "Hayman's London Dry Gin"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Orange slice",
+    "methodSummary": "Shake the rum, cognac, gin, lime juice and sugar syrup with ice and strain over crushed ice, then float the cherry liqueur on top before garnishing with an orange slice.",
+    "diffordsRank": 22,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Près du Quai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20871/pres-du-quai",
+    "diffordsGuideId": 20871,
+    "ingredients": [
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Strucchi Rosso Vermouth"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Bénédictine D.O.M. liqueur"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Peychaud's or other Creole-style bitters"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican-style aged blended rum",
+      "Bourbon whiskey",
+      "Strucchi Rosso Vermouth"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lemon zest twist",
+    "methodSummary": "Stir all ingredients with ice, strain into an ice-filled glass, and express a lemon zest twist over the top as garnish.",
+    "diffordsRank": 23,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Menehune Juice",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1293/menehune-juice",
+    "diffordsGuideId": 1293,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Cointreau L'Unique triple sec liqueur"
+    ],
+    "glass": "Double old-fashioned",
+    "garnish": "Lime wedge, mint sprigs bouquet, and stirrer (preferably a Menehune stirrer)",
+    "methodSummary": "Shake all ingredients with ice, fine strain into a chilled glass, and garnish with a lime wedge, mint sprigs and a stirrer.",
+    "diffordsRank": 24,
+    "tried": true,
+    "jbRating": 8.3,
+    "gmRating": 7.9,
+    "jbNotes": "Limey, the tiki version of a Rickey. Rumarita? Last word-ey.",
+    "gmNotes": "Limey, the tiki version of a Rickey. Rumarita? Last word-ey.",
+    "_specSpirits": [
+      "Dark Rum",
+      "Light Rum",
+      "Triple Sec"
+    ]
+  },
+  {
+    "name": "Pinky Pincher",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1553/pinky-pincher",
+    "diffordsGuideId": 1553,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Bourbon whiskey"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Mint sprig, orange slice, and lemon slice",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled glass, garnished with mint, an orange slice and a lemon slice.",
+    "diffordsRank": 25,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Halekulani",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/11559/halekulani",
+    "diffordsGuideId": 11559,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Straight rye whiskey (100 proof /50% alc./vol.)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Demerara/Muscovado/brown sugar syrup (2 sugar to 1 water)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Straight rye whiskey"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Skewered cherry and pineapple wedge on rim",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled coupe glass, then garnish with a skewered cherry and pineapple wedge.",
+    "diffordsRank": 26,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Bahama Mama",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/144/bahama-mama",
+    "diffordsGuideId": 144,
+    "ingredients": [
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Coconut rum liqueur (35-40% alc./vol.)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Malibu Original coconut rum liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Galliano Espresso Coffee liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican-style aged blended rum",
+      "Overproof aged pot still rum",
+      "Coconut rum liqueur"
+    ],
+    "glass": "Tiki mug or Collins glass",
+    "garnish": "Pineapple wedge, Luxardo Maraschino Cherry, and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled tiki mug or Collins glass, garnished with pineapple, a cherry and mint.",
+    "diffordsRank": 27,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Gun Club Punch No.1",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2680/gun-club-punch-no1",
+    "diffordsGuideId": 2680,
+    "ingredients": [
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Light white rum"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Jamaican-style aged blended rum",
+      "Ferrand Dry Curaçao liqueur"
+    ],
+    "glass": "Cartridge mug or Collins glass",
+    "garnish": "Fruit stick with skewered pineapple cubes and Luxardo Maraschino Cherry, plus mint sprigs",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice, garnished with a pineapple-and-cherry fruit stick and mint sprigs.",
+    "diffordsRank": 28,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Bahamas Daiquiri",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/145/bahamas-daiquiri",
+    "diffordsGuideId": 145,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Coconut rum liqueur (35-40% alc./vol.)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Galliano Espresso Coffee liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "3",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water) or merest pinch of salt (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof aged pot still rum",
+      "Coconut rum liqueur",
+      "Galliano Espresso Coffee liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled coupe glass, garnished with a pineapple wedge.",
+    "diffordsRank": 29,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Honolulu Cocktail No. 1",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2180/honolulu-cocktail-no-1",
+    "diffordsGuideId": 2180,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution"
+      }
+    ],
+    "primarySpirits": [
+      "Hayman's London Dry Gin"
+    ],
+    "glass": "Nick & Nora glass",
+    "garnish": "Pineapple wedge on rim, skewered maraschino cherry",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled Nick & Nora glass, garnished with pineapple and a cherry.",
+    "diffordsRank": 30,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Poison Dart",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/9308/poison-dart",
+    "diffordsGuideId": 9308,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Cynar or other carciofo amaro"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/24",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Orange Bitters by Angostura"
+      }
+    ],
+    "primarySpirits": [
+      "Bourbon whiskey",
+      "Cynar (or other carciofo amaro)",
+      "St. Elizabeth Allspice Dram liqueur"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Orange zest twist expressed over cocktail, skewered with a dart-like cocktail stick",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled old-fashioned glass, then express an orange zest twist over the top and garnish with a dart-style pick.",
+    "diffordsRank": 31,
+    "tried": true,
+    "jbRating": 7.89,
+    "gmRating": 7.11,
+    "jbNotes": "Like a hot toddy, but cold. Tastes a little of old fashioned (improved whiskey cocktail).",
+    "gmNotes": "Like a hot toddy, but cold. Tastes a little of old fashioned (improved whiskey cocktail).",
+    "_specSpirits": [
+      "Bourbon Whiskey",
+      "Pimento Dram",
+      "Cinnamon Syrup"
+    ]
+  },
+  {
+    "name": "Nuka Nuka",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/10036/nuka-nuka",
+    "diffordsGuideId": 10036,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Peychaud's or other Creole-style bitters"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Egg white (pasteurised)"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean blended rum"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Pineapple and Luxardo Maraschino Cherry-charged fruit stick with mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice, strain back into the shaker and dry-shake to build the egg-white foam, then fine strain into an ice-filled glass.",
+    "diffordsRank": 32,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried (no foam)",
+    "gmNotes": "Tried (no foam)",
+    "_specSpirits": [
+      "Dark Rum",
+      "Overproof White Rum",
+      "Pimento Dram"
+    ]
+  },
+  {
+    "name": "Pago Pago",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1453/pago-pago",
+    "diffordsGuideId": 1453,
+    "ingredients": [
+      {
+        "amount": "3",
+        "unit": "wedge",
+        "ingredient": "Pineapple (fresh)"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Green Chartreuse (or alternative herbal liqueur)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Giffard White Crème de Cacao Liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice, chilled"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean blended rum",
+      "Green Chartreuse",
+      "Giffard White Crème de Cacao Liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Pineapple wedge on rim, or floated edible flower",
+    "methodSummary": "Muddle fresh pineapple in the shaker, add the remaining ingredients, shake with ice, and fine strain into a chilled coupe glass.",
+    "diffordsRank": 33,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Sleeping Lotus",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20189/sleeping-lotus",
+    "diffordsGuideId": 20189,
+    "ingredients": [
+      {
+        "amount": "10",
+        "unit": "leaves",
+        "ingredient": "Fresh mint"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Orange Bitters by Angostura"
+      }
+    ],
+    "primarySpirits": [
+      "Hayman's London Dry Gin"
+    ],
+    "glass": "Zombie or Collins glass",
+    "garnish": "Edible flowers (preferably orchid) and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice, fine strain over crushed ice, churn to combine, and top with more crushed ice.",
+    "diffordsRank": 34,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Ranglum",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2557/ranglum",
+    "diffordsGuideId": 2557,
+    "ingredients": [
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Difford's Falernum liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+      }
+    ],
+    "primarySpirits": [
+      "Dark/black/blackstrap rum",
+      "Difford's Falernum liqueur",
+      "Overproof white rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled old-fashioned glass, garnished with a lime wedge.",
+    "diffordsRank": 35,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Yellow Bird",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2113/yellow-bird",
+    "diffordsGuideId": 2113,
+    "ingredients": [
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Giffard Banane du Brésil liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Galliano L'Autentico liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Light white rum",
+      "Giffard Banane du Brésil liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Carved banana or skewered pineapple wedge, maraschino cherry and half orange slice",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled Collins glass, garnished with banana or pineapple, a cherry, and an orange slice.",
+    "diffordsRank": 36,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Fay Wray",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/13331/fay-wray",
+    "diffordsGuideId": 13331,
+    "ingredients": [
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Caribbean light rum aged 3-5 years"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Giffard Banane du Brésil liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Agricole blanc/cane juice rhum (unaged)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Demerara/Muscovado/brown sugar syrup (2 sugar to 1 water)"
+      },
+      {
+        "amount": "1",
+        "unit": "wedge",
+        "ingredient": "Lime (fresh)"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean light rum",
+      "Cognac",
+      "Giffard Banane du Brésil liqueur"
+    ],
+    "glass": "Double old-fashioned",
+    "garnish": "Mint sprigs bouquet and speared banana chips",
+    "methodSummary": "Regal-shake all ingredients, including a squeezed and dropped-in lime wedge, with ice, then strain over crushed ice.",
+    "diffordsRank": 37,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Goombay Smash",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/887/goombay-smash",
+    "diffordsGuideId": 887,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Coconut rum liqueur (35-40% alc./vol.)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Luxardo Apricot Albicocca Liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican-style aged blended rum",
+      "Coconut rum liqueur",
+      "Luxardo Apricot Albicocca Liqueur"
+    ],
+    "glass": "Sling glass",
+    "garnish": "Pineapple wedge and orange slice wheel",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled sling glass, garnished with a pineapple wedge and orange slice.",
+    "diffordsRank": 38,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Quarantine Order",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/6828/quarantine-order",
+    "diffordsGuideId": 6828,
+    "ingredients": [
+      {
+        "amount": "1 1/3",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1 1/3",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Passion Fruit Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
+      },
+      {
+        "amount": "4",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican-style aged blended rum",
+      "Light gold rum"
+    ],
+    "glass": "Belgium beer glass",
+    "garnish": "Mint sprigs bouquet, lime slice wheel, and maraschino cherry (sail)",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice in a beer glass, garnished with mint, a lime wheel and a cherry.",
+    "diffordsRank": 39,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried",
+    "gmNotes": "Tried",
+    "_specSpirits": [
+      "Aged Jamaican Rum",
+      "Black Rum",
+      "Cinnamon Syrup"
+    ]
+  },
+  {
+    "name": "St. Stephen's Sour",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/6101/st-stephens-sour",
+    "diffordsGuideId": 6101,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Cognac",
+      "Caribbean blended rum"
+    ],
+    "glass": "Highball (max 10oz/300ml)",
+    "garnish": "Lemon zest twist, expressed over the cocktail",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice in a highball glass, then express a lemon zest twist on top.",
+    "diffordsRank": 40,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Fog Cutter",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/778/fog-cutter",
+    "diffordsGuideId": 778,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Light white rum"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Pisco"
+      },
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Orgeat syrup"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Oloroso Sherry"
+      }
+    ],
+    "primarySpirits": [
+      "White rum",
+      "Gin",
+      "Oloroso Sherry"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "The rum, gin, cognac, pisco, juices and orgeat are shaken with ice and strained over crushed ice, then the sherry is floated on top and the drink is finished with a bouquet of mint.",
+    "diffordsRank": 41,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Barracuda",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4823/barracuda",
+    "diffordsGuideId": 4823,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Galliano L'Autentico liqueur"
+      },
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Brut champagne/sparkling wine"
+      }
+    ],
+    "primarySpirits": [
+      "Gold rum",
+      "Sparkling wine",
+      "Galliano L'Autentico"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Rum, Galliano, pineapple juice, lime juice and syrup are shaken and fine-strained into a chilled coupe, then topped with sparkling wine and garnished with a pineapple wedge.",
+    "diffordsRank": 42,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "The Conference",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/7414/the-conference",
+    "diffordsGuideId": 7414,
+    "ingredients": [
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Straight rye whiskey (100 proof/50% alc./vol.)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Calvados/apple brandy/straight applejack"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Demerara/Muscovado/brown sugar syrup (2 sugar to 1 water)"
+      },
+      {
+        "amount": "2",
+        "unit": "dashes",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Mole bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Bourbon whiskey",
+      "Rye whiskey",
+      "Calvados"
+    ],
+    "glass": "Old-Fashioned glass",
+    "garnish": "Expressed lemon and orange zest twists",
+    "methodSummary": "All four brown spirits, sugar syrup and both bitters are stirred with ice and strained over ice in an old-fashioned glass; lemon and orange zests are expressed over the top as garnish. Note: bourbon, rye, calvados and cognac are all tied at ½ oz each, so the primarySpirits ranking above just reflects the page's listed order.",
+    "diffordsRank": 43,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Pinky Gonzales",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/17013/pinky-gonzales",
+    "diffordsGuideId": 17013,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Reposado tequila (100% agave)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Blanco tequila"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "⅓",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "⅙",
+        "unit": "fl oz",
+        "ingredient": "Agave syrup (agave nectar)"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "2",
+        "unit": "drops",
+        "ingredient": "Saline solution (20g sea salt to 80g water)"
+      }
+    ],
+    "primarySpirits": [
+      "Reposado tequila",
+      "Blanco tequila",
+      "Dry Curaçao"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Mint sprigs bouquet & fruit stick (pineapple cubes and Luxardo Maraschino Cherry)",
+    "methodSummary": "All ingredients are shaken with ice and strained over crushed ice in a double old-fashioned glass, then finished with a mint bouquet and a skewered pineapple-and-cherry stick.",
+    "diffordsRank": 44,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Crystal Ship",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20873/crystal-ship",
+    "diffordsGuideId": 20873,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Vida Clásico Mezcal"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Agricole blanc/cane juice rhum (unaged)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Bols Blue Curaçao"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Mezcal",
+      "Agricole rhum",
+      "Blue Curaçao"
+    ],
+    "glass": "Pearl Diver or Collins glass",
+    "garnish": "Ice shell and plastic monkey on rim",
+    "methodSummary": "All ingredients are shaken with ice, strained over crushed ice into the glass, and served with a straw under an ice shell topped with a plastic monkey garnish.",
+    "diffordsRank": 45,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Lioness",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/17801/lioness",
+    "diffordsGuideId": 17801,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Giffard Crème de Pêche de Vigne liqueur"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Cognac",
+      "Falernum",
+      "Crème de Pêche de Vigne"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Cognac, falernum, peach liqueur and lime juice are shaken with ice and fine-strained into a chilled coupe, garnished with a lime wedge.",
+    "diffordsRank": 46,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Jet Pilot",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4963/jet-pilot",
+    "diffordsGuideId": 4963,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged light-bodied rum (low-ester, 2-5 years old)"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "La Fée Parisienne absinthe"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "¼",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415) (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof pot still rum",
+      "Overproof light-bodied rum",
+      "Light gold rum"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Skewered Luxardo Maraschino Cherry",
+    "methodSummary": "The three rums, falernum, cinnamon syrup, juices, absinthe and bitters are dry-blended, xanthan gum is added gradually, then crushed ice is blended in and the drink is poured into a chilled glass with a cherry garnish and straw.",
+    "diffordsRank": 47,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Nui Nui",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4884/nui-nui",
+    "diffordsGuideId": 4884,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Cinnamon Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Vanilla Syrup"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Gold rum",
+      "Allspice Dram",
+      "Angostura bitters"
+    ],
+    "glass": "Tiki mug or Collins glass",
+    "garnish": "Thick long orange peel",
+    "methodSummary": "All ingredients are blended together with crushed ice; a long orange peel is draped over the glass rim before the blended drink is poured in and topped with more crushed ice.",
+    "diffordsRank": 48,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried",
+    "gmNotes": "Tried",
+    "_specSpirits": [
+      "Gold Rum",
+      "Dark Jamaican Rum",
+      "Allspice Dram"
+    ]
+  },
+  {
+    "name": "Kamaniwanalaya",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1088/kamaniwanalaya",
+    "diffordsGuideId": 1088,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Adriatico Amaretto Liqueur"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally circa 55% alc./vol.)"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Fiol Extra Dry Prosecco"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Amaretto liqueur",
+      "Prosecco"
+    ],
+    "glass": "Cartridge mug or Collins glass",
+    "garnish": "Pineapple wedge, Luxardo Maraschino Cherry, and mint sprigs bouquet",
+    "methodSummary": "The rums, amaretto and juices are shaken with ice and strained over cubed then crushed ice, topped with prosecco, and finished with a pineapple wedge, cherry, mint and a straw.",
+    "diffordsRank": 49,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "In the August Sun",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/5598/in-the-august-sun",
+    "diffordsGuideId": 5598,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lustau Jarana Fino Sherry"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "⅓",
+        "unit": "fl oz",
+        "ingredient": "Cream of coconut"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof white rum",
+      "Fino Sherry",
+      "Falernum"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "All ingredients are shaken with ice and strained over crushed ice into a Collins glass, then garnished with a pineapple wedge.",
+    "diffordsRank": 50,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Western Sour",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/13347/western-sour",
+    "diffordsGuideId": 13347,
+    "ingredients": [
+      {
+        "amount": "1⅔",
+        "unit": "fl oz",
+        "ingredient": "Straight rye whiskey (100 proof/50% alc./vol.)"
+      },
+      {
+        "amount": "⅔",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
+      }
+    ],
+    "primarySpirits": [
+      "Rye whiskey",
+      "Falernum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lemon slice wheel and Luxardo Maraschino Cherry sail",
+    "methodSummary": "Rye whiskey, grapefruit and lime juice, falernum and sugar syrup are shaken with ice and strained over crushed ice, garnished with a lemon wheel and a cherry.",
+    "diffordsRank": 51,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Private Island",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/26650/private-island",
+    "diffordsGuideId": 26650,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Agricole blanc/cane juice rhum (unaged)"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Luxardo Apricot Albicocca Liqueur"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Agricole rhum",
+      "Apricot liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Freshly grated nutmeg",
+    "methodSummary": "All ingredients are shaken with ice and fine-strained into a chilled coupe, then dusted with freshly grated nutmeg.",
+    "diffordsRank": 52,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Lost Lake",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/32854/lost-lake",
+    "diffordsGuideId": 32854,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Italian red bitter liqueur"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Luxardo Maraschino liqueur"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Monin Passion Fruit Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican-style rum",
+      "Italian red bitter liqueur",
+      "Maraschino liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Pineapple wedge, parasol-skewered Luxardo Maraschino Cherry, and edible orchid flower",
+    "methodSummary": "All ingredients are shaken with ice and strained over crushed ice into a Collins glass or tiki mug, garnished with pineapple, a skewered cherry parasol and an edible orchid, and served with a straw.",
+    "diffordsRank": 53,
+    "tried": true,
+    "jbRating": 7.5,
+    "gmRating": 7.21,
+    "jbNotes": "Sweeter weirdness than Bali Hai but grows on you? Sweet/tart. Passion fruit aftertaste. Mildly bitter?",
+    "gmNotes": "Sweeter weirdness than Bali Hai but grows on you? Sweet/tart. Passion fruit aftertaste. Mildly bitter?",
+    "_specSpirits": [
+      "Aged Jamaican Rum",
+      "Campari",
+      "Maraschino Liqueur"
+    ]
+  },
+  {
+    "name": "Shark's Tooth (by Don Beach)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2577/sharks-tooth-by-don-beach",
+    "diffordsGuideId": 2577,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Maraschino (Marasca) syrup (from cherry jar)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Crossfire Hurricane Jamaican Rum"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Crossfire Hurricane Jamaican Rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Pineapple wedge & cherry",
+    "methodSummary": "The gold rum, lime and pineapple juice, sugar and maraschino syrups are blended with crushed ice and poured into an old-fashioned glass; the Jamaican rum is served alongside in a shot glass for the drinker to add themselves, without a straw.",
+    "diffordsRank": 54,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried",
+    "gmNotes": "Tried",
+    "_specSpirits": [
+      "Gold Rum",
+      "Dark Rum",
+      "Maraschino Liqueur"
+    ]
+  },
+  {
+    "name": "Humuhumunukunukuapua'a",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/36898/humuhumunukunukuapuaa",
+    "diffordsGuideId": 36898,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Peychaud's or other Creole-style bitters"
+      }
+    ],
+    "primarySpirits": [
+      "London Dry Gin",
+      "Peychaud's bitters"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Pineapple wedge and skewered Luxardo Maraschino Cherry (or edible orchid)",
+    "methodSummary": "Gin, pineapple juice, lemon juice, orgeat and bitters are shaken with crushed ice and poured unstrained into a chilled glass, garnished with a pineapple wedge and skewered cherry or orchid.",
+    "diffordsRank": 55,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Snake Eyes",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/14830/snake-eyes",
+    "diffordsGuideId": 14830,
+    "ingredients": [
+      {
+        "amount": "1½",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Vida Clásico Mezcal"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Coconut water"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Sugar cane syrup (from juice)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Giffard Banane du Brésil liqueur"
+      }
+    ],
+    "primarySpirits": [
+      "Mezcal",
+      "Banane du Brésil liqueur"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "None (salt rim only)",
+    "methodSummary": "The glass rim is salted, then all ingredients are shaken with ice and strained into the ice-filled, salt-rimmed glass with no additional garnish.",
+    "diffordsRank": 56,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rum Cow",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/21191/rum-cow",
+    "diffordsGuideId": 21191,
+    "ingredients": [
+      {
+        "amount": "1⅓",
+        "unit": "fl oz",
+        "ingredient": "Crossfire Hurricane Jamaican Rum"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Milk (whole milk/full 3-4% fat)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Jamaican rum",
+      "Angostura bitters"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Freshly grated nutmeg",
+    "methodSummary": "Rum, milk, sugar syrup and bitters are shaken with ice and strained into a chilled coupe, then dusted with grated nutmeg.",
+    "diffordsRank": 57,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rye Tai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/38752/rye-tai",
+    "diffordsGuideId": 38752,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Straight rye whiskey (100 proof/50% alc./vol.)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Amaro Montenegro"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Licor 43 Original liqueur"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice (chilled)"
+      },
+      {
+        "amount": "¾",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "7",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Rye whiskey",
+      "Amaro Montenegro",
+      "Licor 43"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Rye, orgeat, amaro, Licor 43 and the juices are shaken with ice and strained over crushed ice, then Angostura bitters are floated on top and the drink is garnished with a pineapple wedge.",
+    "diffordsRank": 58,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Daiquiri De Luxe",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/612/daiquiri-de-luxe",
+    "diffordsGuideId": 612,
+    "ingredients": [
+      {
+        "amount": "1⅔",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Giffard Caribbean Pineapple liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "¼",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Caribbean Pineapple liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lime/pineapple wedge",
+    "methodSummary": "Rum, pineapple liqueur, both juices and orgeat are shaken with ice and fine-strained into a chilled coupe, garnished with a lime or pineapple wedge.",
+    "diffordsRank": 59,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Hawaiian Eye",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/943/hawaiian-eye",
+    "diffordsGuideId": 943,
+    "ingredients": [
+      {
+        "amount": "1⅓",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "⅔",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "⅔",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "⅔",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "½",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "¼",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415) (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Light white rum",
+      "Falernum"
+    ],
+    "glass": "Tiki mug or Collins glass",
+    "garnish": "Edible flower (orchid or other)",
+    "methodSummary": "The rums, falernum, lime juice and sugar syrup are dry-blended with gradually added xanthan gum, then blended again with crushed ice, poured into a chilled glass, garnished with an edible flower, and served with a straw.",
+    "diffordsRank": 60,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried",
+    "gmNotes": "Tried",
+    "_specSpirits": [
+      "Bourbon Whiskey",
+      "Light Rum",
+      "Orange Curaçao"
+    ]
+  },
+  {
+    "name": "Mai Dutch Tai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4375/mai-dutch-tai",
+    "diffordsGuideId": 4375,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Oude genever"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "La Fée Parisienne absinthe"
+      }
+    ],
+    "primarySpirits": [
+      "Genever",
+      "Ferrand Dry Curaçao liqueur",
+      "Absinthe"
+    ],
+    "glass": "Double old-fashioned",
+    "garnish": "Mint sprig, lime shell & fruit stick",
+    "methodSummary": "Shake everything with ice, strain over fresh ice, and top with a crown of crushed ice.",
+    "diffordsRank": 61,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Roxie Ray",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/19648/roxie-ray",
+    "diffordsGuideId": 19648,
+    "ingredients": [
+      {
+        "amount": "3",
+        "unit": "each",
+        "ingredient": "fresh Strawberries (hulled, small & ripe)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Passoã passion fruit liqueur"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Santoni L'Aperitivo"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Strawberry Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof white rum",
+      "Passoã passion fruit liqueur",
+      "Dark/black rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Mint sprig-tipped strawberry",
+    "methodSummary": "Muddle the strawberries in the shaker, add the rest, shake with ice, then fine-strain over crushed ice.",
+    "diffordsRank": 62,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Electric Avenue",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4166/electric-avenue",
+    "diffordsGuideId": 4166,
+    "ingredients": [
+      {
+        "amount": "1 1/6",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1 1/6",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cockburn's Ruby Soho Port"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Cockburn's Ruby Port"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "Build the rum, juices and syrup over crushed ice, churn, add more crushed ice, and float the port on top.",
+    "diffordsRank": 63,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Lion of Baltimore",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/32817/lion-of-baltimore",
+    "diffordsGuideId": 32817,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Strucchi Rosso Vermouth"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Pimento bitters"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water) or merest pinch of salt"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof pot still rum",
+      "Jamaican-style aged blended rum",
+      "Strucchi Rosso Vermouth"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lime wedge on rim",
+    "methodSummary": "Shake all ingredients with ice and fine-strain into a chilled coupe.",
+    "diffordsRank": 64,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Scorpion Reef",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/34987/scorpion-reef",
+    "diffordsGuideId": 34987,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Vida Clásico Mezcal"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Orgeat almond liqueur"
+      },
+      {
+        "amount": "8",
+        "unit": "drop",
+        "ingredient": "Chocolate bitters"
+      },
+      {
+        "amount": "5",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Del Maguey Vida Clásico Mezcal",
+      "Jamaican-style aged blended rum",
+      "Orgeat almond liqueur"
+    ],
+    "glass": "Wine glass",
+    "garnish": "Ice crown dusted with five-spice powder",
+    "methodSummary": "Stir the base ingredients over crushed ice, swizzle, top up with more crushed ice, float the Angostura dashes, then crown with crushed ice and dust with five-spice powder.",
+    "diffordsRank": 65,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rum Dum Sour",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4890/rum-dum-sour",
+    "diffordsGuideId": 4890,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Egg white (pasteurised) or Fee Brothers Fee Foam cocktail foamer"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Overproof pot still rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lemon zest twist",
+    "methodSummary": "Shake the first four ingredients with ice, strain back into the shaker, dry-shake, fine-strain over fresh ice, then float the overproof rum on top.",
+    "diffordsRank": 66,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rumshack Punch",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/5594/rumshack-punch",
+    "diffordsGuideId": 5594,
+    "ingredients": [
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Navy rum (ideally circa 55% alc./vol.)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "White peach purée"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Peach schnapps liqueur"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1 1/3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Navy rum",
+      "Overproof white rum",
+      "Peach schnapps liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Shake all ingredients with ice and fine-strain over fresh ice.",
+    "diffordsRank": 67,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Tapa Punch",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/31243/tapa-punch",
+    "diffordsGuideId": 31243,
+    "ingredients": [
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "100% pot still rum (40-50% alc./vol.)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Giffard Crème de Pêche de Vigne liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "3",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water)"
+      }
+    ],
+    "primarySpirits": [
+      "Dark/black rum",
+      "Light white rum",
+      "Jamaican-style aged blended rum"
+    ],
+    "glass": "Tiki mug or Collins glass",
+    "garnish": "Icing sugar-dusted mint sprigs bouquet, grated nutmeg, and Luxardo Maraschino Cherry skewered with a paper parasol",
+    "methodSummary": "Build all ingredients over crushed ice, swizzle, top with more crushed ice, and swizzle again.",
+    "diffordsRank": 68,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Royal Daiquiri",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/17406/royal-daiquiri",
+    "diffordsGuideId": 17406,
+    "ingredients": [
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Giffard Parfait Amour liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "3",
+        "unit": "drop",
+        "ingredient": "Difford's Margarita Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Giffard Parfait Amour liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lemon zest twist, or a viola flower",
+    "methodSummary": "Shaken with ice and fine-strained into a chilled coupe.",
+    "diffordsRank": 69,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Totally Tropical Mai Tai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/39564/totally-tropical-mai-tai",
+    "diffordsGuideId": 39564,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple rum"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Tropical Dry Curaçao"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Adriatico Amaretto Liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/12",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "8",
+        "unit": "drop",
+        "ingredient": "Difford's Daiquiri Bitters (optional)"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Pineapple rum",
+      "Caribbean blended rum",
+      "Ferrand Tropical Dry Curaçao"
+    ],
+    "glass": "Double old-fashioned",
+    "garnish": "Fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry) and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice.",
+    "diffordsRank": 70,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": 9.19,
+    "jbNotes": "“Ooh - that’s good” -JB.",
+    "gmNotes": "Slight riff as I didn’t have pineapple rum or tropical curaçao but definitely yummy. Measured 1/12 oz as a bar spoon. Like the Tiki Max — feels like tiki, but has the allspice hint. Yum.",
+    "_specSpirits": [
+      "Aged Rum",
+      "Pineapple Rum",
+      "Tropical Curaçao"
+    ]
+  },
+  {
+    "name": "Funk The Funky Funk",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/14981/funk-the-funky-funk",
+    "diffordsGuideId": 14981,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Cachaça (unaged)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar cane syrup (from juice)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Coconut water"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Giffard Caribbean Pineapple liqueur"
+      },
+      {
+        "amount": "4",
+        "unit": "drop",
+        "ingredient": "Difford's Daiquiri Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Cachaça",
+      "Overproof white rum",
+      "Giffard Caribbean Pineapple liqueur"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Shake all ingredients with ice and strain over fresh ice.",
+    "diffordsRank": 71,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Hawaiian (by Thad Vogler)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/30689/hawaiian-by-thad-vogler",
+    "diffordsGuideId": 30689,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Calvados / apple brandy / straight applejack"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Yellow Chartreuse (or génépy liqueur)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Pineapple Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice, chilled"
+      },
+      {
+        "amount": "2",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water) or merest pinch of salt"
+      }
+    ],
+    "primarySpirits": [
+      "Calvados / apple brandy",
+      "Yellow Chartreuse"
+    ],
+    "glass": "Nick & Nora glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Shake all ingredients with ice and fine-strain into the chilled glass.",
+    "diffordsRank": 72,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "3 Monkeys & a dash",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/19661/3-monkeys-and-a-dash",
+    "diffordsGuideId": 19661,
+    "ingredients": [
+      {
+        "amount": "1 1/6",
+        "unit": "fl oz",
+        "ingredient": "New make spirit"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Blended/vatted Scotch malt whisky"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Honey syrup (3 parts honey to 1 water by weight)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "4",
+        "unit": "dash",
+        "ingredient": "Peychaud's or other Creole-style bitters"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "New make spirit",
+      "Blended/vatted Scotch malt whisky",
+      "Falernum liqueur"
+    ],
+    "glass": "Beer tankard (12oz)",
+    "garnish": "Misted with 3 sprays of whisky, skewered pineapple wedge & Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice, fine-strain over crushed ice, and churn to redistribute the ice.",
+    "diffordsRank": 73,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Major Bailey No. 2",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1226/major-bailey-no-2",
+    "diffordsGuideId": 1226,
+    "ingredients": [
+      {
+        "amount": "12",
+        "unit": "leaves",
+        "ingredient": "fresh Mint leaves"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Cointreau L'Unique triple sec liqueur"
+    ],
+    "glass": "Sling glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "Gently muddle mint in the shaker, add the rest, shake with ice, and fine-strain over crushed ice.",
+    "diffordsRank": 74,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Hornitos Lau",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/978/hornitos-lau",
+    "diffordsGuideId": 978,
+    "ingredients": [
+      {
+        "amount": "10",
+        "unit": "leaves",
+        "ingredient": "fresh Mint leaves"
+      },
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Patrón Reposado tequila"
+      },
+      {
+        "amount": "1 1/4",
+        "unit": "fl oz",
+        "ingredient": "Licor 43 Original liqueur"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Patrón Reposado tequila",
+      "Licor 43 Original liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice, fine-strain over crushed ice, and churn with more crushed ice to fill.",
+    "diffordsRank": 75,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Vacation Martini",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2021/vacation-martini",
+    "diffordsGuideId": 2021,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Vanilla flavoured vodka"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Coconut rum liqueur (35-40% alc./vol.)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Egg white (pasteurised)"
+      },
+      {
+        "amount": "1/24",
+        "unit": "fl oz",
+        "ingredient": "Bols Blue Curaçao"
+      }
+    ],
+    "primarySpirits": [
+      "Vanilla flavoured vodka",
+      "Coconut rum liqueur",
+      "Bols Blue Curaçao"
+    ],
+    "glass": "Martini glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Shake the first five ingredients with ice, strain back into the shaker, dry-shake to emulsify, fine-strain into the chilled glass, then drop in the blue curaçao so it sinks to form a blue base.",
+    "diffordsRank": 76,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Will Of Alan",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2609/will-of-alan",
+    "diffordsGuideId": 2609,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Old-fashioned / old time bitters"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Egg white (pasteurised) or 3 dash Fee Brothers Fee Foam cocktail foamer"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean blended rum",
+      "Falernum liqueur"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Shake all ingredients with ice, strain back into the shaker, dry-shake without ice to emulsify, then strain over fresh ice.",
+    "diffordsRank": 77,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Snowbird",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/32811/snowbird",
+    "diffordsGuideId": 32811,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Del Maguey Vida Clásico Mezcal"
+      },
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Cream of coconut"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415)"
+      }
+    ],
+    "primarySpirits": [
+      "Del Maguey Vida Clásico Mezcal",
+      "Cointreau L'Unique triple sec liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Freshly grated nutmeg",
+    "methodSummary": "Blend the first five ingredients without ice on a slow setting while adding the xanthan gum, then blend again with crushed ice and pour into the chilled glass.",
+    "diffordsRank": 78,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "East India No. 3",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/37803/east-india-no-3",
+    "diffordsGuideId": 37803,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Jamaican-style aged blended rum with funk"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Ferrand Dry Curaçao liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Cognac",
+      "Ferrand Dry Curaçao liqueur",
+      "Jamaican-style aged blended rum"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lemon zest twist and skewered Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice, fine-strain into the chilled coupe, express the lemon zest over the drink and discard it, then garnish.",
+    "diffordsRank": 79,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "Tried",
+    "gmNotes": "Tried",
+    "_specSpirits": [
+      "Cognac",
+      "Maraschino Liqueur",
+      "Orange Curaçao"
+    ]
+  },
+  {
+    "name": "Brooklyn Burro",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/32633/brooklyn-burro",
+    "diffordsGuideId": 32633,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Ginger syrup (equal parts ginger juice to caster sugar by weight)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Thomas Henry Soda Water, chilled"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum"
+    ],
+    "glass": "Old-Fashioned glass",
+    "garnish": "Pineapple wedge on rim, skewered with crystalised ginger",
+    "methodSummary": "Shake the first five ingredients with ice, then strain over fresh ice while pouring in the soda water.",
+    "diffordsRank": 80,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Three of Strong",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4935/three-of-strong",
+    "diffordsGuideId": 4935,
+    "ingredients": [
+      {
+        "amount": "1 1/3",
+        "unit": "fl oz",
+        "ingredient": "Cacao & coffee spiced rum"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Bittersweet orange-red aperitivo"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Passion fruit purée"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Cacao & coffee spiced rum",
+      "Bittersweet orange-red aperitivo",
+      "Angostura Aromatic Bitters"
+    ],
+    "glass": "Tiki mug or collins",
+    "garnish": "Cinnamon stick & bamboo leaf (optional)",
+    "methodSummary": "Shake all ingredients with ice and strain into a crushed-ice-filled tiki mug or collins glass.",
+    "diffordsRank": 81,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "USS Wondrich",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/13327/uss-wondrich",
+    "diffordsGuideId": 13327,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Lustau Amontillado Los Arcos Sherry"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Strucchi Rosso Vermouth"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Chocolate orange liqueur"
+      }
+    ],
+    "primarySpirits": [
+      "Amontillado Sherry",
+      "Rosso Vermouth",
+      "Chocolate orange liqueur"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Pineapple wedge",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled coupe glass.",
+    "diffordsRank": 82,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rum Barrel (by Donn Beach)",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2287/rum-barrel-by-donn-beach",
+    "diffordsGuideId": 2287,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Honey sugar syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Falernum liqueur"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "La Fée Parisienne absinthe"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Overproof pot still rum",
+      "St. Elizabeth Allspice Dram"
+    ],
+    "glass": "Rum barrel mug or pint glass",
+    "garnish": "Pineapple wedge, Luxardo Maraschino Cherry & mint sprig",
+    "methodSummary": "Blend all ingredients with a scoop of crushed ice and serve with straws in a rum barrel mug or pint glass.",
+    "diffordsRank": 83,
+    "tried": true,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": "I like it (and then we remembered nothing)",
+    "gmNotes": "I like it (and then we remembered nothing)",
+    "_specSpirits": [
+      "Demerara Rum",
+      "Gold Rum",
+      "Dark Jamaican Rum"
+    ]
+  },
+  {
+    "name": "Tropical Pineapple Daiquiri",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4227/tropical-pineapple-daiquiri",
+    "diffordsGuideId": 4227,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Giffard Caribbean Pineapple liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "4",
+        "unit": "drop",
+        "ingredient": "Difford's Daiquiri Bitters (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Giffard Caribbean Pineapple liqueur",
+      "Difford's Daiquiri Bitters"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Pineapple wedge & Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled old-fashioned glass.",
+    "diffordsRank": 84,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Blue Hawaii",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2309/blue-hawaii",
+    "diffordsGuideId": 2309,
+    "ingredients": [
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Ketel One Vodka"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Bols Blue Curaçao"
+      },
+      {
+        "amount": "3",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Vodka",
+      "Blue Curaçao"
+    ],
+    "glass": "Hurricane glass",
+    "garnish": "Pineapple wedge and Luxardo Maraschino Cherry skewered with a paper parasol",
+    "methodSummary": "Shake all ingredients with ice, fine strain over crushed ice into a hurricane glass, and serve with a straw.",
+    "diffordsRank": 85,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Suffering Bastard",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2588/suffering-bastard",
+    "diffordsGuideId": 2588,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "2/3",
+        "unit": "fl oz",
+        "ingredient": "Lime cordial (sweetened lime juice)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "3",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      },
+      {
+        "amount": "3 1/3",
+        "unit": "fl oz",
+        "ingredient": "Thomas Henry Ginger Beer"
+      }
+    ],
+    "primarySpirits": [
+      "Cognac",
+      "Hayman's London Dry Gin",
+      "Angostura Aromatic Bitters"
+    ],
+    "glass": "Tiki mug or collins",
+    "garnish": "Skewered pineapple cube and maraschino cherry, lime wedge and mint sprigs bouquet",
+    "methodSummary": "Shake the cognac, gin, lime cordial, lime juice and bitters with ice, strain into an ice-filled glass, then top with ginger beer.",
+    "diffordsRank": 86,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Doctor Funk",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/657/doctor-funk",
+    "diffordsGuideId": 657,
+    "ingredients": [
+      {
+        "amount": "2 1/3",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "La Fée Parisienne absinthe"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Dark/black/blackstrap rum",
+      "Absinthe"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Lime wedge (served with a straw)",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice into a double old-fashioned glass.",
+    "diffordsRank": 87,
+    "tried": true,
+    "jbRating": 7.7,
+    "gmRating": 5.2,
+    "jbNotes": "John kind of likes it. Not Dr. Pepper at all but appreciate the herbal notes and a smooth almost cream soda feel at the end.",
+    "gmNotes": "Might have measured the absinthe wrong? 1/3rds is hard. I get that it’s supposed to taste like Dr. Pepper but it’s not doing it for me. Tastes more like Dr. Pepper syrup.",
+    "_specSpirits": [
+      "Dark Rum",
+      "Light Rum",
+      "Blanche Absinthe"
+    ]
+  },
+  {
+    "name": "Ancient Mariner",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/4853/ancient-mariner",
+    "diffordsGuideId": 4853,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Dark/black/blackstrap rum"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "St. Elizabeth Allspice Dram liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Pink grapefruit juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Caribbean blended rum (6-10 yr)",
+      "Dark/black/blackstrap rum",
+      "St. Elizabeth Allspice Dram"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Scored lime wedge and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice into a double old-fashioned glass.",
+    "diffordsRank": 88,
+    "tried": true,
+    "jbRating": 8.7,
+    "gmRating": 8.68,
+    "jbNotes": "“Ooh”",
+    "gmNotes": "“Ooh”",
+    "_specSpirits": [
+      "Dark Rum",
+      "Demerara Rum",
+      "Pimento Dram"
+    ]
+  },
+  {
+    "name": "Scorpion",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1756/scorpion",
+    "diffordsGuideId": 1756,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Orange juice (freshly squeezed)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415) (optional)"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum",
+      "Cognac"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Orange wheel, mint sprigs bouquet, and ideally an edible gardenia flower or white rose",
+    "methodSummary": "Dry-blend the first five ingredients while gradually adding xanthan gum, then blend again with crushed ice and pour into a chilled glass.",
+    "diffordsRank": 89,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Honi Honi",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/2446/honi-honi",
+    "diffordsGuideId": 2446,
+    "ingredients": [
+      {
+        "amount": "1 2/3",
+        "unit": "fl oz",
+        "ingredient": "Bourbon whiskey"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Bourbon whiskey",
+      "Cointreau triple sec"
+    ],
+    "glass": "Double old-fashioned glass",
+    "garnish": "Pineapple wedge, Luxardo Maraschino Cherry, and mint sprigs bouquet",
+    "methodSummary": "Shake all ingredients with ice and fine strain over crushed ice into a double old-fashioned glass.",
+    "diffordsRank": 90,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Rum Runner",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1715/rum-runner",
+    "diffordsGuideId": 1715,
+    "ingredients": [
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Crossfire Hurricane Jamaican Rum"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Giffard Banane du Brésil liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Giffard Crème de Mûre liqueur"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Crossfire Hurricane Jamaican Rum",
+      "Light gold rum",
+      "Giffard Banane du Brésil liqueur"
+    ],
+    "glass": "Hurricane glass",
+    "garnish": "Pineapple wedge & Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice into a hurricane glass.",
+    "diffordsRank": 91,
+    "tried": true,
+    "jbRating": 8.83,
+    "gmRating": 7.99,
+    "jbNotes": "Big crowd pleaser, easy to batch. Goes down too quickly. Strong and doesn’t taste it at all.",
+    "gmNotes": "Maybe a touch too sweet.",
+    "_specSpirits": [
+      "Dark Rum",
+      "Blackberry Liqueur",
+      "Banana Liqueur"
+    ]
+  },
+  {
+    "name": "Suit & Tai",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/3796/suit-and-tai",
+    "diffordsGuideId": 3796,
+    "ingredients": [
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Cognac (brandy)"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Caribbean blended rum aged 6-10 years"
+      },
+      {
+        "amount": "5/6",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "1",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Cognac",
+      "Caribbean blended rum (6-10 yr)",
+      "Cointreau triple sec"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Expressed lime zest twist",
+    "methodSummary": "Shake all ingredients with ice, strain over crushed ice into an old-fashioned glass, and finish with an expressed lime zest twist.",
+    "diffordsRank": 92,
+    "tried": true,
+    "jbRating": 8.3,
+    "gmRating": 8.31,
+    "jbNotes": "Citrusy, smooth, refreshing, smells good",
+    "gmNotes": "Citrusy, smooth, refreshing, smells good",
+    "_specSpirits": [
+      "Bourbon Whiskey",
+      "Aged Rum",
+      "Orange Curaçao"
+    ]
+  },
+  {
+    "name": "Royal Hawaiian",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20191/royal-hawaiian",
+    "diffordsGuideId": 20191,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "1",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Hayman's London Dry Gin"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Skewered pineapple wedge or dehydrated pineapple slice wheel & Luxardo Maraschino Cherry",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled coupe glass.",
+    "diffordsRank": 93,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Major Bailey",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1225/major-bailey",
+    "diffordsGuideId": 1225,
+    "ingredients": [
+      {
+        "amount": "12",
+        "unit": "leaves",
+        "ingredient": "Fresh mint"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      }
+    ],
+    "primarySpirits": [
+      "Hayman's London Dry Gin"
+    ],
+    "glass": "Sling glass",
+    "garnish": "Mint sprigs bouquet",
+    "methodSummary": "Muddle mint in the shaker, add remaining ingredients, shake with ice, fine strain over crushed ice into a sling glass, and briefly churn.",
+    "diffordsRank": 94,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Fernet Me Not No. 3",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20876/fernet-me-not-no-3",
+    "diffordsGuideId": 20876,
+    "ingredients": [
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Fernet Branca liqueur"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Almond (Orgeat) Syrup"
+      },
+      {
+        "amount": "3/4",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      }
+    ],
+    "primarySpirits": [
+      "Fernet Branca"
+    ],
+    "glass": "Nick & Nora glass",
+    "garnish": "Expressed lime zest twist",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled Nick & Nora glass, finished with an expressed lime zest twist.",
+    "diffordsRank": 95,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Honolulu",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/973/honolulu",
+    "diffordsGuideId": 973,
+    "ingredients": [
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Light gold rum (1-3 year old molasses column)"
+      },
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      },
+      {
+        "amount": "1/4",
+        "unit": "barspoon",
+        "ingredient": "Xanthan gum (E415)"
+      }
+    ],
+    "primarySpirits": [
+      "Light gold rum"
+    ],
+    "glass": "Old-fashioned glass",
+    "garnish": "Pineapple wedge on rim skewered with maraschino cherry",
+    "methodSummary": "Dry-blend the first five ingredients while gradually adding xanthan gum, then blend again with crushed ice and pour into a chilled old-fashioned glass.",
+    "diffordsRank": 96,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Caribbean Punch",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/378/caribbean-punch",
+    "diffordsGuideId": 378,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Overproof white rum (unaged Jamaican/funky)"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Adriatico Amaretto Liqueur"
+      },
+      {
+        "amount": "1/3",
+        "unit": "fl oz",
+        "ingredient": "Coconut rum liqueur (35-40% alc./vol.)"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Galliano L'Autentico liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      },
+      {
+        "amount": "1/6",
+        "unit": "fl oz",
+        "ingredient": "Monin Grenadine Syrup"
+      }
+    ],
+    "primarySpirits": [
+      "Overproof white rum",
+      "Adriatico Amaretto Liqueur",
+      "Coconut rum liqueur"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Expressed lime zest twist",
+    "methodSummary": "Shake all ingredients with ice and strain over crushed ice into a collins glass, finished with an expressed lime zest twist.",
+    "diffordsRank": 97,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Montego Bay",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1357/montego-bay",
+    "diffordsGuideId": 1357,
+    "ingredients": [
+      {
+        "amount": "1 1/2",
+        "unit": "fl oz",
+        "ingredient": "Agricole blanc/cane juice rhum (unaged)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "1/4",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "2",
+        "unit": "dash",
+        "ingredient": "Angostura Aromatic Bitters"
+      }
+    ],
+    "primarySpirits": [
+      "Agricole blanc rhum",
+      "Cointreau triple sec",
+      "Angostura Aromatic Bitters"
+    ],
+    "glass": "Coupe glass",
+    "garnish": "Lime wedge",
+    "methodSummary": "Shake all ingredients with ice and fine strain into a chilled coupe glass.",
+    "diffordsRank": 98,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Swamp Water",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/1908/swamp-water",
+    "diffordsGuideId": 1908,
+    "ingredients": [
+      {
+        "amount": "3",
+        "unit": "leaves",
+        "ingredient": "Fresh basil"
+      },
+      {
+        "amount": "1 1/3",
+        "unit": "fl oz",
+        "ingredient": "Green Chartreuse (or alternative herbal liqueur)"
+      },
+      {
+        "amount": "3 1/2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice (brine)"
+      },
+      {
+        "amount": "1/2",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "6",
+        "unit": "drop",
+        "ingredient": "Difford's Daiquiri Bitters"
+      },
+      {
+        "amount": "3",
+        "unit": "drop",
+        "ingredient": "Saline solution (20g sea salt to 80g water) or merest pinch of salt"
+      }
+    ],
+    "primarySpirits": [
+      "Green Chartreuse",
+      "Difford's Daiquiri Bitters"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Lime wedge and basil leaf",
+    "methodSummary": "Muddle basil in the shaker, add remaining ingredients, shake with ice, and strain into an ice-filled collins glass.",
+    "diffordsRank": 99,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  },
+  {
+    "name": "Hawaiian Iced Tea",
+    "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/16722/hawaiian-iced-tea",
+    "diffordsGuideId": 16722,
+    "ingredients": [
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Hayman's London Dry Gin"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Blanco tequila"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Ketel One Vodka"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Cointreau L'Unique triple sec liqueur"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Lime juice (freshly squeezed)"
+      },
+      {
+        "amount": "5/12",
+        "unit": "fl oz",
+        "ingredient": "Lemon juice (freshly squeezed)"
+      },
+      {
+        "amount": "2",
+        "unit": "fl oz",
+        "ingredient": "Pineapple juice"
+      }
+    ],
+    "primarySpirits": [
+      "Light white rum",
+      "Hayman's London Dry Gin",
+      "Blanco tequila"
+    ],
+    "glass": "Collins glass",
+    "garnish": "Pineapple wedge on rim",
+    "methodSummary": "Shake all ingredients with ice and strain into an ice-filled collins glass.",
+    "diffordsRank": 100,
+    "tried": false,
+    "jbRating": null,
+    "gmRating": null,
+    "jbNotes": null,
+    "gmNotes": null
+  }
+]
