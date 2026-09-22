@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-sand: #fff7e8;
+  --color-sand-deep: #fdebc8;
+  --color-card: #ffffff;
+  --color-ink: #2a1b12;
+  --color-ink-soft: #6b4a33;
+  --color-ink-faint: #7c5b40;
+  --color-teal-deep: #0b4f4a;
+  --color-teal: #0e6b63;
+  --color-coral-deep: #9a3412;
+  --color-coral: #c2410c;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-sand: var(--color-sand);
+  --color-sand-deep: var(--color-sand-deep);
+  --color-card: var(--color-card);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-teal-deep: var(--color-teal-deep);
+  --color-teal: var(--color-teal);
+  --color-coral-deep: var(--color-coral-deep);
+  --color-coral: var(--color-coral);
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * Deliberate, single tropical theme -- does NOT follow the OS/browser
+ * prefers-color-scheme. An earlier version let the background flip to
+ * near-black in dark mode while text colors stayed fixed for a light
+ * background, which failed WCAG contrast almost everywhere (caught by a
+ * Lighthouse accessibility audit). Every color pairing below is checked
+ * against WCAG AA (4.5:1 normal text / 3:1 large text) -- see the
+ * contrast notes in the project README before changing any of them.
+ */
+body {
+  background-color: var(--color-sand);
+  background-image:
+    radial-gradient(circle at 8% 0%, rgba(15, 118, 110, 0.08), transparent 40%),
+    radial-gradient(circle at 100% 15%, rgba(194, 65, 12, 0.08), transparent 45%);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Header banner: explicit gradient (not a Tailwind gradient utility, to
+ * avoid relying on utility-name churn between Tailwind major versions).
+ * teal-deep -> coral-deep stays dark enough end-to-end for white text
+ * (9.41:1 / 7.31:1 at the stops) to keep AA contrast across the gradient.
+ */
+.tiki-header {
+  background-image: linear-gradient(135deg, var(--color-teal-deep), var(--color-coral-deep));
 }

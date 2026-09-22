@@ -25,77 +25,98 @@ export default function Page() {
       return rankA - rankB;
     });
 
+  const kpis = [
+    {
+      icon: "🍹",
+      label: "Tasted",
+      value: `${summary.triedCount} / ${summary.total}`,
+    },
+    {
+      icon: "🌺",
+      label: "Progress",
+      value: `${Math.round(summary.fraction * 100)}%`,
+    },
+    { icon: "🥃", label: "JB Average", value: summary.jbAverage ?? "—" },
+    { icon: "🍸", label: "GM Average", value: summary.gmAverage ?? "—" },
+  ];
+
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 py-6 sm:max-w-lg">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-teal-800">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
+      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20"
+        >
+          🌴
+        </span>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-8 -left-4 text-7xl opacity-10"
+        >
+          🌺
+        </span>
+        <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
+          Difford&apos;s Guide Top 100
+        </p>
+        <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">
           🍹 Adventures in Tiki
         </h1>
-        <p className="text-sm text-neutral-600">
-          Tasting log for Difford&apos;s Guide Top 100 Tiki &amp; Tropical
-          Cocktails.
+        <p className="relative mt-2 max-w-xs text-sm text-white/90">
+          JB &amp; GM&apos;s tasting log for the tiki &amp; tropical cocktail
+          canon.
         </p>
       </header>
 
       <section
         aria-label="Progress summary"
-        className="grid grid-cols-2 gap-2"
+        className="grid grid-cols-2 gap-3"
       >
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-teal-700">
-            Tasted
-          </p>
-          <p className="text-lg font-semibold text-teal-900">
-            {summary.triedCount} / {summary.total}
-          </p>
-        </div>
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-teal-700">
-            Progress
-          </p>
-          <p className="text-lg font-semibold text-teal-900">
-            {Math.round(summary.fraction * 100)}%
-          </p>
-        </div>
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-teal-700">
-            JB Average
-          </p>
-          <p className="text-lg font-semibold text-teal-900">
-            {summary.jbAverage ?? "—"}
-          </p>
-        </div>
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-teal-700">
-            GM Average
-          </p>
-          <p className="text-lg font-semibold text-teal-900">
-            {summary.gmAverage ?? "—"}
-          </p>
-        </div>
+        {kpis.map((item) => (
+          <div
+            key={item.label}
+            className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm"
+          >
+            <p aria-hidden="true" className="text-lg leading-none">
+              {item.icon}
+            </p>
+            <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-teal">
+              {item.label}
+            </p>
+            <p className="text-xl font-bold text-teal-deep">{item.value}</p>
+          </div>
+        ))}
       </section>
 
-      <section aria-label="Tasted cocktails" className="flex flex-col gap-2">
-        <h2 className="text-sm font-semibold text-neutral-700">
-          Tasted so far
-        </h2>
-        <ul className="flex flex-col divide-y divide-neutral-100 rounded-lg border border-neutral-200">
+      <section aria-label="Tasted cocktails" className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+            Tasted so far
+          </h2>
+          <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
+        </div>
+        <ul className="flex flex-col gap-2">
           {triedSorted.map((c) => {
             const r = rankByName.get(c.name);
             return (
-              <li key={c.name} className="flex items-center gap-3 p-3">
-                <span className="w-6 shrink-0 text-center text-xs font-semibold text-neutral-400">
+              <li
+                key={c.name}
+                className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm"
+              >
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-coral-deep text-xs font-bold text-white"
+                >
                   {r?.rank ?? "–"}
                 </span>
                 <div className="flex flex-1 flex-col">
-                  <span className="text-sm font-medium text-neutral-900">
+                  <span className="text-sm font-semibold text-ink">
                     {c.name}
                   </span>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-ink-faint">
                     {c.primarySpirits.join(", ")}
                   </span>
                 </div>
-                <span className="text-sm font-semibold text-teal-800">
+                <span className="rounded-full bg-teal-deep px-2.5 py-1 text-xs font-bold text-white">
                   {r?.avgRating ?? "—"}
                 </span>
               </li>
@@ -104,11 +125,11 @@ export default function Page() {
         </ul>
       </section>
 
-      <p className="pb-4 text-center text-xs text-neutral-400">
+      <p className="pt-2 text-center text-xs text-ink-faint">
         Recipes adapted from{" "}
         <a
           href="https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical"
-          className="underline"
+          className="font-semibold text-teal underline underline-offset-2"
         >
           Difford&apos;s Guide
         </a>
