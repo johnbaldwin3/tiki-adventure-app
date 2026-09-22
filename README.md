@@ -25,10 +25,17 @@ links back to the original.
 
 ```bash
 npm install
+cp .env.example .env.local   # then fill in your Supabase project URL + anon key
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+The app reads the cocktail list and tastings live from Supabase
+(`src/lib/supabase.ts`, `src/lib/cocktails.ts`) using the publishable/anon
+key, which only has public SELECT access (see
+`supabase/migrations/0001_init_schema.sql`) -- there is no write access
+from the client until Phase 7 auth lands.
 
 ## Testing
 
@@ -43,7 +50,7 @@ This app is being built in small, reviewed phases:
 
 1. ✅ Ingredient audit — verified all 100 cocktails against Difford's Guide
 2. ✅ Project scaffolding — Next.js app, tests, repo, first deploy
-3. ⬜ Database schema & seeding (Supabase)
+3. ✅ Database schema & seeding (Supabase)
 4. ⬜ Core read-only UI (cocktail list, recipe cards)
 5. ⬜ Interactive tasting features (ratings, notes, tried toggle)
 6. ⬜ KPI dashboard & polish

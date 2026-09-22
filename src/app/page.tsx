@@ -1,18 +1,25 @@
-import cocktails from "../../seed-data/cocktails.json";
+import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 
-interface SeedCocktail {
-  name: string;
-  tried: boolean;
-  jbRating: number | null;
-  gmRating: number | null;
-  primarySpirits: string[];
-  diffordsGuideUrl: string;
-}
+// This page reads live from Supabase on every request rather than being
+// statically generated or ISR-cached. The tasting log is small (100 rows)
+// and cheap to query, and once Phase 7 auth lands, JB/GM will be able to
+// add/edit tastings themselves -- always-fresh reads avoid a stale cache
+// showing an old rating after someone just entered one. Revisit this if/when
+// traffic or DB load ever makes that trade-off worth reconsidering.
+export const dynamic = "force-dynamic";
 
-const records = cocktails as SeedCocktail[];
+export default async function Page() {
+  let records: CocktailRecord[];
+  let loadError: string | null = null;
+  try {
+    records = await fetchCocktailRecords();
+  } catch (err) {
+    loadError =
+      err instanceof Error ? err.message : "Failed to load the tasting log.";
+    records = [];
+  }
 
-export default function Page() {
   const ranked = rankCocktails(records);
   const summary = summarizeProgress(records);
   const rankByName = new Map(ranked.map((r) => [r.name, r]));
@@ -66,6 +73,16 @@ export default function Page() {
           canon.
         </p>
       </header>
+
+      {loadError && (
+        <p
+          role="alert"
+          className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm"
+        >
+          Couldn&apos;t load the tasting log right now. Please try refreshing
+          the page.
+        </p>
+      )}
 
       <section
         aria-label="Progress summary"
