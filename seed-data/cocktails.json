@@ -12,7 +12,7 @@
       {
         "amount": "5/6",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "5/6",
@@ -37,7 +37,7 @@
     ],
     "primarySpirits": [
       "Light Gold Rum",
-      "Dry Curaçao",
+      "Dry Cura\u00e7ao",
       "Rosso Vermouth"
     ],
     "glass": "Collins glass",
@@ -68,7 +68,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "3/4",
@@ -93,12 +93,12 @@
       {
         "amount": "1/12",
         "unit": "fl oz",
-        "ingredient": "Giffard Menthe Pastille white crème de menthe"
+        "ingredient": "Giffard Menthe Pastille white cr\u00e8me de menthe"
       },
       {
         "amount": "2",
         "unit": "dash",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       },
       {
         "amount": "2",
@@ -109,7 +109,7 @@
     "primarySpirits": [
       "Caribbean Rum",
       "Pineapple Rum",
-      "Dry Curaçao"
+      "Dry Cura\u00e7ao"
     ],
     "glass": "Old-fashioned glass",
     "garnish": "Half lime shell, mint sprigs bouquet, and fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry)",
@@ -180,12 +180,7 @@
     "jbRating": 8.9,
     "gmRating": 8.71,
     "jbNotes": "Balance - spicy/intriguing - refreshing - not too sugary",
-    "gmNotes": "Balance - spicy/intriguing - refreshing - not too sugary",
-    "_specSpirits": [
-      "Aged Agricole Rhum",
-      "Aged Rum",
-      "Falernum Liqueur"
-    ]
+    "gmNotes": "Balance - spicy/intriguing - refreshing - not too sugary"
   },
   {
     "name": "Navy Grog",
@@ -317,7 +312,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "3/4",
@@ -332,7 +327,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1/6",
@@ -342,7 +337,7 @@
     ],
     "primarySpirits": [
       "Caribbean Rum",
-      "Dry Curaçao",
+      "Dry Cura\u00e7ao",
       "Dark Rum"
     ],
     "glass": "Double old-fashioned glass",
@@ -397,12 +392,7 @@
     "jbRating": 8.59,
     "gmRating": null,
     "jbNotes": "Huge hit for a group. Easy to batch.",
-    "gmNotes": "Don’t remember notes but was a huge hit for a group. Also easy to batch. Smooth and almost creamy but not in a thick way.",
-    "_specSpirits": [
-      "Navy Rum",
-      "Cream of Coconut",
-      "Overproof Rum"
-    ]
+    "gmNotes": "Don\u2019t remember notes but was a huge hit for a group. Also easy to batch. Smooth and almost creamy but not in a thick way."
   },
   {
     "name": "Saturn",
@@ -477,7 +467,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "3/4",
@@ -598,12 +588,7 @@
     "jbRating": 8.96,
     "gmRating": 8.96,
     "jbNotes": "Yum. Tastes like a tiki bar. Balance of sweet and tart. Subtle butterscotch flavor.",
-    "gmNotes": "Yum. Tastes like a tiki bar. Balance of sweet and tart. Subtle butterscotch flavor.",
-    "_specSpirits": [
-      "Overproof Rum",
-      "Amaro Meletti",
-      "Falernum Liqueur"
-    ]
+    "gmNotes": "Yum. Tastes like a tiki bar. Balance of sweet and tart. Subtle butterscotch flavor."
   },
   {
     "name": "Elusive Dreams",
@@ -638,13 +623,13 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Giffard Banane du Brésil liqueur"
+        "ingredient": "Giffard Banane du Br\u00e9sil liqueur"
       }
     ],
     "primarySpirits": [
       "Pineapple Rum",
       "Light White Rum",
-      "Banane du Brésil Liqueur"
+      "Banane du Br\u00e9sil Liqueur"
     ],
     "glass": "Coupe glass",
     "garnish": "Pineapple wedge on the rim",
@@ -725,12 +710,7 @@
     "jbRating": null,
     "gmRating": 9.41,
     "jbNotes": "Quintessential tiki flavor. Tropical and delicious.",
-    "gmNotes": "The quintessential tiki flavor. Tropical and yummy and you have no idea it’s mostly booze. Yes.",
-    "_specSpirits": [
-      "Navy Rum",
-      "Apricot Liqueur",
-      "Overproof Rum"
-    ]
+    "gmNotes": "The quintessential tiki flavor. Tropical and yummy and you have no idea it\u2019s mostly booze. Yes."
   },
   {
     "name": "Undead Gentleman",
@@ -740,7 +720,7 @@
       {
         "amount": "1/24",
         "unit": "fl oz",
-        "ingredient": "La Fée Absinthe Blanche"
+        "ingredient": "La F\u00e9e Absinthe Blanche"
       },
       {
         "amount": "1 1/2",
@@ -821,7 +801,7 @@
       {
         "amount": "5/12",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -836,12 +816,7 @@
     "jbRating": 8.4,
     "gmRating": 7.87,
     "jbNotes": "Bitter forward at first but liked it - grew on us at the end. Smoothed out after a few sips.",
-    "gmNotes": "Bitter forward at first but liked it - grew on us at the end. Smoothed out after a few sips.",
-    "_specSpirits": [
-      "Black Rum",
-      "Campari",
-      "Dark Rum"
-    ]
+    "gmNotes": "Bitter forward at first but liked it - grew on us at the end. Smoothed out after a few sips."
   },
   {
     "name": "Nuclear Daiquiri",
@@ -897,7 +872,7 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Del Maguey Vida Clásico Mezcal"
+        "ingredient": "Del Maguey Vida Cl\u00e1sico Mezcal"
       },
       {
         "amount": "1",
@@ -907,7 +882,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "1/2",
@@ -923,7 +898,7 @@
     "primarySpirits": [
       "Mezcal",
       "Caribbean Rum",
-      "Dry Curaçao"
+      "Dry Cura\u00e7ao"
     ],
     "glass": "Double old-fashioned glass",
     "garnish": "Half lime shell, mint sprigs bouquet, and fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry)",
@@ -958,7 +933,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1",
@@ -1002,7 +977,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -1051,7 +1026,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -1067,12 +1042,7 @@
     "jbRating": 7.1,
     "gmRating": 7.39,
     "jbNotes": "Grows on you. A little darker/more bitter or liquor forward.",
-    "gmNotes": "Grows on you. A little darker/more bitter or liquor forward.",
-    "_specSpirits": [
-      "Dark Rum",
-      "Light Rum",
-      "Coffee Liqueur"
-    ]
+    "gmNotes": "Grows on you. A little darker/more bitter or liquor forward."
   },
   {
     "name": "Zombie",
@@ -1132,7 +1102,7 @@
       {
         "amount": "4",
         "unit": "dash",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       },
       {
         "amount": "1",
@@ -1193,7 +1163,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1/4",
@@ -1217,7 +1187,7 @@
     "gmNotes": null
   },
   {
-    "name": "Près du Quai",
+    "name": "Pr\u00e8s du Quai",
     "diffordsGuideUrl": "https://www.diffordsguide.com/cocktails/recipe/20871/pres-du-quai",
     "diffordsGuideId": 20871,
     "ingredients": [
@@ -1239,7 +1209,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Bénédictine D.O.M. liqueur"
+        "ingredient": "B\u00e9n\u00e9dictine D.O.M. liqueur"
       },
       {
         "amount": "2",
@@ -1295,7 +1265,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -1310,12 +1280,7 @@
     "jbRating": 8.3,
     "gmRating": 7.9,
     "jbNotes": "Limey, the tiki version of a Rickey. Rumarita? Last word-ey.",
-    "gmNotes": "Limey, the tiki version of a Rickey. Rumarita? Last word-ey.",
-    "_specSpirits": [
-      "Dark Rum",
-      "Light Rum",
-      "Triple Sec"
-    ]
+    "gmNotes": "Limey, the tiki version of a Rickey. Rumarita? Last word-ey."
   },
   {
     "name": "Pinky Pincher",
@@ -1489,7 +1454,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "1/6",
@@ -1515,7 +1480,7 @@
     "primarySpirits": [
       "Light white rum",
       "Jamaican-style aged blended rum",
-      "Ferrand Dry Curaçao liqueur"
+      "Ferrand Dry Cura\u00e7ao liqueur"
     ],
     "glass": "Cartridge mug or Collins glass",
     "garnish": "Fruit stick with skewered pineapple cubes and Luxardo Maraschino Cherry, plus mint sprigs",
@@ -1681,12 +1646,7 @@
     "jbRating": 7.89,
     "gmRating": 7.11,
     "jbNotes": "Like a hot toddy, but cold. Tastes a little of old fashioned (improved whiskey cocktail).",
-    "gmNotes": "Like a hot toddy, but cold. Tastes a little of old fashioned (improved whiskey cocktail).",
-    "_specSpirits": [
-      "Bourbon Whiskey",
-      "Pimento Dram",
-      "Cinnamon Syrup"
-    ]
+    "gmNotes": "Like a hot toddy, but cold. Tastes a little of old fashioned (improved whiskey cocktail)."
   },
   {
     "name": "Nuka Nuka",
@@ -1740,12 +1700,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried (no foam)",
-    "gmNotes": "Tried (no foam)",
-    "_specSpirits": [
-      "Dark Rum",
-      "Overproof White Rum",
-      "Pimento Dram"
-    ]
+    "gmNotes": "Tried (no foam)"
   },
   {
     "name": "Pago Pago",
@@ -1770,7 +1725,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Giffard White Crème de Cacao Liqueur"
+        "ingredient": "Giffard White Cr\u00e8me de Cacao Liqueur"
       },
       {
         "amount": "1/3",
@@ -1786,7 +1741,7 @@
     "primarySpirits": [
       "Caribbean blended rum",
       "Green Chartreuse",
-      "Giffard White Crème de Cacao Liqueur"
+      "Giffard White Cr\u00e8me de Cacao Liqueur"
     ],
     "glass": "Coupe glass",
     "garnish": "Pineapple wedge on rim, or floated edible flower",
@@ -1870,7 +1825,7 @@
       {
         "amount": "1/6",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0\u00b0Brix)"
       }
     ],
     "primarySpirits": [
@@ -1906,7 +1861,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Giffard Banane du Brésil liqueur"
+        "ingredient": "Giffard Banane du Br\u00e9sil liqueur"
       },
       {
         "amount": "1/3",
@@ -1932,7 +1887,7 @@
     "primarySpirits": [
       "Light gold rum",
       "Light white rum",
-      "Giffard Banane du Brésil liqueur"
+      "Giffard Banane du Br\u00e9sil liqueur"
     ],
     "glass": "Collins glass",
     "garnish": "Carved banana or skewered pineapple wedge, maraschino cherry and half orange slice",
@@ -1962,7 +1917,7 @@
       {
         "amount": "3/4",
         "unit": "fl oz",
-        "ingredient": "Giffard Banane du Brésil liqueur"
+        "ingredient": "Giffard Banane du Br\u00e9sil liqueur"
       },
       {
         "amount": "3/4",
@@ -1988,7 +1943,7 @@
     "primarySpirits": [
       "Caribbean light rum",
       "Cognac",
-      "Giffard Banane du Brésil liqueur"
+      "Giffard Banane du Br\u00e9sil liqueur"
     ],
     "glass": "Double old-fashioned",
     "garnish": "Mint sprigs bouquet and speared banana chips",
@@ -2114,12 +2069,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried",
-    "gmNotes": "Tried",
-    "_specSpirits": [
-      "Aged Jamaican Rum",
-      "Black Rum",
-      "Cinnamon Syrup"
-    ]
+    "gmNotes": "Tried"
   },
   {
     "name": "St. Stephen's Sour",
@@ -2167,12 +2117,12 @@
     "diffordsGuideId": 778,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Light white rum"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Hayman's London Dry Gin"
       },
@@ -2187,22 +2137,22 @@
         "ingredient": "Pisco"
       },
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Orange juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Orgeat syrup"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Lemon juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Oloroso Sherry"
       }
@@ -2228,29 +2178,29 @@
     "diffordsGuideId": 4823,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Light gold rum (1-3 year old molasses column)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Galliano L'Autentico liqueur"
       },
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
         "amount": "1/12",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1",
@@ -2321,7 +2271,7 @@
     ],
     "glass": "Old-Fashioned glass",
     "garnish": "Expressed lemon and orange zest twists",
-    "methodSummary": "All four brown spirits, sugar syrup and both bitters are stirred with ice and strained over ice in an old-fashioned glass; lemon and orange zests are expressed over the top as garnish. Note: bourbon, rye, calvados and cognac are all tied at ½ oz each, so the primarySpirits ranking above just reflects the page's listed order.",
+    "methodSummary": "All four brown spirits, sugar syrup and both bitters are stirred with ice and strained over ice in an old-fashioned glass; lemon and orange zests are expressed over the top as garnish. Note: bourbon, rye, calvados and cognac are all tied at \u00bd oz each, so the primarySpirits ranking above just reflects the page's listed order.",
     "diffordsRank": 43,
     "tried": false,
     "jbRating": null,
@@ -2345,22 +2295,22 @@
         "ingredient": "Blanco tequila"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "⅓",
+        "amount": "\u2153",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       },
       {
-        "amount": "⅙",
+        "amount": "\u2159",
         "unit": "fl oz",
         "ingredient": "Agave syrup (agave nectar)"
       },
@@ -2378,7 +2328,7 @@
     "primarySpirits": [
       "Reposado tequila",
       "Blanco tequila",
-      "Dry Curaçao"
+      "Dry Cura\u00e7ao"
     ],
     "glass": "Double old-fashioned glass",
     "garnish": "Mint sprigs bouquet & fruit stick (pineapple cubes and Luxardo Maraschino Cherry)",
@@ -2398,7 +2348,7 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Del Maguey Vida Clásico Mezcal"
+        "ingredient": "Del Maguey Vida Cl\u00e1sico Mezcal"
       },
       {
         "amount": "1",
@@ -2406,12 +2356,12 @@
         "ingredient": "Agricole blanc/cane juice rhum (unaged)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
-        "ingredient": "Bols Blue Curaçao"
+        "ingredient": "Bols Blue Cura\u00e7ao"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       },
@@ -2421,7 +2371,7 @@
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       }
@@ -2429,7 +2379,7 @@
     "primarySpirits": [
       "Mezcal",
       "Agricole rhum",
-      "Blue Curaçao"
+      "Blue Cura\u00e7ao"
     ],
     "glass": "Pearl Diver or Collins glass",
     "garnish": "Ice shell and plastic monkey on rim",
@@ -2447,22 +2397,22 @@
     "diffordsGuideId": 17801,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Cognac (brandy)"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Falernum liqueur"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
-        "ingredient": "Giffard Crème de Pêche de Vigne liqueur"
+        "ingredient": "Giffard Cr\u00e8me de P\u00eache de Vigne liqueur"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       }
@@ -2470,7 +2420,7 @@
     "primarySpirits": [
       "Cognac",
       "Falernum",
-      "Crème de Pêche de Vigne"
+      "Cr\u00e8me de P\u00eache de Vigne"
     ],
     "glass": "Coupe glass",
     "garnish": "Lime wedge",
@@ -2493,39 +2443,39 @@
         "ingredient": "Overproof aged pot still rum (high-ester 4-6 years old)"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Overproof aged light-bodied rum (low-ester, 2-5 years old)"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Light gold rum (1-3 year old molasses column)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Falernum liqueur"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Monin Cinnamon Syrup"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Pink grapefruit juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
         "amount": "2",
         "unit": "dash",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       },
       {
         "amount": "1",
@@ -2533,7 +2483,7 @@
         "ingredient": "Angostura Aromatic Bitters"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "barspoon",
         "ingredient": "Xanthan gum (E415) (optional)"
       }
@@ -2569,12 +2519,12 @@
         "ingredient": "St. Elizabeth Allspice Dram liqueur"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Orange juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
@@ -2607,12 +2557,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried",
-    "gmNotes": "Tried",
-    "_specSpirits": [
-      "Gold Rum",
-      "Dark Jamaican Rum",
-      "Allspice Dram"
-    ]
+    "gmNotes": "Tried"
   },
   {
     "name": "Kamaniwanalaya",
@@ -2620,7 +2565,7 @@
     "diffordsGuideId": 1088,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
       },
@@ -2630,12 +2575,12 @@
         "ingredient": "Adriatico Amaretto Liqueur"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Navy rum (ideally circa 55% alc./vol.)"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Overproof white rum (unaged Jamaican/funky)"
       },
@@ -2645,7 +2590,7 @@
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
@@ -2686,7 +2631,7 @@
         "ingredient": "Lustau Jarana Fino Sherry"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Falernum liqueur"
       },
@@ -2696,7 +2641,7 @@
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "⅓",
+        "amount": "\u2153",
         "unit": "fl oz",
         "ingredient": "Cream of coconut"
       }
@@ -2722,17 +2667,17 @@
     "diffordsGuideId": 13347,
     "ingredients": [
       {
-        "amount": "1⅔",
+        "amount": "1\u2154",
         "unit": "fl oz",
         "ingredient": "Straight rye whiskey (100 proof/50% alc./vol.)"
       },
       {
-        "amount": "⅔",
+        "amount": "\u2154",
         "unit": "fl oz",
         "ingredient": "Pink grapefruit juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
@@ -2742,7 +2687,7 @@
         "ingredient": "Falernum liqueur"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water)"
       }
@@ -2767,27 +2712,27 @@
     "diffordsGuideId": 26650,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
         "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Agricole blanc/cane juice rhum (unaged)"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Luxardo Apricot Albicocca Liqueur"
       },
@@ -2823,27 +2768,27 @@
         "ingredient": "Jamaican-style aged blended rum with funk"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Italian red bitter liqueur"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Luxardo Maraschino liqueur"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Monin Passion Fruit Syrup"
       }
@@ -2861,12 +2806,7 @@
     "jbRating": 7.5,
     "gmRating": 7.21,
     "jbNotes": "Sweeter weirdness than Bali Hai but grows on you? Sweet/tart. Passion fruit aftertaste. Mildly bitter?",
-    "gmNotes": "Sweeter weirdness than Bali Hai but grows on you? Sweet/tart. Passion fruit aftertaste. Mildly bitter?",
-    "_specSpirits": [
-      "Aged Jamaican Rum",
-      "Campari",
-      "Maraschino Liqueur"
-    ]
+    "gmNotes": "Sweeter weirdness than Bali Hai but grows on you? Sweet/tart. Passion fruit aftertaste. Mildly bitter?"
   },
   {
     "name": "Shark's Tooth (by Don Beach)",
@@ -2879,19 +2819,19 @@
         "ingredient": "Light gold rum (1-3 year old molasses column)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Pineapple juice"
       },
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1/6",
@@ -2916,12 +2856,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried",
-    "gmNotes": "Tried",
-    "_specSpirits": [
-      "Gold Rum",
-      "Dark Rum",
-      "Maraschino Liqueur"
-    ]
+    "gmNotes": "Tried"
   },
   {
     "name": "Humuhumunukunukuapua'a",
@@ -2934,17 +2869,17 @@
         "ingredient": "Hayman's London Dry Gin"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Pineapple juice"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lemon juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       },
@@ -2974,9 +2909,9 @@
     "diffordsGuideId": 14830,
     "ingredients": [
       {
-        "amount": "1½",
+        "amount": "1\u00bd",
         "unit": "fl oz",
-        "ingredient": "Del Maguey Vida Clásico Mezcal"
+        "ingredient": "Del Maguey Vida Cl\u00e1sico Mezcal"
       },
       {
         "amount": "2",
@@ -2984,24 +2919,24 @@
         "ingredient": "Coconut water"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Sugar cane syrup (from juice)"
       },
       {
         "amount": "1/6",
         "unit": "fl oz",
-        "ingredient": "Giffard Banane du Brésil liqueur"
+        "ingredient": "Giffard Banane du Br\u00e9sil liqueur"
       }
     ],
     "primarySpirits": [
       "Mezcal",
-      "Banane du Brésil liqueur"
+      "Banane du Br\u00e9sil liqueur"
     ],
     "glass": "Old-fashioned glass",
     "garnish": "None (salt rim only)",
@@ -3019,7 +2954,7 @@
     "diffordsGuideId": 21191,
     "ingredients": [
       {
-        "amount": "1⅓",
+        "amount": "1\u2153",
         "unit": "fl oz",
         "ingredient": "Crossfire Hurricane Jamaican Rum"
       },
@@ -3029,9 +2964,9 @@
         "ingredient": "Milk (whole milk/full 3-4% fat)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1",
@@ -3064,7 +2999,7 @@
         "ingredient": "Straight rye whiskey (100 proof/50% alc./vol.)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       },
@@ -3079,12 +3014,12 @@
         "ingredient": "Licor 43 Original liqueur"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Pineapple juice (chilled)"
       },
       {
-        "amount": "¾",
+        "amount": "\u00be",
         "unit": "fl oz",
         "ingredient": "Lemon juice (freshly squeezed)"
       },
@@ -3115,12 +3050,12 @@
     "diffordsGuideId": 612,
     "ingredients": [
       {
-        "amount": "1⅔",
+        "amount": "1\u2154",
         "unit": "fl oz",
         "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
         "ingredient": "Giffard Caribbean Pineapple liqueur"
       },
@@ -3135,7 +3070,7 @@
         "ingredient": "Lemon juice (freshly squeezed)"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "fl oz",
         "ingredient": "Monin Almond (Orgeat) Syrup"
       }
@@ -3160,32 +3095,32 @@
     "diffordsGuideId": 943,
     "ingredients": [
       {
-        "amount": "1⅓",
+        "amount": "1\u2153",
         "unit": "fl oz",
         "ingredient": "Light gold rum (1-3 year old molasses column)"
       },
       {
-        "amount": "⅔",
+        "amount": "\u2154",
         "unit": "fl oz",
         "ingredient": "Light white rum (charcoal-filtered 1-4 years old)"
       },
       {
-        "amount": "⅔",
+        "amount": "\u2154",
         "unit": "fl oz",
         "ingredient": "Falernum liqueur"
       },
       {
-        "amount": "⅔",
+        "amount": "\u2154",
         "unit": "fl oz",
         "ingredient": "Lime juice (freshly squeezed)"
       },
       {
-        "amount": "½",
+        "amount": "\u00bd",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
-        "amount": "¼",
+        "amount": "\u00bc",
         "unit": "barspoon",
         "ingredient": "Xanthan gum (E415) (optional)"
       }
@@ -3203,12 +3138,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried",
-    "gmNotes": "Tried",
-    "_specSpirits": [
-      "Bourbon Whiskey",
-      "Light Rum",
-      "Orange Curaçao"
-    ]
+    "gmNotes": "Tried"
   },
   {
     "name": "Mai Dutch Tai",
@@ -3223,7 +3153,7 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "1 1/2",
@@ -3238,12 +3168,12 @@
       {
         "amount": "2",
         "unit": "dash",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       }
     ],
     "primarySpirits": [
       "Genever",
-      "Ferrand Dry Curaçao liqueur",
+      "Ferrand Dry Cura\u00e7ao liqueur",
       "Absinthe"
     ],
     "glass": "Double old-fashioned",
@@ -3274,7 +3204,7 @@
       {
         "amount": "2/3",
         "unit": "fl oz",
-        "ingredient": "Passoã passion fruit liqueur"
+        "ingredient": "Passo\u00e3 passion fruit liqueur"
       },
       {
         "amount": "1/6",
@@ -3304,7 +3234,7 @@
     ],
     "primarySpirits": [
       "Overproof white rum",
-      "Passoã passion fruit liqueur",
+      "Passo\u00e3 passion fruit liqueur",
       "Dark/black rum"
     ],
     "glass": "Old-fashioned glass",
@@ -3340,7 +3270,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0\u00b0Brix)"
       },
       {
         "amount": "1/2",
@@ -3426,7 +3356,7 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Del Maguey Vida Clásico Mezcal"
+        "ingredient": "Del Maguey Vida Cl\u00e1sico Mezcal"
       },
       {
         "amount": "1",
@@ -3460,7 +3390,7 @@
       }
     ],
     "primarySpirits": [
-      "Del Maguey Vida Clásico Mezcal",
+      "Del Maguey Vida Cl\u00e1sico Mezcal",
       "Jamaican-style aged blended rum",
       "Orgeat almond liqueur"
     ],
@@ -3492,7 +3422,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1/2",
@@ -3537,7 +3467,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "White peach purée"
+        "ingredient": "White peach pur\u00e9e"
       },
       {
         "amount": "1/3",
@@ -3603,7 +3533,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Giffard Crème de Pêche de Vigne liqueur"
+        "ingredient": "Giffard Cr\u00e8me de P\u00eache de Vigne liqueur"
       },
       {
         "amount": "1/3",
@@ -3618,7 +3548,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "2",
@@ -3669,7 +3599,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "3",
@@ -3709,7 +3639,7 @@
       {
         "amount": "3/4",
         "unit": "fl oz",
-        "ingredient": "Ferrand Tropical Dry Curaçao"
+        "ingredient": "Ferrand Tropical Dry Cura\u00e7ao"
       },
       {
         "amount": "3/4",
@@ -3750,7 +3680,7 @@
     "primarySpirits": [
       "Pineapple rum",
       "Caribbean blended rum",
-      "Ferrand Tropical Dry Curaçao"
+      "Ferrand Tropical Dry Cura\u00e7ao"
     ],
     "glass": "Double old-fashioned",
     "garnish": "Fruit stick (skewered pineapple cubes and Luxardo Maraschino Cherry) and mint sprigs bouquet",
@@ -3759,13 +3689,8 @@
     "tried": true,
     "jbRating": null,
     "gmRating": 9.19,
-    "jbNotes": "“Ooh - that’s good” -JB.",
-    "gmNotes": "Slight riff as I didn’t have pineapple rum or tropical curaçao but definitely yummy. Measured 1/12 oz as a bar spoon. Like the Tiki Max — feels like tiki, but has the allspice hint. Yum.",
-    "_specSpirits": [
-      "Aged Rum",
-      "Pineapple Rum",
-      "Tropical Curaçao"
-    ]
+    "jbNotes": "\u201cOoh - that\u2019s good\u201d -JB.",
+    "gmNotes": "Slight riff as I didn\u2019t have pineapple rum or tropical cura\u00e7ao but definitely yummy. Measured 1/12 oz as a bar spoon. Like the Tiki Max \u2014 feels like tiki, but has the allspice hint. Yum."
   },
   {
     "name": "Funk The Funky Funk",
@@ -3775,7 +3700,7 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Cachaça (unaged)"
+        "ingredient": "Cacha\u00e7a (unaged)"
       },
       {
         "amount": "2/3",
@@ -3809,7 +3734,7 @@
       }
     ],
     "primarySpirits": [
-      "Cachaça",
+      "Cacha\u00e7a",
       "Overproof white rum",
       "Giffard Caribbean Pineapple liqueur"
     ],
@@ -3836,7 +3761,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Yellow Chartreuse (or génépy liqueur)"
+        "ingredient": "Yellow Chartreuse (or g\u00e9n\u00e9py liqueur)"
       },
       {
         "amount": "1/2",
@@ -3972,7 +3897,7 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -4002,7 +3927,7 @@
       {
         "amount": "1 2/3",
         "unit": "fl oz",
-        "ingredient": "Patrón Reposado tequila"
+        "ingredient": "Patr\u00f3n Reposado tequila"
       },
       {
         "amount": "1 1/4",
@@ -4016,7 +3941,7 @@
       }
     ],
     "primarySpirits": [
-      "Patrón Reposado tequila",
+      "Patr\u00f3n Reposado tequila",
       "Licor 43 Original liqueur"
     ],
     "glass": "Collins glass",
@@ -4062,17 +3987,17 @@
       {
         "amount": "1/24",
         "unit": "fl oz",
-        "ingredient": "Bols Blue Curaçao"
+        "ingredient": "Bols Blue Cura\u00e7ao"
       }
     ],
     "primarySpirits": [
       "Vanilla flavoured vodka",
       "Coconut rum liqueur",
-      "Bols Blue Curaçao"
+      "Bols Blue Cura\u00e7ao"
     ],
     "glass": "Martini glass",
     "garnish": "Pineapple wedge on rim",
-    "methodSummary": "Shake the first five ingredients with ice, strain back into the shaker, dry-shake to emulsify, fine-strain into the chilled glass, then drop in the blue curaçao so it sinks to form a blue base.",
+    "methodSummary": "Shake the first five ingredients with ice, strain back into the shaker, dry-shake to emulsify, fine-strain into the chilled glass, then drop in the blue cura\u00e7ao so it sinks to form a blue base.",
     "diffordsRank": 76,
     "tried": false,
     "jbRating": null,
@@ -4138,7 +4063,7 @@
       {
         "amount": "1 1/2",
         "unit": "fl oz",
-        "ingredient": "Del Maguey Vida Clásico Mezcal"
+        "ingredient": "Del Maguey Vida Cl\u00e1sico Mezcal"
       },
       {
         "amount": "1 2/3",
@@ -4167,7 +4092,7 @@
       }
     ],
     "primarySpirits": [
-      "Del Maguey Vida Clásico Mezcal",
+      "Del Maguey Vida Cl\u00e1sico Mezcal",
       "Cointreau L'Unique triple sec liqueur"
     ],
     "glass": "Collins glass",
@@ -4198,7 +4123,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Ferrand Dry Curaçao liqueur"
+        "ingredient": "Ferrand Dry Cura\u00e7ao liqueur"
       },
       {
         "amount": "1/2",
@@ -4213,7 +4138,7 @@
     ],
     "primarySpirits": [
       "Cognac",
-      "Ferrand Dry Curaçao liqueur",
+      "Ferrand Dry Cura\u00e7ao liqueur",
       "Jamaican-style aged blended rum"
     ],
     "glass": "Coupe glass",
@@ -4224,12 +4149,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "Tried",
-    "gmNotes": "Tried",
-    "_specSpirits": [
-      "Cognac",
-      "Maraschino Liqueur",
-      "Orange Curaçao"
-    ]
+    "gmNotes": "Tried"
   },
   {
     "name": "Brooklyn Burro",
@@ -4298,7 +4218,7 @@
       {
         "amount": "2/3",
         "unit": "fl oz",
-        "ingredient": "Passion fruit purée"
+        "ingredient": "Passion fruit pur\u00e9e"
       },
       {
         "amount": "1/2",
@@ -4308,7 +4228,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "2",
@@ -4430,7 +4350,7 @@
       {
         "amount": "1/6",
         "unit": "fl oz",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       },
       {
         "amount": "1",
@@ -4451,12 +4371,7 @@
     "jbRating": null,
     "gmRating": null,
     "jbNotes": "I like it (and then we remembered nothing)",
-    "gmNotes": "I like it (and then we remembered nothing)",
-    "_specSpirits": [
-      "Demerara Rum",
-      "Gold Rum",
-      "Dark Jamaican Rum"
-    ]
+    "gmNotes": "I like it (and then we remembered nothing)"
   },
   {
     "name": "Tropical Pineapple Daiquiri",
@@ -4522,7 +4437,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Bols Blue Curaçao"
+        "ingredient": "Bols Blue Cura\u00e7ao"
       },
       {
         "amount": "3",
@@ -4542,13 +4457,13 @@
       {
         "amount": "1/3",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
       "Light white rum",
       "Vodka",
-      "Blue Curaçao"
+      "Blue Cura\u00e7ao"
     ],
     "glass": "Hurricane glass",
     "garnish": "Pineapple wedge and Luxardo Maraschino Cherry skewered with a paper parasol",
@@ -4624,7 +4539,7 @@
       {
         "amount": "1/6",
         "unit": "fl oz",
-        "ingredient": "La Fée Parisienne absinthe"
+        "ingredient": "La F\u00e9e Parisienne absinthe"
       },
       {
         "amount": "1/3",
@@ -4634,7 +4549,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1/2",
@@ -4659,12 +4574,7 @@
     "jbRating": 7.7,
     "gmRating": 5.2,
     "jbNotes": "John kind of likes it. Not Dr. Pepper at all but appreciate the herbal notes and a smooth almost cream soda feel at the end.",
-    "gmNotes": "Might have measured the absinthe wrong? 1/3rds is hard. I get that it’s supposed to taste like Dr. Pepper but it’s not doing it for me. Tastes more like Dr. Pepper syrup.",
-    "_specSpirits": [
-      "Dark Rum",
-      "Light Rum",
-      "Blanche Absinthe"
-    ]
+    "gmNotes": "Might have measured the absinthe wrong? 1/3rds is hard. I get that it\u2019s supposed to taste like Dr. Pepper but it\u2019s not doing it for me. Tastes more like Dr. Pepper syrup."
   },
   {
     "name": "Ancient Mariner",
@@ -4699,7 +4609,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -4714,13 +4624,8 @@
     "tried": true,
     "jbRating": 8.7,
     "gmRating": 8.68,
-    "jbNotes": "“Ooh”",
-    "gmNotes": "“Ooh”",
-    "_specSpirits": [
-      "Dark Rum",
-      "Demerara Rum",
-      "Pimento Dram"
-    ]
+    "jbNotes": "\u201cOoh\u201d",
+    "gmNotes": "\u201cOoh\u201d"
   },
   {
     "name": "Scorpion",
@@ -4800,7 +4705,7 @@
       {
         "amount": "1/6",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -4835,12 +4740,12 @@
       {
         "amount": "1",
         "unit": "fl oz",
-        "ingredient": "Giffard Banane du Brésil liqueur"
+        "ingredient": "Giffard Banane du Br\u00e9sil liqueur"
       },
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Giffard Crème de Mûre liqueur"
+        "ingredient": "Giffard Cr\u00e8me de M\u00fbre liqueur"
       },
       {
         "amount": "2",
@@ -4861,7 +4766,7 @@
     "primarySpirits": [
       "Crossfire Hurricane Jamaican Rum",
       "Light gold rum",
-      "Giffard Banane du Brésil liqueur"
+      "Giffard Banane du Br\u00e9sil liqueur"
     ],
     "glass": "Hurricane glass",
     "garnish": "Pineapple wedge & Luxardo Maraschino Cherry",
@@ -4870,13 +4775,8 @@
     "tried": true,
     "jbRating": 8.83,
     "gmRating": 7.99,
-    "jbNotes": "Big crowd pleaser, easy to batch. Goes down too quickly. Strong and doesn’t taste it at all.",
-    "gmNotes": "Maybe a touch too sweet.",
-    "_specSpirits": [
-      "Dark Rum",
-      "Blackberry Liqueur",
-      "Banana Liqueur"
-    ]
+    "jbNotes": "Big crowd pleaser, easy to batch. Goes down too quickly. Strong and doesn\u2019t taste it at all.",
+    "gmNotes": "Maybe a touch too sweet."
   },
   {
     "name": "Suit & Tai",
@@ -4911,7 +4811,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "1",
@@ -4932,12 +4832,7 @@
     "jbRating": 8.3,
     "gmRating": 8.31,
     "jbNotes": "Citrusy, smooth, refreshing, smells good",
-    "gmNotes": "Citrusy, smooth, refreshing, smells good",
-    "_specSpirits": [
-      "Bourbon Whiskey",
-      "Aged Rum",
-      "Orange Curaçao"
-    ]
+    "gmNotes": "Citrusy, smooth, refreshing, smells good"
   },
   {
     "name": "Royal Hawaiian",
@@ -5006,7 +4901,7 @@
       {
         "amount": "1/2",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       }
     ],
     "primarySpirits": [
@@ -5079,7 +4974,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0°Brix)"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water, 65.0\u00b0Brix)"
       },
       {
         "amount": "1/4",
@@ -5184,7 +5079,7 @@
       {
         "amount": "1/4",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "2",
@@ -5290,7 +5185,7 @@
       {
         "amount": "5/12",
         "unit": "fl oz",
-        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0°Brix"
+        "ingredient": "Sugar syrup 'rich' (2 sugar to 1 water) 65.0\u00b0Brix"
       },
       {
         "amount": "5/12",

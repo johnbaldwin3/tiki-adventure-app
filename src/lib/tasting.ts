@@ -1,7 +1,9 @@
 /**
  * Core tasting-log math, mirroring the original spreadsheet's formulas:
  *  - Avg Rating: average of JB and GM ratings, blank if neither has rated.
- *  - Rank: dense rank by Avg Rating, descending, blank for unrated cocktails.
+ *  - Rank: competition rank (Excel/SQL RANK() semantics) by Avg Rating,
+ *    descending — ties share a rank and the next rank skips (e.g. 1, 1, 3),
+ *    which is NOT the same as dense rank. Blank for unrated cocktails.
  *  - Progress: fraction of the 100-cocktail list marked as tried.
  */
 
