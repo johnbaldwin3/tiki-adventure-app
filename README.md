@@ -3,6 +3,8 @@
 A mobile-first tasting log, spirits guide, and ranking tracker for Difford's
 Guide's Top 100 Tiki & Tropical Cocktails, built for John (JB) and Genny (GM).
 
+**Live:** https://tiki-adventure-app-beige.vercel.app
+
 Recipe data (ingredients, amounts, glassware, garnish) is independently
 verified against each cocktail's actual recipe page on
 [diffordsguide.com](https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical) —
