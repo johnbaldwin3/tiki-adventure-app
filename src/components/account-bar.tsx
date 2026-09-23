@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 
@@ -7,7 +8,11 @@ export async function AccountBar() {
   let user: Awaited<ReturnType<typeof getSignedInUser>> = null;
   try {
     user = await getSignedInUser();
-  } catch {
+  } catch (err) {
+    // Let Next's own control-flow errors through (e.g. the "this page reads
+    // cookies, so render it per request" signal) -- only swallow real failures.
+    unstable_rethrow(err);
+    console.error("account bar: failed to load signed-in user", err);
     user = null; // auth hiccup: show the signed-out bar rather than breaking the page
   }
   return (

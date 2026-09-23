@@ -118,7 +118,7 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Recipe card detail (Phase 3)
+// Recipe card detail
 // ---------------------------------------------------------------------------
 
 export interface Ingredient {

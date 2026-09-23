@@ -123,8 +123,8 @@ export async function updatePassword(prev: AuthFormState, fd: FormData): Promise
     return { status: "invalid", submission, email: "", errors, message: "Please fix the highlighted fields." };
   }
 
-  // Only right after opening a reset link: a signed-in session alone (e.g. a
-  // stolen cookie) isn't enough to change the password.
+  // Only offered right after opening a reset link (see RESET_COOKIE for why
+  // this is a UX guard; Supabase's "Secure password change" is the real gate).
   const cookieStore = await cookies();
   if (cookieStore.get(RESET_COOKIE)?.value !== "1") {
     return {

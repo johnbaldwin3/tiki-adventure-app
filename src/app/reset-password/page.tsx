@@ -9,7 +9,7 @@ import { updatePassword } from "../auth/actions";
 import { AuthForm } from "../auth/auth-form";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Choose a new password · Adventures in Tiki", robots: { index: false } };
+export const metadata: Metadata = { title: "Choose a new password", robots: { index: false } };
 
 // Reached from the reset email: /auth/confirm signs the user in, then sends them here.
 export default async function ResetPasswordPage() {

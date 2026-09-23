@@ -5,7 +5,7 @@ import { requestPasswordReset } from "../auth/actions";
 import { AuthForm } from "../auth/auth-form";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Reset password · Adventures in Tiki", robots: { index: false } };
+export const metadata: Metadata = { title: "Reset password", robots: { index: false } };
 
 export default function ForgotPasswordPage() {
   return (

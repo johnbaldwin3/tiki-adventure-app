@@ -12,7 +12,7 @@
   --color-coral-deep: #9a3412;
   --color-coral: #c2410c;
 
-  /* Chart palette (Phase 5 /stats). JB/GM are the two categorical series,
+  /* Chart palette (/stats). JB/GM are the two categorical series,
    * validated with the dataviz skill's validate_palette.js against the white
    * card surface: lightness band, chroma floor, CVD separation (ΔE 13.7
    * deutan), normal-vision ΔE 27.1, and >= 3:1 contrast all PASS. The darker
@@ -50,16 +50,15 @@
  * background, which failed WCAG contrast almost everywhere (caught by a
  * Lighthouse accessibility audit). Every color pairing below is checked
  * against WCAG AA (4.5:1 normal text / 3:1 large text) -- see the
- * contrast notes in the project README before changing any of them.
+ * contrast notes in the project README (and re-run the e2e axe scan,
+ * e2e/a11y.spec.ts) before changing any of them.
  */
 body {
   background-color: var(--color-sand);
   background-image:
     radial-gradient(circle at 8% 0%, rgba(15, 118, 110, 0.08), transparent 40%),
     radial-gradient(circle at 100% 15%, rgba(194, 65, 12, 0.08), transparent 45%);
-  background-attachment: fixed;
   color: var(--color-ink);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Header banner: explicit gradient (not a Tailwind gradient utility, to

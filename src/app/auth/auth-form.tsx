@@ -20,13 +20,12 @@ interface Props {
   submitLabel: string;
   pendingLabel: string;
   hidden?: Record<string, string>;
-  initialEmail?: string;
   footer?: ReactNode;
 }
 
 /** Shared sign-in / sign-up / password form with accessible errors and focus handling. */
-export function AuthForm({ action, fields, submitLabel, pendingLabel, hidden, initialEmail = "", footer }: Props) {
-  const [state, formAction, pending] = useActionState(action, { ...initialAuthState, email: initialEmail });
+export function AuthForm({ action, fields, submitLabel, pendingLabel, hidden, footer }: Props) {
+  const [state, formAction, pending] = useActionState(action, initialAuthState);
   const formRef = useRef<HTMLFormElement>(null);
   const messageRef = useRef<HTMLParagraphElement>(null);
 

@@ -12,9 +12,9 @@ export default defineConfig({
     exclude: ["e2e/**", "node_modules/**"],
     env: {
       // Dummy values so importing src/lib/supabase.ts during unit tests
-      // doesn't throw on its module-level env check. No test hits the
-      // network -- src/lib/cocktails.test.ts only exercises the pure
-      // mapRowsToCocktailRecords reshaping function, never fetchCocktailRecords.
+      // doesn't throw on its module-level env check. No unit test hits the
+      // network: they exercise pure functions, or mock the Supabase clients
+      // (e.g. the tasting Server Action test).
       NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key",
     },

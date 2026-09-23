@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { cache } from "react";
 import {
   fetchCocktailBySlug,
@@ -12,7 +12,7 @@ import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
 // Always-fresh reads, same reasoning as the home page (src/app/page.tsx):
-// once ratings/notes become editable, a cached card would show stale data.
+// tasters edit ratings/notes, and a cached card would show stale data.
 export const dynamic = "force-dynamic";
 
 // generateMetadata and the page both need the cocktail; cache() dedupes
@@ -23,14 +23,16 @@ export async function generateMetadata({
   params,
 }: PageProps<"/cocktails/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  if (!SLUG_PATTERN.test(slug)) return { title: "Cocktail not found · Adventures in Tiki" };
+  if (!SLUG_PATTERN.test(slug)) return { title: "Cocktail not found" };
   try {
     const cocktail = await getCocktail(slug);
-    if (cocktail) return { title: `${cocktail.name} · Adventures in Tiki` };
-  } catch {
+    if (cocktail) return { title: cocktail.name };
+    return { title: "Cocktail not found" };
+  } catch (err) {
+    console.error("cocktail metadata: failed to load", slug, err);
     // Fall through to the default title; the page itself shows the error.
   }
-  return { title: "Adventures in Tiki Tracker" };
+  return {};
 }
 
 function formatDate(iso: string): string {
@@ -113,13 +115,21 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
 
   // "Our #N" needs every cocktail's ratings; it's a nice-to-have, so a
   // failure there shouldn't take down an otherwise-loaded recipe card.
-  const recordsPromise = fetchCocktailRecords().catch(() => null);
-  const userPromise = getSignedInUser().catch(() => null);
+  const recordsPromise = fetchCocktailRecords().catch((err) => {
+    console.error("recipe card: failed to load rankings", err);
+    return null;
+  });
+  const userPromise = getSignedInUser().catch((err) => {
+    unstable_rethrow(err);
+    console.error("recipe card: failed to load signed-in user", err);
+    return null;
+  });
 
   let cocktail: Awaited<ReturnType<typeof fetchCocktailBySlug>>;
   try {
     cocktail = await getCocktail(slug);
-  } catch {
+  } catch (err) {
+    console.error("recipe card: failed to load", slug, err);
     return (
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pb-8 pt-6 sm:max-w-lg">
         <BackLink />
@@ -248,6 +258,11 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
             <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={t.initials === myInitials} />
           ))}
         </ul>
+        {user && !user.taster && (
+          <p className="text-center text-sm text-ink-soft">
+            You&apos;re signed in as {user.email}, which isn&apos;t linked to a taster.
+          </p>
+        )}
         {!user && (
           <p className="text-center text-sm text-ink-soft">
             <Link

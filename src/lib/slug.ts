@@ -1,3 +1,6 @@
+/** Shape of every valid slug; mirrors the DB's cocktails_slug_format check. */
+export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 /**
  * Turns a cocktail name into a URL-safe slug for its recipe-card route
  * (/cocktails/[slug]). Used once to generate the `cocktails.slug` column
@@ -9,9 +12,6 @@
  *   "3 Monkeys & a dash"    -> "3-monkeys-and-a-dash"
  *   "Shark's Tooth (by Don Beach)" -> "sharks-tooth-by-don-beach"
  */
-/** Shape of every valid slug; mirrors the DB's cocktails_slug_format check. */
-export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-
 export function slugify(name: string): string {
   return name
     .normalize("NFD")

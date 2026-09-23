@@ -7,7 +7,7 @@ import { computeDashboardStats, type DashboardStats, type TasterStats } from "@/
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Our stats · Adventures in Tiki",
+  title: "Our stats",
 };
 
 const TASTERS = [
@@ -234,7 +234,8 @@ export default async function StatsPage() {
   let stats: DashboardStats | null = null;
   try {
     stats = computeDashboardStats(await fetchCocktailRecords());
-  } catch {
+  } catch (err) {
+    console.error("stats: failed to load", err);
     stats = null;
   }
 
@@ -256,12 +257,10 @@ export default async function StatsPage() {
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">Our stats</h1>
         {stats && (
-          <>
-            <p className="relative mt-4 text-5xl font-extrabold leading-none">
-              {stats.tried}
-              <span className="text-lg font-semibold text-white/85"> of {stats.total} tasted</span>
-            </p>
-          </>
+          <p className="relative mt-4 text-5xl font-extrabold leading-none">
+            {stats.tried}
+            <span className="text-lg font-semibold text-white/85"> of {stats.total} tasted</span>
+          </p>
         )}
       </header>
 
@@ -354,6 +353,18 @@ export default async function StatsPage() {
           )}
         </>
       )}
+      <p className="pt-2 text-center text-xs text-ink-faint">
+        Recipes adapted from{" "}
+        <a
+          href="https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-teal underline underline-offset-2"
+        >
+          Difford&apos;s Guide<span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        .
+      </p>
     </main>
   );
 }

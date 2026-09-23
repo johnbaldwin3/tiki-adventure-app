@@ -8,7 +8,7 @@ import { signIn } from "../auth/actions";
 import { AuthForm } from "../auth/auth-form";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Sign in · Adventures in Tiki", robots: { index: false } };
+export const metadata: Metadata = { title: "Sign in", robots: { index: false } };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const sp = await searchParams;

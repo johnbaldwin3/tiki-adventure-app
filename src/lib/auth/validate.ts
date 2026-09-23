@@ -1,5 +1,5 @@
 /**
- * Pure helpers for the sign-in / sign-up / password pages (Phase 7).
+ * Pure helpers for the sign-in / sign-up / password pages.
  * No Next or Supabase imports, so they're unit-testable.
  */
 

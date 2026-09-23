@@ -8,7 +8,7 @@ import { signUp } from "../auth/actions";
 import { AuthForm } from "../auth/auth-form";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Create account · Adventures in Tiki", robots: { index: false } };
+export const metadata: Metadata = { title: "Create account", robots: { index: false } };
 
 export default async function SignUpPage() {
   if (await getSignedInUser()) redirect("/");

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
@@ -9,10 +10,27 @@ import { TastingForm } from "./tasting-form";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Edit tasting · Adventures in Tiki",
-  robots: { index: false },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/cocktails/[slug]/tasting/[taster]">): Promise<Metadata> {
+  const { taster } = await params;
+  return { title: `Edit ${taster.toUpperCase()}'s tasting`, robots: { index: false } };
+}
+
+/** Shared shell so every state of this page has a way back and a heading. */
+function Shell({ slug, name, children }: { slug: string; name?: string; children: ReactNode }) {
+  return (
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pb-8 pt-6 sm:max-w-lg">
+      <Link
+        href={name ? `/cocktails/${slug}#tasting` : "/"}
+        className="inline-flex w-fit items-center gap-1 px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+      >
+        <span aria-hidden="true">←</span> {name ? `Back to ${name}` : "All cocktails"}
+      </Link>
+      {children}
+    </main>
+  );
+}
 
 export default async function EditTastingPage({
   params,
@@ -26,16 +44,18 @@ export default async function EditTastingPage({
   let cocktail: Awaited<ReturnType<typeof fetchCocktailBySlug>>;
   try {
     cocktail = await fetchCocktailBySlug(slug);
-  } catch {
+  } catch (err) {
+    console.error("edit tasting: failed to load", slug, err);
     return (
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pb-8 pt-6 sm:max-w-lg">
+      <Shell slug={slug}>
+        <h1 className="text-2xl font-extrabold text-teal-deep">Edit tasting</h1>
         <p
           role="alert"
           className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm"
         >
           Couldn&apos;t load this tasting right now. Please try refreshing the page.
         </p>
-      </main>
+      </Shell>
     );
   }
   const entry = cocktail?.tasters.find((t) => t.initials.toLowerCase() === taster);
@@ -44,28 +64,22 @@ export default async function EditTastingPage({
   const mine = user.taster?.initials.toLowerCase();
   if (mine !== taster) {
     return (
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pb-8 pt-6 sm:max-w-lg">
+      <Shell slug={slug} name={cocktail.name}>
         <h1 className="text-2xl font-extrabold text-teal-deep">Not your tasting</h1>
         <p className="text-sm text-ink-soft">
-          You can only edit your own rating &amp; notes for {cocktail.name}.
+          {mine
+            ? `You can only edit your own rating & notes for ${cocktail.name}.`
+            : `You're signed in as ${user.email}, which isn't linked to a taster, so there's nothing to edit.`}
         </p>
-        <div className="flex flex-wrap gap-3">
-          {mine && (
-            <Link
-              href={`/cocktails/${slug}/tasting/${mine}`}
-              className="rounded-full bg-teal-deep px-4 py-2 text-sm font-semibold text-white shadow-sm"
-            >
-              Edit yours
-            </Link>
-          )}
+        {mine && (
           <Link
-            href={`/cocktails/${slug}#tasting`}
-            className="rounded-full border border-teal/30 bg-card px-4 py-2 text-sm font-semibold text-teal-deep shadow-sm"
+            href={`/cocktails/${slug}/tasting/${mine}`}
+            className="w-fit rounded-full bg-teal-deep px-4 py-2 text-sm font-semibold text-white shadow-sm"
           >
-            Back to {cocktail.name}
+            Edit yours
           </Link>
-        </div>
-      </main>
+        )}
+      </Shell>
     );
   }
 

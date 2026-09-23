@@ -2,7 +2,7 @@ import type { CocktailRecord } from "./cocktails";
 import { rankCocktails } from "./tasting";
 
 /**
- * Pure stats for the /stats dashboard (Phase 5). Builds on tasting.ts's
+ * Pure stats for the /stats dashboard. Builds on tasting.ts's
  * averaging/ranking rather than re-deriving them, so the dashboard always
  * agrees with the home list and recipe cards.
  */
@@ -145,12 +145,12 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
   const disagreements = takeWithTies(sortedGaps, topN, (g) => g.gap)
     .map(({ name, slug, jb, gm, gap }) => ({ name, slug, jb, gm, gap }));
 
-  const bySlug = new Map(records.map((r) => [r.name, r.slug]));
+  const slugByName = new Map(records.map((r) => [r.name, r.slug]));
   const ranked = rankCocktails(records)
     .filter((r): r is typeof r & { rank: number; avgRating: number } => r.rank !== null && r.avgRating !== null)
     .sort((a, b) => a.rank - b.rank);
   const topRated = takeWithTies(ranked, topN, (r) => r.rank)
-    .map((r) => ({ name: r.name, slug: bySlug.get(r.name)!, avgRating: r.avgRating, rank: r.rank }));
+    .map((r) => ({ name: r.name, slug: slugByName.get(r.name)!, avgRating: r.avgRating, rank: r.rank }));
 
   return {
     tried,

@@ -3,7 +3,7 @@ import { AccountBar } from "@/components/account-bar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Adventures in Tiki Tracker",
+  title: { default: "Adventures in Tiki", template: "%s · Adventures in Tiki" },
   description:
     "A tasting log and spirits guide for Difford's Guide's Top 100 Tiki & Tropical Cocktails.",
 };

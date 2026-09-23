@@ -16,6 +16,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: /db-down\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
@@ -24,6 +25,19 @@ export default defineConfig({
     // Chromium-based mobile viewport (avoids requiring a separate WebKit install).
     {
       name: "mobile-chrome",
+      testIgnore: /db-down\.spec\.ts/,
+      use: {
+        ...devices["Pixel 7"],
+        launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+      },
+    },
+    // Flips the mock database "down", so it must run on its own after the
+    // other projects finish (the mock server is shared).
+    {
+      name: "db-down",
+      testMatch: /db-down\.spec\.ts/,
+      dependencies: ["chromium", "mobile-chrome"],
+      fullyParallel: false,
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },

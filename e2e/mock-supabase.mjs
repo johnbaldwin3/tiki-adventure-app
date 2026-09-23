@@ -7,7 +7,7 @@
 // seeded from -- and understands just the query shapes src/lib/cocktails.ts
 // uses: `select` (incl. the embedded `tasters(...)` relation), `col=eq.val`
 // filters, `order=col.asc|desc`, upserts into `tastings` (POST with
-// on_conflict=cocktail_id,taster_id), and (Phase 7) a small stand-in for
+// on_conflict=cocktail_id,taster_id), and a small stand-in for
 // Supabase Auth: password sign-in, sign-up with a confirmation email, password
 // reset, refresh, sign-out, and RLS-style "you can only write your own
 // tastings". Emails aren't sent; tests read them from GET /__mock/outbox.
@@ -73,7 +73,7 @@ seed.forEach((c, i) => {
 });
 
 // ---------------------------------------------------------------------------
-// Auth stand-in (Phase 7)
+// Auth stand-in
 // ---------------------------------------------------------------------------
 
 // Fake test-only password for the fake e2e accounts below (mirrored in e2e/auth.ts).
@@ -251,6 +251,11 @@ async function handleAuth(req, res, url) {
 
 const tables = { cocktails, tasters, tastings };
 
+// "Database down" switch for e2e/db-down.spec.ts (POST /__mock/db-down with
+// {"down": true|false}). While on, every PostgREST request returns 500; auth
+// keeps working. That spec runs in its own Playwright project after the others.
+let dbDown = false;
+
 function project(row, select) {
   if (!select || select === "*") return { ...row };
   const out = {};
@@ -273,6 +278,17 @@ const server = http.createServer((req, res) => {
   const rows = match && tables[match[1]];
   if (url.pathname.startsWith("/auth/v1/")) {
     handleAuth(req, res, url);
+    return;
+  }
+  if (req.method === "POST" && url.pathname === "/__mock/db-down") {
+    readBody(req).then((body) => {
+      dbDown = !!body.down;
+      sendJson(res, 200, { down: dbDown });
+    });
+    return;
+  }
+  if (dbDown && url.pathname.startsWith("/rest/v1/")) {
+    sendJson(res, 500, { message: "mock-supabase: database is down (test switch)" });
     return;
   }
   if (req.method === "GET" && url.pathname === "/__mock/outbox") {

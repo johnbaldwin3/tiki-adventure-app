@@ -24,7 +24,7 @@ export interface TastingFormState {
 }
 
 /**
- * Saves the signed-in taster's own tasting for one cocktail (Phase 7).
+ * Saves the signed-in taster's own tasting for one cocktail.
  * Server Actions can be POSTed to directly, so everything is re-checked
  * here: the form, who's signed in, and that they're editing their own
  * tasting. The write itself runs as the signed-in user, so the database's

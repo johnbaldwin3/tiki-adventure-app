@@ -1,5 +1,5 @@
 /**
- * Pure validation for the "add rating & notes" form (Phase 4). Kept free of
+ * Pure validation for the "add rating & notes" form. Kept free of
  * Next/Supabase imports so it can be unit-tested and shared by the Server
  * Action and the form component.
  */

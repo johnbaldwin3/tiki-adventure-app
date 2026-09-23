@@ -10,10 +10,10 @@ import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 
 // This page reads live from Supabase on every request rather than being
 // statically generated or ISR-cached. The tasting log is small (100 rows)
-// and cheap to query, and once Phase 7 auth lands, JB/GM will be able to
-// add/edit tastings themselves -- always-fresh reads avoid a stale cache
-// showing an old rating after someone just entered one. Revisit this if/when
-// traffic or DB load ever makes that trade-off worth reconsidering.
+// and cheap to query, and JB/GM edit tastings from the recipe cards --
+// always-fresh reads avoid a stale cache showing an old rating right after
+// someone saved a new one. Revisit if traffic or DB load ever makes that
+// trade-off worth reconsidering.
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: PageProps<"/">) {
@@ -26,6 +26,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   try {
     records = await fetchCocktailRecords();
   } catch (err) {
+    console.error("home: failed to load the tasting log", err);
     loadError =
       err instanceof Error ? err.message : "Failed to load the tasting log.";
     records = [];
@@ -58,8 +59,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       label: "Progress",
       value: `${Math.round(summary.fraction * 100)}%`,
     },
-    { icon: "🥃", label: "JB Average", value: summary.jbAverage ?? "—" },
-    { icon: "🍸", label: "GM Average", value: summary.gmAverage ?? "—" },
+    { icon: "🥃", label: "John's average", value: summary.jbAverage ?? "—" },
+    { icon: "🍸", label: "Genny's average", value: summary.gmAverage ?? "—" },
   ];
 
   return (
@@ -105,6 +106,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </p>
       )}
 
+      {!loadError && (
+        <>
       <div className="flex flex-col gap-2">
         <section
           aria-label="Progress summary"
@@ -237,14 +240,18 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           })}
         </ul>
       </section>
+        </>
+      )}
 
       <p className="pt-2 text-center text-xs text-ink-faint">
         Recipes adapted from{" "}
         <a
           href="https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical"
+          target="_blank"
+          rel="noopener noreferrer"
           className="font-semibold text-teal underline underline-offset-2"
         >
-          Difford&apos;s Guide
+          Difford&apos;s Guide<span className="sr-only"> (opens in a new tab)</span>
         </a>
         .
       </p>
