@@ -77,6 +77,28 @@ describe("mapRowsToCocktailRecords", () => {
     expect(records[0].primarySpirits).toEqual([]);
   });
 
+  it("coerces a string-typed rating (how Postgres numeric columns actually come back via PostgREST) to a number", () => {
+    const cocktailRows = [
+      {
+        id: "c1",
+        name: "String Rating Drink",
+        diffords_rank: 1,
+        diffords_guide_url: "https://example.com/string-rating",
+        primary_spirits: [],
+      },
+    ];
+    const tastingRows = [
+      { cocktail_id: "c1", rating: "8.59", tried: true, tasters: { initials: "JB" } },
+      { cocktail_id: "c1", rating: "9.41", tried: true, tasters: { initials: "GM" } },
+    ];
+
+    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows);
+
+    expect(records[0].jbRating).toBe(8.59);
+    expect(records[0].gmRating).toBe(9.41);
+    expect(typeof records[0].jbRating).toBe("number");
+  });
+
   it("handles the tasters relation coming back as an array instead of an object", () => {
     const cocktailRows = [
       {

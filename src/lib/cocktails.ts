@@ -17,7 +17,12 @@ interface RawCocktailRow {
 
 interface RawTastingRow {
   cocktail_id: string;
-  rating: number | null;
+  // PostgREST serializes Postgres `numeric` columns as JSON strings (to
+  // avoid float precision loss), so tastings.rating comes back as e.g.
+  // "8.59", not 8.59, despite the DB column being numeric(4,2). Must be
+  // coerced with Number() below before it reaches averageRating/rankCocktails,
+  // which both filter on typeof v === "number".
+  rating: number | string | null;
   tried: boolean;
   tasters: { initials: string } | { initials: string }[] | null;
 }
@@ -50,8 +55,13 @@ export function mapRowsToCocktailRecords(
         tried: false,
       };
 
-    if (initials === "JB") existing.jbRating = row.rating;
-    if (initials === "GM") existing.gmRating = row.rating;
+    const numericRating =
+      row.rating === null || row.rating === undefined ? null : Number(row.rating);
+    const safeRating =
+      numericRating !== null && Number.isNaN(numericRating) ? null : numericRating;
+
+    if (initials === "JB") existing.jbRating = safeRating;
+    if (initials === "GM") existing.gmRating = safeRating;
     existing.tried = existing.tried || row.tried;
 
     tastingsByCocktail.set(row.cocktail_id, existing);
