@@ -6,7 +6,8 @@
 // seed-data/cocktails.json -- the same verified data the real DB was
 // seeded from -- and understands just the query shapes src/lib/cocktails.ts
 // uses: `select` (incl. the embedded `tasters(...)` relation), `col=eq.val`
-// filters, and `order=col.asc|desc`.
+// filters, `order=col.asc|desc`, and (Phase 4) upserts into `tastings`
+// (POST with on_conflict=cocktail_id,taster_id). Writes live in memory only.
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
@@ -84,10 +85,49 @@ function project(row, select) {
   return out;
 }
 
+function upsertTastings(req, res) {
+  let raw = "";
+  req.on("data", (chunk) => (raw += chunk));
+  req.on("end", () => {
+    const incoming = [JSON.parse(raw)].flat();
+    for (const row of incoming) {
+      const existing = tastings.find(
+        (t) => t.cocktail_id === row.cocktail_id && t.taster_id === row.taster_id
+      );
+      const normalized = {
+        ...row,
+        rating: row.rating === null || row.rating === undefined ? null : String(row.rating),
+      };
+      if (existing) Object.assign(existing, normalized);
+      else tastings.push({ notes: null, tried: true, tasted_at: null, ...normalized });
+    }
+    res.writeHead(201);
+    res.end();
+  });
+}
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
   const match = url.pathname.match(/^\/rest\/v1\/(\w+)$/);
   const rows = match && tables[match[1]];
+  if (req.method === "POST" && match?.[1] === "tastings") {
+    // Only the service-role client may write, and only as an upsert on the
+    // real unique key -- so e2e fails if the app ever writes with the anon
+    // key or loses its on_conflict target.
+    const key = req.headers["apikey"] ?? "";
+    if (key !== "e2e-mock-service-key") {
+      res.writeHead(401, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "mock-supabase: writes need the service-role key" }));
+      return;
+    }
+    if (url.searchParams.get("on_conflict") !== "cocktail_id,taster_id") {
+      res.writeHead(400, { "content-type": "application/json" });
+      res.end(JSON.stringify({ message: "mock-supabase: expected on_conflict=cocktail_id,taster_id" }));
+      return;
+    }
+    upsertTastings(req, res);
+    return;
+  }
   if (req.method !== "GET" || !rows) {
     res.writeHead(404, { "content-type": "application/json" });
     res.end(JSON.stringify({ message: `mock-supabase: unsupported ${req.method} ${url.pathname}` }));

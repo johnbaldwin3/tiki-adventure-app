@@ -18,8 +18,8 @@ test("tapping a cocktail opens its full recipe card, and Back returns to the lis
 
   // Our tasting: both tasters, ratings and notes from the fixtures
   const tasting = page.getByRole("region", { name: "Our tasting" });
-  await expect(tasting.getByText("John")).toBeVisible();
-  await expect(tasting.getByText("Genny")).toBeVisible();
+  await expect(tasting.getByText("John", { exact: true })).toBeVisible();
+  await expect(tasting.getByText("Genny", { exact: true })).toBeVisible();
   await expect(tasting.getByText(/Quintessential tiki flavor/)).toBeVisible();
   await expect(page.getByText(/9\.41 avg · our #1/)).toBeVisible();
 

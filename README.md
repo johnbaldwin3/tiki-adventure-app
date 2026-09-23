@@ -37,6 +37,16 @@ key, which only has public SELECT access (see
 `supabase/migrations/0001_init_schema.sql`) -- there is no write access
 from the client until Phase 7 auth lands.
 
+### Saving ratings & notes (Phase 4)
+
+Each recipe card's "Our tasting" section links to an edit form per taster
+(`/cocktails/[slug]/tasting/[jb|gm]`). Until sign-in lands in Phase 7 the
+deployed site runs that form in **preview mode**: it validates but never
+saves. Writes are hard-disabled on Vercel (`src/lib/tasting-form.ts`
+`tastingWritesEnabled`). To save for real from your own machine, set
+`TASTING_WRITES_ENABLED=true` and `SUPABASE_SERVICE_ROLE_KEY` in
+`.env.local` (see `.env.example`) and run `npm run dev`.
+
 ## Testing
 
 ```bash
@@ -58,7 +68,7 @@ This app is being built in small, reviewed phases:
 2. ✅ Project scaffolding — Next.js app, tests, repo, first deploy
 3. ✅ Database schema & seeding (Supabase)
 4. ✅ Core read-only UI — full Top 100 list with All / Tasted / Not yet filter, full-screen recipe cards with "Our tasting" notes
-5. ⬜ Interactive tasting features (ratings, notes, tried toggle)
+5. ✅ Interactive tasting features — per-taster edit form for rating, date, notes and tried (preview mode on the live site until sign-in)
 6. ⬜ KPI dashboard & polish
 7. ⬜ Authentication for registered users
 8. ⬜ Final QA & handoff

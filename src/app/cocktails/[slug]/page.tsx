@@ -56,7 +56,7 @@ function BackLink() {
   );
 }
 
-function TasterCard({ taster }: { taster: TasterEntry }) {
+function TasterCard({ taster, slug }: { taster: TasterEntry; slug: string }) {
   const status = taster.rating !== null
     ? null
     : taster.tried
@@ -87,9 +87,18 @@ function TasterCard({ taster }: { taster: TasterEntry }) {
           <span className="text-xs font-semibold text-ink-soft">{status}</span>
         )}
       </div>
-      <p className={`mt-2 text-sm ${taster.notes ? "text-ink" : "italic text-ink-faint"}`}>
+      <p
+        className={`mt-2 whitespace-pre-line text-sm ${taster.notes ? "text-ink" : "italic text-ink-faint"}`}
+      >
         {taster.notes ?? "No notes yet."}
       </p>
+      <Link
+        href={`/cocktails/${slug}/tasting/${taster.initials.toLowerCase()}`}
+        className="mt-3 inline-flex items-center gap-1 rounded-full border border-teal/30 px-3 py-1.5 text-sm font-semibold text-teal-deep hover:bg-sand-deep"
+      >
+        {taster.rating !== null || taster.notes ? "Edit" : "Add rating & notes"}
+        <span className="sr-only"> for {taster.displayName}</span>
+      </Link>
     </li>
   );
 }
@@ -231,7 +240,7 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
         </div>
         <ul className="flex flex-col gap-2">
           {cocktail.tasters.map((t) => (
-            <TasterCard key={t.initials} taster={t} />
+            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} />
           ))}
         </ul>
       </section>

@@ -51,6 +51,10 @@ export default defineConfig({
         NEXT_DIST_DIR: ".next-e2e",
         NEXT_PUBLIC_SUPABASE_URL: MOCK_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "e2e-mock-anon-key",
+        // Phase 4: exercise the real save path against the mock (production
+        // leaves writes off until Phase 7 sign-in).
+        TASTING_WRITES_ENABLED: "true",
+        SUPABASE_SERVICE_ROLE_KEY: "e2e-mock-service-key",
       },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
