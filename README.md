@@ -69,7 +69,7 @@ This app is being built in small, reviewed phases:
 3. ✅ Database schema & seeding (Supabase)
 4. ✅ Core read-only UI — full Top 100 list with All / Tasted / Not yet filter, full-screen recipe cards with "Our tasting" notes
 5. ✅ Interactive tasting features — per-taster edit form for rating, date, notes and tried (preview mode on the live site until sign-in)
-6. ⬜ KPI dashboard & polish
+6. ✅ KPI dashboard & polish — /stats page (progress by Difford's band, John vs Genny, rating spread, where we disagree, favorites), site-wide 404 and error pages
 7. ⬜ Authentication for registered users
 8. ⬜ Final QA & handoff
 

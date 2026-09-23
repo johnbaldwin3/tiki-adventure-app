@@ -97,25 +97,33 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </p>
       )}
 
-      <section
-        aria-label="Progress summary"
-        className="grid grid-cols-2 gap-3"
-      >
-        {kpis.map((item) => (
-          <div
-            key={item.label}
-            className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm"
-          >
-            <p aria-hidden="true" className="text-lg leading-none">
-              {item.icon}
-            </p>
-            <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-teal">
-              {item.label}
-            </p>
-            <p className="text-xl font-bold text-teal-deep">{item.value}</p>
-          </div>
-        ))}
-      </section>
+      <div className="flex flex-col gap-2">
+        <section
+          aria-label="Progress summary"
+          className="grid grid-cols-2 gap-3"
+        >
+          {kpis.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm"
+            >
+              <p aria-hidden="true" className="text-lg leading-none">
+                {item.icon}
+              </p>
+              <p className="mt-1.5 text-xs font-semibold uppercase tracking-wide text-teal">
+                {item.label}
+              </p>
+              <p className="text-xl font-bold text-teal-deep">{item.value}</p>
+            </div>
+          ))}
+        </section>
+        <Link
+          href="/stats"
+          className="self-end rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+        >
+          See all our stats <span aria-hidden="true">→</span>
+        </Link>
+      </div>
 
       <section aria-labelledby="cocktail-list-heading" className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
