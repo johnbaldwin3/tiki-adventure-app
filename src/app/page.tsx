@@ -1,4 +1,11 @@
+import Link from "next/link";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import {
+  filterCocktails,
+  LIST_FILTERS,
+  parseListFilter,
+  type ListFilter,
+} from "@/lib/list";
 import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 
 // This page reads live from Supabase on every request rather than being
@@ -9,7 +16,9 @@ import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 // traffic or DB load ever makes that trade-off worth reconsidering.
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({ searchParams }: PageProps<"/">) {
+  const filter = parseListFilter((await searchParams).show);
+
   let records: CocktailRecord[];
   let loadError: string | null = null;
   try {
@@ -24,13 +33,17 @@ export default async function Page() {
   const summary = summarizeProgress(records);
   const rankByName = new Map(ranked.map((r) => [r.name, r]));
 
-  const triedSorted = records
-    .filter((c) => c.tried)
-    .sort((a, b) => {
-      const rankA = rankByName.get(a.name)?.rank ?? Infinity;
-      const rankB = rankByName.get(b.name)?.rank ?? Infinity;
-      return rankA - rankB;
-    });
+  const listed = records.map((c) => ({
+    ...c,
+    avgRating: rankByName.get(c.name)?.avgRating ?? null,
+    rank: rankByName.get(c.name)?.rank ?? null,
+  }));
+  const visible = filterCocktails(listed, filter);
+  const counts: Record<ListFilter, number> = {
+    all: records.length,
+    tasted: summary.triedCount,
+    untasted: records.length - summary.triedCount,
+  };
 
   const kpis = [
     {
@@ -104,38 +117,105 @@ export default async function Page() {
         ))}
       </section>
 
-      <section aria-label="Tasted cocktails" className="flex flex-col gap-3">
+      <section aria-labelledby="cocktail-list-heading" className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-ink-soft">
-            Tasted so far
+          <h2
+            id="cocktail-list-heading"
+            className="text-sm font-bold uppercase tracking-wide text-ink-soft"
+          >
+            The Top 100
           </h2>
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
         </div>
-        <ul className="flex flex-col gap-2">
-          {triedSorted.map((c) => {
-            const r = rankByName.get(c.name);
+
+        <nav aria-label="Filter cocktails" className="flex gap-2">
+          {LIST_FILTERS.map((f) => {
+            const active = f.value === filter;
             return (
-              <li
-                key={c.name}
-                className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm"
+              <Link
+                key={f.value}
+                href={f.value === "all" ? "/" : `/?show=${f.value}`}
+                scroll={false}
+                aria-current={active ? "page" : undefined}
+                className={`flex-1 rounded-full px-3 py-2 text-center text-sm font-semibold shadow-sm transition-colors ${
+                  active
+                    ? "bg-teal-deep text-white"
+                    : "border border-teal/20 bg-card text-teal-deep hover:bg-sand-deep"
+                }`}
               >
-                <span
-                  aria-hidden="true"
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-coral-deep text-xs font-bold text-white"
+                {f.label} <span className={active ? "text-white/80" : "text-ink-faint"}>{counts[f.value]}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {filter === "tasted" && (
+          <p className="text-xs text-ink-faint">
+            Ranked by JB &amp; GM&apos;s average rating.
+          </p>
+        )}
+
+        {visible.length === 0 && !loadError && (
+          <p className="rounded-xl bg-card p-4 text-center text-sm text-ink-soft shadow-sm">
+            {filter === "untasted"
+              ? "You've tasted them all! 🎉"
+              : "Nothing here yet."}
+          </p>
+        )}
+
+        <ul className="flex flex-col gap-2">
+          {visible.map((c) => {
+            // The number in the circle follows the current ordering: our
+            // rank on the Tasted view (sorted by rating), Difford's rank
+            // everywhere else (sorted by Difford's list).
+            const showOurRank = filter === "tasted";
+            const circle = showOurRank ? (c.rank ?? "–") : c.diffordsRank;
+            const circleLabel = showOurRank
+              ? c.rank
+                ? `Our rank ${c.rank}`
+                : "Not yet rated"
+              : `Difford's rank ${c.diffordsRank}`;
+            return (
+              <li key={c.slug}>
+                <Link
+                  href={`/cocktails/${c.slug}`}
+                  // Card pages are force-dynamic and query Supabase (incl. in
+                  // generateMetadata), so prefetching every visible row would
+                  // fire ~3 queries per row. loading.tsx gives instant
+                  // feedback on tap instead.
+                  prefetch={false}
+                  className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
                 >
-                  {r?.rank ?? "–"}
-                </span>
-                <div className="flex flex-1 flex-col">
-                  <span className="text-sm font-semibold text-ink">
-                    {c.name}
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                      showOurRank
+                        ? "bg-coral-deep text-white"
+                        : "border border-teal/30 bg-sand text-teal-deep"
+                    }`}
+                  >
+                    <span aria-hidden="true">{circle}</span>
+                    <span className="sr-only">{circleLabel}</span>
                   </span>
-                  <span className="text-xs text-ink-faint">
-                    {c.primarySpirits.join(", ")}
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-semibold text-ink">{c.name}</span>
+                    <span className="truncate text-xs text-ink-faint">
+                      {c.primarySpirits.join(", ")}
+                    </span>
                   </span>
-                </div>
-                <span className="rounded-full bg-teal-deep px-2.5 py-1 text-xs font-bold text-white">
-                  {r?.avgRating ?? "—"}
-                </span>
+                  {c.avgRating !== null ? (
+                    <span className="rounded-full bg-teal-deep px-2.5 py-1 text-xs font-bold text-white">
+                      <span className="sr-only">Average rating </span>
+                      {c.avgRating}
+                    </span>
+                  ) : c.tried ? (
+                    <span className="rounded-full border border-teal/30 px-2.5 py-1 text-xs font-semibold text-teal-deep">
+                      Tried
+                    </span>
+                  ) : null}
+                  <span aria-hidden="true" className="text-lg leading-none text-ink-faint">
+                    ›
+                  </span>
+                </Link>
               </li>
             );
           })}
