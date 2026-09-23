@@ -120,17 +120,3 @@ export function todayInEastern(now: Date = new Date()): string {
     day: "2-digit",
   }).format(now);
 }
-
-/**
- * Saving is OFF unless explicitly enabled AND a service-role key is set,
- * and it is ALWAYS off on Vercel (production and preview deployments),
- * whatever the env vars say. Until Phase 7 adds sign-in there is no way to
- * know who is submitting, and Server Actions can be POSTed to directly, so
- * a deployed site must never write with the service-role key. Local dev and
- * the e2e suite (against the mock DB) are the only places writes run.
- * Phase 7 replaces this gate with a real signed-in-taster check.
- */
-export function tastingWritesEnabled(env: Record<string, string | undefined>): boolean {
-  if (env.VERCEL) return false;
-  return env.TASTING_WRITES_ENABLED === "true" && !!env.SUPABASE_SERVICE_ROLE_KEY;
-}

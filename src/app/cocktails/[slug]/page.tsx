@@ -7,6 +7,7 @@ import {
   fetchCocktailRecords,
   type TasterEntry,
 } from "@/lib/cocktails";
+import { getSignedInUser } from "@/lib/auth/current-taster";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
@@ -56,7 +57,7 @@ function BackLink() {
   );
 }
 
-function TasterCard({ taster, slug }: { taster: TasterEntry; slug: string }) {
+function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: string; canEdit: boolean }) {
   const status = taster.rating !== null
     ? null
     : taster.tried
@@ -92,13 +93,15 @@ function TasterCard({ taster, slug }: { taster: TasterEntry; slug: string }) {
       >
         {taster.notes ?? "No notes yet."}
       </p>
-      <Link
-        href={`/cocktails/${slug}/tasting/${taster.initials.toLowerCase()}`}
-        className="mt-3 inline-flex items-center gap-1 rounded-full border border-teal/30 px-3 py-1.5 text-sm font-semibold text-teal-deep hover:bg-sand-deep"
-      >
-        {taster.rating !== null || taster.notes ? "Edit" : "Add rating & notes"}
-        <span className="sr-only"> for {taster.displayName}</span>
-      </Link>
+      {canEdit && (
+        <Link
+          href={`/cocktails/${slug}/tasting/${taster.initials.toLowerCase()}`}
+          className="mt-3 inline-flex items-center gap-1 rounded-full border border-teal/30 px-3 py-1.5 text-sm font-semibold text-teal-deep hover:bg-sand-deep"
+        >
+          {taster.rating !== null || taster.notes ? "Edit" : "Add rating & notes"}
+          <span className="sr-only"> for {taster.displayName}</span>
+        </Link>
+      )}
     </li>
   );
 }
@@ -111,6 +114,7 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
   // "Our #N" needs every cocktail's ratings; it's a nice-to-have, so a
   // failure there shouldn't take down an otherwise-loaded recipe card.
   const recordsPromise = fetchCocktailRecords().catch(() => null);
+  const userPromise = getSignedInUser().catch(() => null);
 
   let cocktail: Awaited<ReturnType<typeof fetchCocktailBySlug>>;
   try {
@@ -131,7 +135,8 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
 
   if (!cocktail) notFound();
 
-  const records = await recordsPromise;
+  const [records, user] = await Promise.all([recordsPromise, userPromise]);
+  const myInitials = user?.taster?.initials ?? null;
   const ourRank = records
     ? (rankCocktails(records).find((r) => r.name === cocktail.name)?.rank ?? null)
     : null;
@@ -240,9 +245,20 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
         </div>
         <ul className="flex flex-col gap-2">
           {cocktail.tasters.map((t) => (
-            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} />
+            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={t.initials === myInitials} />
           ))}
         </ul>
+        {!user && (
+          <p className="text-center text-sm text-ink-soft">
+            <Link
+              href={`/login?next=${encodeURIComponent(`/cocktails/${cocktail.slug}`)}`}
+              className="font-semibold text-teal underline-offset-2 hover:underline"
+            >
+              Sign in
+            </Link>{" "}
+            to add your rating &amp; notes.
+          </p>
+        )}
       </section>
 
       <p className="pt-2 text-center text-xs text-ink-faint">

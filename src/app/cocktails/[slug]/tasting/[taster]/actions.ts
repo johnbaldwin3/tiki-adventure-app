@@ -2,20 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createAdminClient } from "@/lib/supabase-admin";
-import { supabase } from "@/lib/supabase";
+import { getSignedInUser } from "@/lib/auth/current-taster";
 import { SLUG_PATTERN } from "@/lib/slug";
+import { supabase } from "@/lib/supabase";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
   parseTastingForm,
   readTastingForm,
-  tastingWritesEnabled,
   todayInEastern,
   type TastingFormErrors,
   type TastingFormValues,
 } from "@/lib/tasting-form";
 
 export interface TastingFormState {
-  status: "idle" | "invalid" | "preview" | "error";
+  status: "idle" | "invalid" | "error";
   /** Increments on every submit so the form re-mounts and re-announces, even for a repeat result. */
   submission: number;
   values: TastingFormValues;
@@ -24,9 +24,11 @@ export interface TastingFormState {
 }
 
 /**
- * Saves one taster's tasting for one cocktail. Server Actions are reachable
- * by direct POST, so everything is re-validated here and the write is gated
- * by tastingWritesEnabled() (off in production until Phase 7 sign-in).
+ * Saves the signed-in taster's own tasting for one cocktail (Phase 7).
+ * Server Actions can be POSTed to directly, so everything is re-checked
+ * here: the form, who's signed in, and that they're editing their own
+ * tasting. The write itself runs as the signed-in user, so the database's
+ * RLS policies (migration 0003) enforce the same rule a second time.
  */
 export async function saveTasting(
   prev: TastingFormState,
@@ -36,62 +38,46 @@ export async function saveTasting(
   const values = readTastingForm(formData);
   const slug = String(formData.get("slug") ?? "");
   const initials = String(formData.get("taster") ?? "").toUpperCase();
+  const fail = (message: string): TastingFormState => ({ status: "error", submission, values, errors: {}, message });
 
   if (!SLUG_PATTERN.test(slug) || !/^[A-Z]{2,3}$/.test(initials)) {
-    return { status: "error", submission, values, errors: {}, message: "That cocktail or taster wasn't recognized." };
+    return fail("That cocktail or taster wasn't recognized.");
   }
 
   const parsed = parseTastingForm(values, todayInEastern());
   if (!parsed.ok) {
-    return {
-      status: "invalid",
-      submission,
-      values,
-      errors: parsed.errors,
-      message: "Please fix the highlighted fields.",
-    };
+    return { status: "invalid", submission, values, errors: parsed.errors, message: "Please fix the highlighted fields." };
   }
 
-  if (!tastingWritesEnabled(process.env)) {
-    return {
-      status: "preview",
-      submission,
-      values,
-      errors: {},
-      message:
-        "Looks good, but this wasn't saved. Saving turns on once sign-in is added, so only JB and GM can change tastings.",
-    };
+  const user = await getSignedInUser();
+  if (!user) return fail("Your sign-in has expired. Please sign in again, then save.");
+  if (!user.taster || user.taster.initials !== initials) {
+    return fail("You can only save your own tasting.");
   }
 
-  const [{ data: cocktail, error: cocktailError }, { data: taster, error: tasterError }] =
-    await Promise.all([
-      supabase.from("cocktails").select("id").eq("slug", slug).maybeSingle(),
-      supabase.from("tasters").select("id").eq("initials", initials).maybeSingle(),
-    ]);
-  if (cocktailError || tasterError || !cocktail || !taster) {
-    return { status: "error", submission, values, errors: {}, message: "Couldn't find that cocktail or taster. Nothing was saved." };
-  }
+  const { data: cocktail, error: cocktailError } = await supabase
+    .from("cocktails")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (cocktailError || !cocktail) return fail("Couldn't find that cocktail. Nothing was saved.");
 
-  const { error } = await createAdminClient()
-    .from("tastings")
-    .upsert(
-      {
-        cocktail_id: cocktail.id,
-        taster_id: taster.id,
-        tried: parsed.value.tried,
-        rating: parsed.value.rating,
-        tasted_at: parsed.value.tastedAt,
-        notes: parsed.value.notes,
-      },
-      { onConflict: "cocktail_id,taster_id" }
-    );
-  if (error) {
-    return { status: "error", submission, values, errors: {}, message: "Saving failed. Please try again." };
-  }
+  const db = await createSupabaseServerClient();
+  const { error } = await db.from("tastings").upsert(
+    {
+      cocktail_id: cocktail.id,
+      taster_id: user.taster.id,
+      tried: parsed.value.tried,
+      rating: parsed.value.rating,
+      tasted_at: parsed.value.tastedAt,
+      notes: parsed.value.notes,
+    },
+    { onConflict: "cocktail_id,taster_id" }
+  );
+  if (error) return fail("Saving failed. Please try again.");
 
-  // The pages are force-dynamic today; revalidating keeps this correct if
-  // caching is ever turned on for them.
   revalidatePath("/");
+  revalidatePath("/stats");
   revalidatePath(`/cocktails/${slug}`);
   redirect(`/cocktails/${slug}#tasting`);
 }

@@ -1,24 +1,25 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Guard the one thing that matters most before Phase 7 sign-in: the Server
-// Action must never reach the service-role client unless writes are enabled.
-const createAdminClient = vi.fn();
-vi.mock("@/lib/supabase-admin", () => ({ createAdminClient }));
+// The action must re-check everything itself (Server Actions can be POSTed
+// to directly): valid input, a signed-in user, and that it's their own
+// tasting -- and only then write, as that user (so RLS applies too).
+type User = { email: string; taster: { id: string; initials: string; displayName: string } | null } | null;
+let signedIn: User = null;
+vi.mock("@/lib/auth/current-taster", () => ({ getSignedInUser: async () => signedIn }));
+
+const upsert = vi.fn<(row: unknown, opts: unknown) => Promise<{ error: unknown }>>(async () => ({ error: null }));
+const createSupabaseServerClient = vi.fn(async () => ({ from: () => ({ upsert }) }));
+vi.mock("@/lib/supabase-server", () => ({ createSupabaseServerClient }));
+
+let cocktailLookup: { data: unknown; error: unknown } = { data: { id: "c1" }, error: null };
+vi.mock("@/lib/supabase", () => ({
+  supabase: { from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => cocktailLookup }) }) }) },
+}));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const redirect = vi.fn((url: string) => {
   throw new Error(`REDIRECT:${url}`);
 });
 vi.mock("next/navigation", () => ({ redirect: (url: string) => redirect(url) }));
-
-// Anon client used for the id lookups.
-const lookups: Record<string, { data: unknown; error: unknown }> = {};
-vi.mock("@/lib/supabase", () => ({
-  supabase: {
-    from: (table: string) => ({
-      select: () => ({ eq: () => ({ maybeSingle: async () => lookups[table] }) }),
-    }),
-  },
-}));
 
 const { saveTasting } = await import("./actions");
 
@@ -29,90 +30,79 @@ const prev = {
   errors: {},
   message: null,
 };
-
 function form(fields: Record<string, string>) {
   const fd = new FormData();
   for (const [k, v] of Object.entries(fields)) fd.set(k, v);
   return fd;
 }
-
 const valid = { slug: "tiki-max", taster: "jb", tried: "on", rating: "8.5", notes: "Nice" };
+const john = { email: "john@example.test", taster: { id: "t-jb", initials: "JB", displayName: "John" } };
 
 beforeEach(() => {
-  vi.unstubAllEnvs();
-  createAdminClient.mockReset();
+  signedIn = john;
+  cocktailLookup = { data: { id: "c1" }, error: null };
+  upsert.mockClear();
+  upsert.mockResolvedValue({ error: null });
+  createSupabaseServerClient.mockClear();
   redirect.mockClear();
-  lookups.cocktails = { data: { id: "c1" }, error: null };
-  lookups.tasters = { data: { id: "t1" }, error: null };
 });
-afterEach(() => vi.unstubAllEnvs());
 
 describe("saveTasting", () => {
-  it("returns preview (and never touches the service-role client) when writes are off", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "");
-    const state = await saveTasting(prev, form(valid));
-    expect(state.status).toBe("preview");
-    expect(state.submission).toBe(1);
-    expect(state.values.rating).toBe("8.5");
-    expect(createAdminClient).not.toHaveBeenCalled();
-    expect(redirect).not.toHaveBeenCalled();
-  });
-
-  it("stays in preview on Vercel even with both vars set", async () => {
-    vi.stubEnv("VERCEL", "1");
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    expect((await saveTasting(prev, form(valid))).status).toBe("preview");
-    expect(createAdminClient).not.toHaveBeenCalled();
-  });
-
-  it("returns field errors without writing", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    const state = await saveTasting(prev, form({ ...valid, rating: "12" }));
-    expect(state.status).toBe("invalid");
-    expect(state.errors.rating).toBeDefined();
-    expect(createAdminClient).not.toHaveBeenCalled();
-  });
-
-  it("rejects a malformed slug or taster", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    expect((await saveTasting(prev, form({ ...valid, slug: "../x" }))).status).toBe("error");
-    expect((await saveTasting(prev, form({ ...valid, taster: "j1" }))).status).toBe("error");
-    expect(createAdminClient).not.toHaveBeenCalled();
-  });
-
-  it("returns an error when the cocktail doesn't exist", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    lookups.cocktails = { data: null, error: null };
-    expect((await saveTasting(prev, form(valid))).status).toBe("error");
-    expect(createAdminClient).not.toHaveBeenCalled();
-  });
-
-  it("upserts every field on the (cocktail, taster) key, then redirects to the card", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    const upsert = vi.fn(async () => ({ error: null }));
-    createAdminClient.mockReturnValue({ from: () => ({ upsert }) });
-
+  it("upserts the signed-in taster's own tasting as that user, then redirects to the card", async () => {
     await expect(saveTasting(prev, form(valid))).rejects.toThrow("REDIRECT:/cocktails/tiki-max#tasting");
+    expect(createSupabaseServerClient).toHaveBeenCalled();
     expect(upsert).toHaveBeenCalledWith(
-      { cocktail_id: "c1", taster_id: "t1", tried: true, rating: 8.5, tasted_at: null, notes: "Nice" },
+      { cocktail_id: "c1", taster_id: "t-jb", tried: true, rating: 8.5, tasted_at: null, notes: "Nice" },
       { onConflict: "cocktail_id,taster_id" }
     );
   });
 
-  it("reports a failed write without redirecting", async () => {
-    vi.stubEnv("TASTING_WRITES_ENABLED", "true");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "k");
-    createAdminClient.mockReturnValue({
-      from: () => ({ upsert: async () => ({ error: { message: "boom" } }) }),
-    });
-    const state = await saveTasting(prev, form(valid));
-    expect(state.status).toBe("error");
+  it("refuses when nobody is signed in", async () => {
+    signedIn = null;
+    const s = await saveTasting(prev, form(valid));
+    expect(s.status).toBe("error");
+    expect(s.message).toMatch(/sign in again/);
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("refuses to save someone else's tasting", async () => {
+    const s = await saveTasting(prev, form({ ...valid, taster: "gm" }));
+    expect(s.status).toBe("error");
+    expect(s.message).toMatch(/only save your own/);
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("refuses a signed-in account that isn't linked to a taster", async () => {
+    signedIn = { email: "stranger@example.test", taster: null };
+    expect((await saveTasting(prev, form(valid))).status).toBe("error");
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("returns field errors without writing (and keeps the typed values)", async () => {
+    const s = await saveTasting(prev, form({ ...valid, rating: "12" }));
+    expect(s.status).toBe("invalid");
+    expect(s.errors.rating).toBeDefined();
+    expect(s.values.rating).toBe("12");
+    expect(s.submission).toBe(1);
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects a malformed slug or taster", async () => {
+    expect((await saveTasting(prev, form({ ...valid, slug: "../x" }))).status).toBe("error");
+    expect((await saveTasting(prev, form({ ...valid, taster: "j1" }))).status).toBe("error");
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when the cocktail doesn't exist", async () => {
+    cocktailLookup = { data: null, error: null };
+    expect((await saveTasting(prev, form(valid))).status).toBe("error");
+    expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("reports a rejected write (e.g. RLS) without redirecting", async () => {
+    upsert.mockResolvedValueOnce({ error: { message: "new row violates row-level security policy" } });
+    const s = await saveTasting(prev, form(valid));
+    expect(s.status).toBe("error");
     expect(redirect).not.toHaveBeenCalled();
   });
 });

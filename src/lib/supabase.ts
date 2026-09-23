@@ -12,11 +12,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /**
- * Shared Supabase client, using the publishable/anon key only.
- *
- * RLS on every table currently allows public SELECT and nothing else (see
- * supabase/migrations/0001_init_schema.sql), so this client can safely be
- * used from both server and client components -- there is no write access
- * until Phase 7 auth introduces real write policies.
+ * Shared Supabase client for public, signed-out reads, using the
+ * publishable/anon key only. Anonymous callers get SELECT and nothing else
+ * (RLS, see supabase/migrations/). Writes never use this client: they go
+ * through the signed-in user's session client in ./supabase-server.ts, so
+ * the tasting RLS policies from migration 0003 apply.
  */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getSignedInUser } from "@/lib/auth/current-taster";
 import { fetchCocktailBySlug } from "@/lib/cocktails";
 import { SLUG_PATTERN } from "@/lib/slug";
-import { tastingWritesEnabled, todayInEastern } from "@/lib/tasting-form";
+import { todayInEastern } from "@/lib/tasting-form";
 import { TastingForm } from "./tasting-form";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,9 @@ export default async function EditTastingPage({
 }: PageProps<"/cocktails/[slug]/tasting/[taster]">) {
   const { slug, taster } = await params;
   if (!SLUG_PATTERN.test(slug) || !/^[a-z]{2,3}$/.test(taster)) notFound();
+
+  const user = await getSignedInUser();
+  if (!user) redirect(`/login?next=${encodeURIComponent(`/cocktails/${slug}/tasting/${taster}`)}`);
 
   let cocktail: Awaited<ReturnType<typeof fetchCocktailBySlug>>;
   try {
@@ -36,6 +40,34 @@ export default async function EditTastingPage({
   }
   const entry = cocktail?.tasters.find((t) => t.initials.toLowerCase() === taster);
   if (!cocktail || !entry) notFound();
+
+  const mine = user.taster?.initials.toLowerCase();
+  if (mine !== taster) {
+    return (
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pb-8 pt-6 sm:max-w-lg">
+        <h1 className="text-2xl font-extrabold text-teal-deep">Not your tasting</h1>
+        <p className="text-sm text-ink-soft">
+          You can only edit your own rating &amp; notes for {cocktail.name}.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {mine && (
+            <Link
+              href={`/cocktails/${slug}/tasting/${mine}`}
+              className="rounded-full bg-teal-deep px-4 py-2 text-sm font-semibold text-white shadow-sm"
+            >
+              Edit yours
+            </Link>
+          )}
+          <Link
+            href={`/cocktails/${slug}#tasting`}
+            className="rounded-full border border-teal/30 bg-card px-4 py-2 text-sm font-semibold text-teal-deep shadow-sm"
+          >
+            Back to {cocktail.name}
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -59,7 +91,6 @@ export default async function EditTastingPage({
         slug={slug}
         taster={taster}
         today={todayInEastern()}
-        writesEnabled={tastingWritesEnabled(process.env)}
         initialValues={{
           tried: entry.tried,
           rating: entry.rating === null ? "" : String(entry.rating),

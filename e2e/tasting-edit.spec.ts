@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { GENNY, JOHN, signIn } from "./auth";
 
 // The mock keeps writes in memory for the whole run, and projects run in
 // parallel, so each project edits its own tried-but-unrated cocktail with a
@@ -10,7 +11,7 @@ const TARGET: Record<string, { slug: string; name: string }> = {
 
 test("add a rating, date and notes from the recipe card", async ({ page }, testInfo) => {
   const { slug, name } = TARGET[testInfo.project.name];
-  await page.goto(`/cocktails/${slug}`);
+  await signIn(page, JOHN, `/cocktails/${slug}`);
 
   const tasting = page.getByRole("region", { name: "Our tasting" });
   await tasting.getByRole("link", { name: /Add rating & notes for John|Edit for John/ }).click();
@@ -49,7 +50,7 @@ test("add a rating, date and notes from the recipe card", async ({ page }, testI
 });
 
 test("invalid input shows field errors and keeps what was typed", async ({ page }) => {
-  await page.goto("/cocktails/zombie/tasting/gm");
+  await signIn(page, GENNY, "/cocktails/zombie/tasting/gm");
   await expect(page.getByRole("checkbox", { name: /I've tried this/ })).not.toBeChecked();
 
   await page.getByLabel("Rating").fill("11");
@@ -70,7 +71,7 @@ test("invalid input shows field errors and keeps what was typed", async ({ page 
 });
 
 test("Cancel returns to the card without saving", async ({ page }) => {
-  await page.goto("/cocktails/zombie/tasting/jb");
+  await signIn(page, JOHN, "/cocktails/zombie/tasting/jb");
   await page.getByLabel("Notes").fill("should not be saved");
   await page.getByRole("link", { name: "Cancel" }).click();
   await expect(page).toHaveURL(/\/cocktails\/zombie#tasting$/);
@@ -78,13 +79,13 @@ test("Cancel returns to the card without saving", async ({ page }) => {
 });
 
 test("an unknown taster shows the not-found page", async ({ page }) => {
-  await page.goto("/cocktails/zombie/tasting/xx");
+  await signIn(page, JOHN, "/cocktails/zombie/tasting/xx");
   await expect(page.getByRole("heading", { name: /not found/i })).toBeVisible();
 });
 
 test("edit form fits a phone screen", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/cocktails/tiki-max/tasting/gm");
+  await signIn(page, GENNY, "/cocktails/tiki-max/tasting/gm");
   await expect(page.getByLabel("Rating")).toHaveValue("9.41");
   const hasHorizontalScroll = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth

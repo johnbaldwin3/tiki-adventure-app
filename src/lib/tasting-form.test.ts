@@ -3,7 +3,6 @@ import {
   NOTES_MAX_LENGTH,
   parseTastingForm,
   readTastingForm,
-  tastingWritesEnabled,
   todayInEastern,
   type TastingFormValues,
 } from "./tasting-form";
@@ -104,21 +103,5 @@ describe("todayInEastern", () => {
     // 02:00 UTC on Sep 24 is still Sep 23 in New York (EDT, UTC-4).
     expect(todayInEastern(new Date("2026-09-24T02:00:00Z"))).toBe("2026-09-23");
     expect(todayInEastern(new Date("2026-09-24T05:00:00Z"))).toBe("2026-09-24");
-  });
-});
-
-describe("tastingWritesEnabled", () => {
-  it("is off unless both the flag and a service key are set", () => {
-    expect(tastingWritesEnabled({})).toBe(false);
-    expect(tastingWritesEnabled({ TASTING_WRITES_ENABLED: "true" })).toBe(false);
-    expect(tastingWritesEnabled({ SUPABASE_SERVICE_ROLE_KEY: "k" })).toBe(false);
-    expect(tastingWritesEnabled({ TASTING_WRITES_ENABLED: "1", SUPABASE_SERVICE_ROLE_KEY: "k" })).toBe(false);
-    expect(tastingWritesEnabled({ TASTING_WRITES_ENABLED: "true", SUPABASE_SERVICE_ROLE_KEY: "k" })).toBe(true);
-  });
-
-  it("is always off on Vercel, even if both vars are set", () => {
-    expect(
-      tastingWritesEnabled({ VERCEL: "1", TASTING_WRITES_ENABLED: "true", SUPABASE_SERVICE_ROLE_KEY: "k" })
-    ).toBe(false);
   });
 });

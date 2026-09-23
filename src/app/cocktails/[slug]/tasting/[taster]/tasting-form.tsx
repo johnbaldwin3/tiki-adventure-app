@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useRef } from "react";
+import { fieldClass } from "@/components/form-field";
 import { NOTES_MAX_LENGTH, type TastingFormValues } from "@/lib/tasting-form";
 import { saveTasting, type TastingFormState } from "./actions";
 
@@ -10,12 +11,7 @@ interface Props {
   taster: string; // lowercase initials, e.g. "jb"
   initialValues: TastingFormValues;
   today: string;
-  writesEnabled: boolean;
 }
-
-const fieldClass =
-  // border-teal on white is ~6:1, clearing WCAG 1.4.11's 3:1 for field outlines.
-  "w-full rounded-xl border bg-card px-3 py-2.5 text-base text-ink shadow-sm focus:outline-2 focus:outline-offset-1 focus:outline-teal";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
@@ -26,7 +22,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function TastingForm({ slug, taster, initialValues, today, writesEnabled }: Props) {
+export function TastingForm({ slug, taster, initialValues, today }: Props) {
   const [state, formAction, pending] = useActionState<TastingFormState, FormData>(saveTasting, {
     status: "idle",
     submission: 0,
@@ -63,23 +59,12 @@ export function TastingForm({ slug, taster, initialValues, today, writesEnabled 
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="taster" value={taster} />
 
-      {!writesEnabled && (
-        <p className="rounded-2xl border border-teal/25 bg-sand-deep p-3 text-sm text-teal-deep">
-          <strong>Preview mode.</strong> You can try the form, but saving is turned off until
-          sign-in is added.
-        </p>
-      )}
-
       {state.message && (
         <p
           ref={messageRef}
           tabIndex={-1}
-          role={state.status === "preview" ? "status" : "alert"}
-          className={`rounded-2xl border bg-card p-3 text-sm shadow-sm ${
-            state.status === "preview"
-              ? "border-teal/30 text-teal-deep"
-              : "border-coral/30 text-coral-deep"
-          }`}
+          role="alert"
+          className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm"
         >
           {state.message}
         </p>

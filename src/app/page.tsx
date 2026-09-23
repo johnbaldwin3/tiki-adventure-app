@@ -17,7 +17,9 @@ import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: PageProps<"/">) {
-  const filter = parseListFilter((await searchParams).show);
+  const sp = await searchParams;
+  const filter = parseListFilter(sp.show);
+  const passwordUpdated = sp.password === "updated";
 
   let records: CocktailRecord[];
   let loadError: string | null = null;
@@ -86,6 +88,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           canon.
         </p>
       </header>
+
+      {passwordUpdated && (
+        <p role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
+          Your password has been updated.
+        </p>
+      )}
 
       {loadError && (
         <p

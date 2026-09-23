@@ -33,19 +33,41 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The app reads the cocktail list and tastings live from Supabase
 (`src/lib/supabase.ts`, `src/lib/cocktails.ts`) using the publishable/anon
-key, which only has public SELECT access (see
-`supabase/migrations/0001_init_schema.sql`) -- there is no write access
-from the client until Phase 7 auth lands.
+key, which only has public SELECT access. Saving a rating requires signing
+in; see below.
 
-### Saving ratings & notes (Phase 4)
+### Signing in & saving ratings (Phase 7)
 
-Each recipe card's "Our tasting" section links to an edit form per taster
-(`/cocktails/[slug]/tasting/[jb|gm]`). Until sign-in lands in Phase 7 the
-deployed site runs that form in **preview mode**: it validates but never
-saves. Writes are hard-disabled on Vercel (`src/lib/tasting-form.ts`
-`tastingWritesEnabled`). To save for real from your own machine, set
-`TASTING_WRITES_ENABLED=true` and `SUPABASE_SERVICE_ROLE_KEY` in
-`.env.local` (see `.env.example`) and run `npm run dev`.
+JB and GM sign in with email + password (Supabase Auth) and can then add
+or edit **their own** rating, date and notes from any recipe card
+(`/cocktails/[slug]/tasting/[jb|gm]`). You stay signed in until you sign
+out: the session cookie lasts 400 days and `src/proxy.ts` refreshes the
+token on each visit (`src/lib/auth/cookies.ts`). Signing out only signs
+out that browser.
+
+Who may sign up, and who may edit what, is enforced in the database
+(`supabase/migrations/0003_taster_auth.sql`): only emails listed in
+`taster_accounts` can create an account, and RLS lets a signed-in taster
+insert/update only their own tastings. Emails are kept out of git; add one
+with:
+
+```sql
+insert into public.taster_accounts (taster_id, email)
+select id, 'someone@example.com' from public.tasters where initials = 'GM';
+```
+
+One-time Supabase setup (Dashboard → Authentication):
+
+- **URL Configuration:** set **Site URL** to the live site and add
+  `https://<live-site>/**` and `http://localhost:3000/**` to **Redirect
+  URLs** (no `*.vercel.app` wildcards), so confirmation and reset emails
+  link back to the app.
+- **Sign In / Providers → Email:** keep **Confirm email** ON (it proves the
+  person owns the address) and set **minimum password length** to 8 to
+  match the app.
+- Once JB and GM have both created accounts, turn **Allow new users to
+  sign up** OFF. The allow-list trigger stays as a backstop.
+- Leave session time-box / inactivity timeout off (so sign-ins persist).
 
 ## Testing
 
@@ -68,9 +90,9 @@ This app is being built in small, reviewed phases:
 2. ✅ Project scaffolding — Next.js app, tests, repo, first deploy
 3. ✅ Database schema & seeding (Supabase)
 4. ✅ Core read-only UI — full Top 100 list with All / Tasted / Not yet filter, full-screen recipe cards with "Our tasting" notes
-5. ✅ Interactive tasting features — per-taster edit form for rating, date, notes and tried (preview mode on the live site until sign-in)
+5. ✅ Interactive tasting features — per-taster edit form for rating, date, notes and tried
 6. ✅ KPI dashboard & polish — /stats page (progress by Difford's band, John vs Genny, rating spread, where we disagree, favorites), site-wide 404 and error pages
-7. ⬜ Authentication for registered users
+7. ✅ Authentication for registered users — email + password sign-in for JB & GM (allow-listed), edit only your own tastings (RLS), stay signed in until you sign out
 8. ⬜ Final QA & handoff
 
 ## Future ideas (not yet scheduled)
