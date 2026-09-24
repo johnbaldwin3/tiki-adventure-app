@@ -26,6 +26,13 @@ test("an ingredient page shows the style, bottles to buy with source, and the dr
 
   const brands = page.getByRole("region", { name: "Bottles to look for" });
   await expect(brands.getByText("Crossfire Hurricane Gold")).toBeVisible();
+  await expect(
+    brands.getByRole("link", { name: /Search Total Wine for Crossfire Hurricane Gold/ })
+  ).toHaveAttribute("href", "https://www.totalwine.com/search/all?text=Crossfire%20Hurricane%20Gold");
+  await expect(brands.getByRole("link", { name: /WineXpress \(Five Forks\)/ })).toHaveAttribute(
+    "href",
+    "tel:+18642836049"
+  );
   await expect(brands.getByRole("link", { name: /Difford's Guide's list/ })).toHaveAttribute(
     "href",
     /diffordsguide\.com\/beer-wine-spirits\/category\/1543\//

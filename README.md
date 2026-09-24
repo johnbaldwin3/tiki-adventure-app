@@ -54,7 +54,10 @@ in; see below.
   assumed always on hand (fresh citrus, water/soda/salt, Angostura).
   `INGREDIENT_ALIASES` maps each recipe's exact wording to a style without
   changing the verified recipe text; unit tests fail if any recipe line is
-  unmapped.
+  unmapped. Each example bottle links to a Total Wine search (their site
+  shows stock at your chosen store), and the page offers a tap-to-call link
+  for WineXpress (Five Forks), which has no online catalog
+  (`src/lib/stores.ts`).
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -172,5 +175,10 @@ Captured from John so they don't get lost:
   shelf at home and list the drinks we can make from it right now (builds
   on the ingredient catalog; needs a `cabinet` table keyed by style id,
   optionally recording which exact bottle we own)
+- **AI recipe import** -- an assistant (via OpenRouter) that adds a new
+  recipe to our list from typed text, a photo of a recipe book/card, or a
+  link to an online recipe, then lets us review it before saving
+- **Shopping list** -- bottles we're missing for drinks we want to try, with
+  the Total Wine / WineXpress links
 - Smaller ideas: search box, "what should we try next?" suggestions,
   Add to Home Screen (PWA), photos on tastings, progress over time

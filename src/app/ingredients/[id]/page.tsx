@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { aliasesFor, getIngredient, resolveIngredient } from "@/lib/ingredients";
+import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
 import { rankCocktails } from "@/lib/tasting";
 
 export const dynamic = "force-dynamic";
@@ -73,14 +74,31 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
           Bottles to look for
         </h2>
         {ingredient.brands.length > 0 ? (
-          <ul className="mt-2 flex flex-col gap-1.5">
+          <>
+          <ul className="mt-2 flex flex-col divide-y divide-teal/10">
             {ingredient.brands.map((b) => (
-              <li key={b} className="flex items-center gap-2 text-sm text-ink">
-                <span aria-hidden="true" className="text-teal">•</span>
-                {b}
+              <li key={b} className="flex items-center gap-3 py-2 text-sm text-ink">
+                <span className="min-w-0 flex-1">{b}</span>
+                <a
+                  href={totalWineSearchUrl(b)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Search Total Wine for ${b} (opens in a new tab)`}
+                  className="shrink-0 rounded-full border border-teal/30 px-2.5 py-1 text-xs font-semibold text-teal-deep hover:bg-sand-deep"
+                >
+                  Total Wine <span aria-hidden="true">↗</span>
+                </a>
               </li>
             ))}
           </ul>
+          <p className="mt-3 text-xs text-ink-faint">
+            Total Wine shows stock for the store you&apos;ve picked on their site. Not online? Call{" "}
+            <a href={WINEXPRESS.phoneHref} className="font-semibold text-teal underline underline-offset-2">
+              {WINEXPRESS.name} at {WINEXPRESS.phoneDisplay}
+            </a>
+            .
+          </p>
+          </>
         ) : (
           <p className="mt-2 text-sm italic text-ink-faint">{noBrandsNote(ingredient.family)}</p>
         )}
