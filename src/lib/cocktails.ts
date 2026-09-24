@@ -3,6 +3,8 @@ import type { TastingRecord } from "./tasting";
 
 export interface CocktailRecord extends TastingRecord {
   slug: string;
+  /** Each recipe line's ingredient wording, in pour order (see src/data/ingredients.ts). */
+  ingredientTexts: string[];
   diffordsRank: number;
   primarySpirits: string[];
   diffordsGuideUrl: string;
@@ -15,6 +17,7 @@ interface RawCocktailRow {
   diffords_rank: number;
   diffords_guide_url: string;
   primary_spirits: string[] | null;
+  ingredients?: unknown;
 }
 
 interface RawTastingRow {
@@ -80,6 +83,7 @@ export function mapRowsToCocktailRecords(
         diffordsRank: c.diffords_rank,
         diffordsGuideUrl: c.diffords_guide_url,
         primarySpirits: c.primary_spirits ?? [],
+        ingredientTexts: parseIngredients(c.ingredients).map((i) => i.ingredient),
         tried: t?.tried ?? false,
         jbRating: t?.jbRating ?? null,
         gmRating: t?.gmRating ?? null,
@@ -99,7 +103,7 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
   ] = await Promise.all([
     supabase
       .from("cocktails")
-      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits")
+      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients")
       .order("diffords_rank", { ascending: true }),
     supabase.from("tastings").select("cocktail_id, rating, tried, tasters(initials)"),
   ]);

@@ -41,6 +41,17 @@ test("stats shows a friendly error", async ({ page }) => {
   await expectAccessible(page);
 });
 
+test("ingredients pages still show the catalog, with a note", async ({ page }) => {
+  await page.goto("/ingredients");
+  await expect(page.getByRole("alert").filter({ hasText: "Couldn't load which drinks" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Rum" })).toBeVisible();
+  await expectAccessible(page);
+  await page.goto("/ingredients/navy-rum");
+  await expect(page.getByText("Pusser's Gunpowder Proof (54.5%)")).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: "Couldn't load the drinks" })).toBeVisible();
+  await expectAccessible(page);
+});
+
 test("recipe card shows a friendly error with a way back", async ({ page }) => {
   await page.goto("/cocktails/tiki-max");
   await expect(page.getByRole("alert").filter({ hasText: "Couldn't load this recipe" })).toBeVisible();

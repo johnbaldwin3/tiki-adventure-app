@@ -148,6 +148,31 @@ describe("mapRowsToCocktailRecords", () => {
   });
 });
 
+describe("mapRowsToCocktailRecords ingredientTexts", () => {
+  it("lists each recipe line's ingredient wording in pour order, or [] when absent", () => {
+    const [withLines, without] = mapRowsToCocktailRecords(
+      [
+        {
+          id: "c1",
+          name: "A",
+          slug: "a",
+          diffords_rank: 1,
+          diffords_guide_url: "https://example.com",
+          primary_spirits: [],
+          ingredients: [
+            { amount: "1", unit: "fl oz", ingredient: "Navy rum (ideally 54.5% alc./vol.)" },
+            { amount: "1/2", unit: "fl oz", ingredient: "Lime juice (freshly squeezed)" },
+          ],
+        },
+        { id: "c2", name: "B", slug: "b", diffords_rank: 2, diffords_guide_url: "https://example.com", primary_spirits: [] },
+      ],
+      []
+    );
+    expect(withLines.ingredientTexts).toEqual(["Navy rum (ideally 54.5% alc./vol.)", "Lime juice (freshly squeezed)"]);
+    expect(without.ingredientTexts).toEqual([]);
+  });
+});
+
 describe("parseIngredients", () => {
   it("keeps well-formed entries in order and drops malformed ones", () => {
     expect(

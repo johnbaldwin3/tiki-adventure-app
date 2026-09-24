@@ -15,6 +15,7 @@ function rec(
     diffordsRank,
     diffordsGuideUrl: "https://example.com",
     primarySpirits: [],
+    ingredientTexts: [],
     tried,
     jbRating,
     gmRating,

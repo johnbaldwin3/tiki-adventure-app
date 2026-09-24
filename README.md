@@ -45,6 +45,16 @@ in; see below.
   original on Difford's Guide.
 - **Stats (`/stats`)** -- progress by Difford's rank band, John vs Genny,
   rating spread, where we disagree, favorites.
+- **Ingredients (`/ingredients`)** -- every ingredient in the Top 100 as a
+  brand-neutral style, grouped by family, with example bottles to look for
+  and the drinks that use it. Recipe-card ingredient lines link here. The
+  catalog lives in `src/data/ingredients.ts`: each style has a family,
+  example brands (for rum, taken from Difford's Guide's product listing for
+  the exact style, linked on the page), and "staple" flags for what's
+  assumed always on hand (fresh citrus, water/soda/salt, Angostura).
+  `INGREDIENT_ALIASES` maps each recipe's exact wording to a style without
+  changing the verified recipe text; unit tests fail if any recipe line is
+  unmapped.
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -145,18 +155,22 @@ review pass:
 7. ✅ Authentication for registered users — email + password sign-in for JB & GM (allow-listed), edit only your own tastings (RLS), stay signed in until you sign out
 8. ✅ Final QA & handoff — axe accessibility scan of every page, "database down" tests, rebuild-from-repo seed script (verified on a fresh Postgres), docs
 
+### Beyond the original plan
+
+9. ✅ Ingredient catalog — tidy styles & families for all 153 recipe wordings, researched example bottles, ingredient browser and pages
+
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Filter by ingredient** -- pick from a list of every ingredient used
-  across the 100 cocktails and see the drinks that use them
+- **Filter by ingredient** -- pick one or more ingredients (from the new
+  catalog) and see the drinks that use them
 - **Have / don't-have matching** -- find drinks that use ingredients we
   have, and exclude ones needing ingredients we don't (e.g. "missing only
   one ingredient")
 - **Virtual bar cabinet** -- keep a saved list of what's actually on the
-  shelf at home and list the drinks we can make from it right now. Will
-  likely need ingredient names normalized into a canonical list (e.g.
-  "Light white rum" vs brand-specific entries) and a `cabinet` table
+  shelf at home and list the drinks we can make from it right now (builds
+  on the ingredient catalog; needs a `cabinet` table keyed by style id,
+  optionally recording which exact bottle we own)
 - Smaller ideas: search box, "what should we try next?" suggestions,
   Add to Home Screen (PWA), photos on tastings, progress over time

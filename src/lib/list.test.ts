@@ -8,6 +8,7 @@ function make(name: string, diffordsRank: number, tried: boolean, rank: number |
     diffordsRank,
     diffordsGuideUrl: "https://example.com",
     primarySpirits: [],
+    ingredientTexts: [],
     tried,
     jbRating: null,
     gmRating: null,

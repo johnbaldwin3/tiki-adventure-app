@@ -8,6 +8,7 @@ import {
   type TasterEntry,
 } from "@/lib/cocktails";
 import { getSignedInUser } from "@/lib/auth/current-taster";
+import { resolveIngredient } from "@/lib/ingredients";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
@@ -46,6 +47,21 @@ function formatDate(iso: string): string {
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+/** Recipe wording, linked to its ingredient page (style, brands to buy, other drinks). */
+function IngredientText({ text }: { text: string }) {
+  const resolved = resolveIngredient(text);
+  if (!resolved) return <span className="text-ink">{text}</span>;
+  return (
+    <Link
+      href={`/ingredients/${resolved.ingredient.id}`}
+      prefetch={false}
+      className="text-ink underline decoration-teal/40 decoration-1 underline-offset-4 hover:decoration-teal"
+    >
+      {text}
+    </Link>
+  );
 }
 
 function BackLink() {
@@ -206,7 +222,7 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
                 <span className="min-w-20 shrink-0 whitespace-nowrap font-bold text-teal-deep">
                   {[ing.amount, ing.unit].filter(Boolean).join(" ")}
                 </span>
-                <span className="text-ink">{ing.ingredient}</span>
+                <IngredientText text={ing.ingredient} />
               </li>
             ))}
           </ul>
