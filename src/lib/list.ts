@@ -40,3 +40,57 @@ export function filterCocktails(records: ListedCocktail[], filter: ListFilter): 
   }
   return records.slice().sort(byDiffords);
 }
+
+// ---------------------------------------------------------------------------
+// Ingredient filter (?ing=navy-rum,falernum&match=any)
+// ---------------------------------------------------------------------------
+
+export type IngredientMatch = "all" | "any";
+
+/**
+ * Reads ?ing= (comma-separated catalog ids, possibly repeated) plus an
+ * optional ?add= from the picker form. Unknown ids are dropped; order is
+ * kept (first chosen first) and duplicates removed.
+ */
+export function parseIngredientFilter(
+  ing: string | string[] | undefined,
+  add: string | string[] | undefined,
+  isKnown: (id: string) => boolean
+): string[] {
+  const parts = [ing, add]
+    .flat()
+    .filter((v): v is string => typeof v === "string")
+    .flatMap((v) => v.split(","))
+    .map((v) => v.trim())
+    .filter((v) => v !== "" && isKnown(v));
+  return [...new Set(parts)];
+}
+
+export function parseIngredientMatch(value: string | string[] | undefined): IngredientMatch {
+  const v = Array.isArray(value) ? value[0] : value;
+  return v === "any" ? "any" : "all";
+}
+
+/** Does a cocktail (given its catalog ingredient ids) satisfy the ingredient filter? */
+export function matchesIngredients(cocktailIds: Set<string>, selected: string[], match: IngredientMatch): boolean {
+  if (selected.length === 0) return true;
+  return match === "all" ? selected.every((id) => cocktailIds.has(id)) : selected.some((id) => cocktailIds.has(id));
+}
+
+/** Builds a home-list URL, omitting defaults so links stay short and canonical. */
+export function listHref({
+  show = "all",
+  ing = [],
+  match = "all",
+}: {
+  show?: ListFilter;
+  ing?: string[];
+  match?: IngredientMatch;
+}): string {
+  const params = new URLSearchParams();
+  if (show !== "all") params.set("show", show);
+  if (ing.length > 0) params.set("ing", ing.join(","));
+  if (ing.length > 1 && match === "any") params.set("match", "any");
+  const qs = params.toString().replace(/%2C/g, ",");
+  return qs ? `/?${qs}` : "/";
+}

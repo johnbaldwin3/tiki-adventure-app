@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { aliasesFor, getIngredient, resolveIngredient } from "@/lib/ingredients";
+import { listHref } from "@/lib/list";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
 import { rankCocktails } from "@/lib/tasting";
 
@@ -124,6 +125,14 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
             {drinks ? `Used in ${drinks.length} ${drinks.length === 1 ? "drink" : "drinks"}` : "Used in"}
           </h2>
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
+          {drinks && drinks.length > 0 && (
+            <Link
+              href={listHref({ ing: [ingredient.id] })}
+              className="shrink-0 text-xs font-semibold text-teal underline-offset-2 hover:underline"
+            >
+              Filter the list <span aria-hidden="true">→</span>
+            </Link>
+          )}
         </div>
         {!drinks ? (
           <p role="alert" className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm">

@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { filterCocktails, parseListFilter, type ListedCocktail } from "./list";
+import {
+  filterCocktails,
+  listHref,
+  matchesIngredients,
+  parseIngredientFilter,
+  parseIngredientMatch,
+  parseListFilter,
+  type ListedCocktail,
+} from "./list";
 
 function make(name: string, diffordsRank: number, tried: boolean, rank: number | null): ListedCocktail {
   return {
@@ -49,5 +57,44 @@ describe("filterCocktails", () => {
   });
   it("'untasted' returns untried cocktails in Difford's order", () => {
     expect(filterCocktails(records, "untasted").map((r) => r.name)).toEqual(["A", "E"]);
+  });
+});
+
+describe("ingredient filter helpers", () => {
+  const known = (id: string) => ["navy-rum", "falernum", "lime"].includes(id);
+
+  it("parses ?ing= and ?add=, dropping unknown ids and duplicates, keeping order", () => {
+    expect(parseIngredientFilter("navy-rum,bogus,falernum", undefined, known)).toEqual(["navy-rum", "falernum"]);
+    expect(parseIngredientFilter("navy-rum", "falernum", known)).toEqual(["navy-rum", "falernum"]);
+    expect(parseIngredientFilter(["navy-rum", "lime"], "navy-rum", known)).toEqual(["navy-rum", "lime"]);
+    expect(parseIngredientFilter(undefined, "", known)).toEqual([]);
+    expect(parseIngredientFilter("navy-rum", "unicorn-tears", known)).toEqual(["navy-rum"]);
+    expect(parseIngredientFilter(undefined, ["falernum", "lime"], known)).toEqual(["falernum", "lime"]);
+  });
+
+  it("defaults match to 'all'", () => {
+    expect(parseIngredientMatch(undefined)).toBe("all");
+    expect(parseIngredientMatch("any")).toBe("any");
+    expect(parseIngredientMatch("nope")).toBe("all");
+  });
+
+  it("matches all or any selected ingredients", () => {
+    const has = new Set(["navy-rum", "lime"]);
+    expect(matchesIngredients(has, [], "all")).toBe(true);
+    expect(matchesIngredients(has, ["navy-rum", "lime"], "all")).toBe(true);
+    expect(matchesIngredients(has, ["navy-rum", "falernum"], "all")).toBe(false);
+    expect(matchesIngredients(has, ["navy-rum", "falernum"], "any")).toBe(true);
+    expect(matchesIngredients(has, ["falernum"], "any")).toBe(false);
+  });
+
+  it("builds canonical list URLs", () => {
+    expect(listHref({})).toBe("/");
+    expect(listHref({ show: "tasted" })).toBe("/?show=tasted");
+    expect(listHref({ ing: ["navy-rum", "falernum"] })).toBe("/?ing=navy-rum,falernum");
+    expect(listHref({ show: "untasted", ing: ["navy-rum", "falernum"], match: "any" })).toBe(
+      "/?show=untasted&ing=navy-rum,falernum&match=any"
+    );
+    // "any" is meaningless with a single ingredient, so it's dropped.
+    expect(listHref({ ing: ["navy-rum"], match: "any" })).toBe("/?ing=navy-rum");
   });
 });

@@ -24,6 +24,8 @@ const signedOutPages = [
   "/",
   "/?show=tasted",
   "/?show=untasted",
+  "/?ing=aged-jamaican-rum,falernum&match=any",
+  "/?ing=navy-rum,falernum",
   "/cocktails/tiki-max",
   "/cocktails/zombie",
   "/stats",

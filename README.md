@@ -39,7 +39,10 @@ in; see below.
 ## What's in the app
 
 - **Home (`/`)** -- progress tiles and all 100 cocktails, filterable by
-  All / Tasted / Not yet; tap one for its recipe card.
+  All / Tasted / Not yet and by ingredient (pick one or more; drinks using
+  all of them, or any of them). Every filter state is a shareable URL, e.g.
+  `/?show=untasted&ing=aged-jamaican-rum,falernum&match=any`. Tap a drink for
+  its recipe card.
 - **Recipe card (`/cocktails/[slug]`)** -- ingredients, glass, garnish,
   method, "Our tasting" (ratings, dates, notes), and a credit link to the
   original on Difford's Guide.
@@ -160,14 +163,13 @@ review pass:
 
 ### Beyond the original plan
 
-9. ✅ Ingredient catalog — tidy styles & families for all 153 recipe wordings, researched example bottles, ingredient browser and pages
+9. ✅ Ingredient catalog — tidy styles & families for all 153 recipe wordings, researched example bottles, ingredient browser and pages, Total Wine / WineXpress links
+10. ✅ Filter by ingredient — pick ingredients on the home list (all-of / any-of), combined with Tasted / Not yet
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Filter by ingredient** -- pick one or more ingredients (from the new
-  catalog) and see the drinks that use them
 - **Have / don't-have matching** -- find drinks that use ingredients we
   have, and exclude ones needing ingredients we don't (e.g. "missing only
   one ingredient")

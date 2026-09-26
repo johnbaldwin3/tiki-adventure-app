@@ -1,8 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { IngredientFilter } from "@/components/ingredient-filter";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { getIngredient, resolveIngredient } from "@/lib/ingredients";
 import {
   filterCocktails,
   LIST_FILTERS,
+  listHref,
+  matchesIngredients,
+  parseIngredientFilter,
+  parseIngredientMatch,
   parseListFilter,
   type ListFilter,
 } from "@/lib/list";
@@ -20,6 +27,10 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const sp = await searchParams;
   const filter = parseListFilter(sp.show);
   const passwordUpdated = sp.password === "updated";
+  const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
+  const match = parseIngredientMatch(sp.match);
+  // The picker form submits ?add=<id>; fold it into a clean, shareable URL.
+  if (sp.add !== undefined) redirect(listHref({ show: filter, ing: ingredientIds, match }));
 
   let records: CocktailRecord[];
   let loadError: string | null = null;
@@ -41,12 +52,25 @@ export default async function Page({ searchParams }: PageProps<"/">) {
     avgRating: rankByName.get(c.name)?.avgRating ?? null,
     rank: rankByName.get(c.name)?.rank ?? null,
   }));
-  const visible = filterCocktails(listed, filter);
+  // Catalog ingredient ids per cocktail, for the ingredient filter and its counts.
+  const idsBySlug = new Map(
+    records.map((r) => [
+      r.slug,
+      new Set(r.ingredientTexts.map((t) => resolveIngredient(t)?.ingredient.id).filter((id): id is string => !!id)),
+    ])
+  );
+  const ingredientMatched = listed.filter((c) =>
+    matchesIngredients(idsBySlug.get(c.slug) ?? new Set(), ingredientIds, match)
+  );
+  const visible = filterCocktails(ingredientMatched, filter);
+  const matchedTried = ingredientMatched.filter((c) => c.tried).length;
   const counts: Record<ListFilter, number> = {
-    all: records.length,
-    tasted: summary.triedCount,
-    untasted: records.length - summary.triedCount,
+    all: ingredientMatched.length,
+    tasted: matchedTried,
+    untasted: ingredientMatched.length - matchedTried,
   };
+  const usageCounts: Record<string, number> = {};
+  for (const ids of idsBySlug.values()) for (const id of ids) usageCounts[id] = (usageCounts[id] ?? 0) + 1;
 
   const kpis = [
     {
@@ -161,7 +185,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             return (
               <Link
                 key={f.value}
-                href={f.value === "all" ? "/" : `/?show=${f.value}`}
+                href={listHref({ show: f.value, ing: ingredientIds, match })}
                 scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={`flex-1 rounded-full px-3 py-2 text-center text-sm font-semibold shadow-sm transition-colors ${
@@ -176,6 +200,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           })}
         </nav>
 
+        <IngredientFilter
+          show={filter}
+          selected={ingredientIds}
+          match={match}
+          usageCounts={usageCounts}
+          resultCount={visible.length}
+        />
+
         {filter === "tasted" && (
           <p className="text-xs text-ink-faint">
             Ranked by JB &amp; GM&apos;s average rating.
@@ -184,13 +216,21 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
         {visible.length === 0 && !loadError && (
           <p className="rounded-xl bg-card p-4 text-center text-sm text-ink-soft shadow-sm">
-            {filter === "untasted"
-              ? "You've tasted them all! 🎉"
-              : "Nothing here yet."}
+            {ingredientIds.length > 0
+              ? `${
+                  ingredientIds.length === 1
+                    ? "No drinks here use that"
+                    : match === "all"
+                      ? "No drinks here use all of those. Try “Any of these”, or remove one"
+                      : "No drinks here use any of those"
+                }${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}.`
+              : filter === "untasted"
+                ? "You've tasted them all! 🎉"
+                : "Nothing here yet."}
           </p>
         )}
 
-        <ul className="flex flex-col gap-2">
+        <ul aria-label="Cocktails" className="flex flex-col gap-2">
           {visible.map((c) => {
             // The number in the circle follows the current ordering: our
             // rank on the Tasted view (sorted by rating), Difford's rank
