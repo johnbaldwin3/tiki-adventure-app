@@ -217,5 +217,20 @@ review pass:
 
 Captured from John so they don't get lost:
 
+- **Unit conversion** -- show recipe amounts in ounces or millilitres
+  (and cups, tablespoons, etc.), with a toggle on the recipe card
+- **Servings** -- 1x / 2x / 3x (or more) on the recipe card, scaling every
+  amount shown
+- **"We made this"** -- a button on the recipe card (for the chosen number
+  of servings) that records what was poured, turning our bar into a living
+  inventory with how much is left per bottle, and alerts when something is
+  running low (feeds the shopping list)
+- **Receipt capture** -- photograph a receipt from the grocery store,
+  WineXpress or a liquor store; AI reads the products and sizes, you check
+  them, and they're added to our bar (with bottle and amount)
+- **Distant future: recipe from a menu** -- give the AI a menu listing
+  (ingredients but no amounts) and have it propose a recipe using the ratios
+  in our saved recipes and common drink structures, plus some outside
+  research; always clearly marked as a best guess to test
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time
