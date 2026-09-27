@@ -154,6 +154,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </section>
         <div className="flex flex-wrap justify-end gap-x-2">
           <Link
+            href="/cabinet"
+            className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+          >
+            Our bar <span aria-hidden="true">→</span>
+          </Link>
+          <Link
             href="/ingredients"
             className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
           >

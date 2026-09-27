@@ -70,3 +70,31 @@ test("edit page shows a friendly error with a way back", async ({ page }) => {
   await expect(page.getByRole("link", { name: /All cocktails/ })).toBeVisible();
   await expectAccessible(page);
 });
+
+test("our bar shows a friendly error", async ({ page }) => {
+  await setDbDown(page, false);
+  await signIn(page, JOHN);
+  await setDbDown(page, true);
+  for (const path of ["/cabinet", "/cabinet/edit"]) {
+    await page.goto(path);
+    await expect(page.getByRole("alert").filter({ hasText: "Couldn't load our bar" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Save our bar" })).toHaveCount(0);
+    await expectAccessible(page);
+  }
+});
+
+test("a failed bar save keeps what was ticked and typed", async ({ page }) => {
+  await setDbDown(page, false);
+  await signIn(page, JOHN, "/cabinet/edit");
+  await page.goto("/cabinet/edit");
+  await page.locator("summary", { hasText: "Rum ·" }).first().click();
+  await page.getByRole("checkbox", { name: /^Navy rum/ }).check();
+  await page.locator("#bottle-navy-rum").fill("Pusser's Blue Label");
+  await setDbDown(page, true);
+  await page.getByRole("button", { name: "Save our bar" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Saving failed" })).toBeFocused();
+  await expect(page).toHaveURL(/\/cabinet\/edit$/);
+  await expect(page.getByRole("checkbox", { name: /^Navy rum/ })).toBeChecked();
+  await expect(page.locator("#bottle-navy-rum")).toHaveValue("Pusser's Blue Label");
+  await expectAccessible(page);
+});

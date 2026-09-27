@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { fetchCabinet } from "@/lib/cabinet-data";
 import { aliasesFor, getIngredient, resolveIngredient } from "@/lib/ingredients";
 import { listHref } from "@/lib/list";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
@@ -29,6 +30,13 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
   const ingredient = getIngredient(id);
   if (!ingredient) notFound();
 
+  // Started now so it loads alongside the drinks below.
+  const cabinetPromise = fetchCabinet().catch((err) => {
+    unstable_rethrow(err);
+    console.error("ingredient page: failed to load cabinet", err);
+    return null;
+  });
+
   let drinks: (CocktailRecord & { avgRating: number | null; optionalOnly: boolean })[] | null = null;
   try {
     const records = await fetchCocktailRecords();
@@ -46,6 +54,8 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
     console.error("ingredient page: failed to load drinks", id, err);
   }
   const aliases = aliasesFor(id);
+  const cabinet = await cabinetPromise;
+  const owned = cabinet?.has(id) ?? false;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -59,6 +69,11 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
       <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">{ingredient.family}</p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{ingredient.name}</h1>
+        {owned && (
+          <p className="relative mt-3 w-fit rounded-full bg-white px-3 py-1 text-sm font-bold text-teal-deep">
+            <span aria-hidden="true">✓ </span>In our bar{cabinet?.get(id) ? `: ${cabinet.get(id)}` : ""}
+          </p>
+        )}
         {ingredient.staple && (
           <p className="relative mt-3 w-fit rounded-full bg-white px-3 py-1 text-sm font-bold text-teal-deep">
             Staple: assumed always on hand

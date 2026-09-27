@@ -8,7 +8,9 @@ import {
   type TasterEntry,
 } from "@/lib/cocktails";
 import { getSignedInUser } from "@/lib/auth/current-taster";
-import { resolveIngredient } from "@/lib/ingredients";
+import { drinkAvailability } from "@/lib/cabinet";
+import { fetchCabinet } from "@/lib/cabinet-data";
+import { getIngredient, resolveIngredient } from "@/lib/ingredients";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
@@ -161,7 +163,20 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
 
   if (!cocktail) notFound();
 
-  const [records, user] = await Promise.all([recordsPromise, userPromise]);
+  const cabinetPromise = fetchCabinet().catch((err) => {
+    unstable_rethrow(err);
+    console.error("recipe card: failed to load cabinet", err);
+    return null;
+  });
+  const [records, user, cabinet] = await Promise.all([recordsPromise, userPromise, cabinetPromise]);
+  // Only for signed-in tasters (RLS); null otherwise.
+  const availability = cabinet
+    ? drinkAvailability(
+        { ...cocktail, tried: false, ingredientTexts: cocktail.ingredients.map((i) => i.ingredient) },
+        new Set(cabinet.keys())
+      )
+    : null;
+  const missing = availability?.missing ?? null;
   const myInitials = user?.taster?.initials ?? null;
   const ourRank = records
     ? (rankCocktails(records).find((r) => r.name === cocktail.name)?.rank ?? null)
@@ -228,6 +243,43 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
           </ul>
         ) : (
           <p className="mt-2 text-sm italic text-ink-faint">No ingredients listed.</p>
+        )}
+        {missing && (
+          <p className="mt-3 rounded-xl bg-sand-deep px-3 py-2 text-sm text-teal-deep">
+            {missing.length === 0 && availability!.unknown.length > 0 ? (
+              <>
+                Can&apos;t tell if we can make this:{" "}
+                <Link href="/cabinet" className="font-semibold underline underline-offset-2">
+                  our bar
+                </Link>{" "}
+                doesn&apos;t track {availability!.unknown.join(", ")}.
+              </>
+            ) : missing.length === 0 ? (
+              <>
+                <span aria-hidden="true">✓ </span>We can make this with what&apos;s in{" "}
+                <Link href="/cabinet" className="font-semibold underline underline-offset-2">
+                  our bar
+                </Link>
+                .
+              </>
+            ) : (
+              <>
+                Missing from{" "}
+                <Link href="/cabinet" className="font-semibold underline underline-offset-2">
+                  our bar
+                </Link>
+                :{" "}
+                {missing.map((id, i) => (
+                  <span key={id}>
+                    {i > 0 && ", "}
+                    <Link href={`/ingredients/${id}`} prefetch={false} className="font-semibold underline underline-offset-2">
+                      {getIngredient(id)?.name ?? id}
+                    </Link>
+                  </span>
+                ))}
+              </>
+            )}
+          </p>
         )}
       </section>
 

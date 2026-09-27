@@ -61,6 +61,16 @@ in; see below.
   shows stock at your chosen store), and the page offers a tap-to-call link
   for WineXpress (Five Forks), which has no online catalog
   (`src/lib/stores.ts`).
+- **Our bar (`/cabinet`)** -- JB & GM's shared home bar (signed-in tasters
+  only). Tick what's on the shelf at `/cabinet/edit` (optionally the exact
+  bottle); the page lists what we can make right now, and "Buy next" --
+  single ingredients that would each complete more drinks. Recipe cards
+  say "We can make this" or what's missing, and ingredient pages show an
+  "In our bar" chip. Staples and lines marked "(optional)" never count as
+  missing. Saves only the rows you changed, so two people editing at once
+  don't undo each other (`planCabinetSave` in `src/lib/cabinet.ts`). Stored
+  in `cabinet_items` (migration 0006; RLS: tasters only, `updated_by` must
+  be you).
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -105,7 +115,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0005` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0006` in order (Supabase SQL editor
    or `supabase db push`).
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
@@ -165,22 +175,16 @@ review pass:
 
 9. ✅ Ingredient catalog — tidy styles & families for all 153 recipe wordings, researched example bottles, ingredient browser and pages, Total Wine / WineXpress links
 10. ✅ Filter by ingredient — pick ingredients on the home list (all-of / any-of), combined with Tasted / Not yet
+11. ✅ Bar cabinet — "Our bar": what we have, what we can make now, what to buy next; markers on recipe cards and ingredient pages
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Have / don't-have matching** -- find drinks that use ingredients we
-  have, and exclude ones needing ingredients we don't (e.g. "missing only
-  one ingredient")
-- **Virtual bar cabinet** -- keep a saved list of what's actually on the
-  shelf at home and list the drinks we can make from it right now (builds
-  on the ingredient catalog; needs a `cabinet` table keyed by style id,
-  optionally recording which exact bottle we own)
 - **AI recipe import** -- an assistant (via OpenRouter) that adds a new
   recipe to our list from typed text, a photo of a recipe book/card, or a
   link to an online recipe, then lets us review it before saving
 - **Shopping list** -- bottles we're missing for drinks we want to try, with
-  the Total Wine / WineXpress links
+  the Total Wine / WineXpress links (the bar's "Buy next" is a start)
 - Smaller ideas: search box, "what should we try next?" suggestions,
   Add to Home Screen (PWA), photos on tastings, progress over time

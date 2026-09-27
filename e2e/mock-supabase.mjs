@@ -251,6 +251,48 @@ async function handleAuth(req, res, url) {
 
 const tables = { cocktails, tasters, tastings };
 
+// Bar cabinet (migration 0006): rows are only visible/editable to signed-in
+// tasters, and updated_by must be the signed-in taster -- mirroring RLS.
+const cabinet = new Map(); // ingredient_id -> { ingredient_id, bottle, updated_by }
+
+function handleCabinet(req, res, url) {
+  const email = bearerEmail(req);
+  const taster = email ? accounts.get(email) : null;
+  if (req.method === "GET") {
+    sendJson(res, 200, taster ? [...cabinet.values()].map((r) => project(r, url.searchParams.get("select"))) : []);
+    return;
+  }
+  if (!taster) {
+    sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "cabinet_items"' });
+    return;
+  }
+  if (req.method === "POST") {
+    if (url.searchParams.get("on_conflict") !== "ingredient_id") {
+      sendJson(res, 400, { message: "mock-supabase: expected on_conflict=ingredient_id" });
+      return;
+    }
+    readBody(req).then((body) => {
+      const rows = [body].flat();
+      if (rows.some((r) => r.updated_by !== taster)) {
+        sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "cabinet_items"' });
+        return;
+      }
+      for (const r of rows) cabinet.set(r.ingredient_id, { ingredient_id: r.ingredient_id, bottle: r.bottle ?? null, updated_by: r.updated_by });
+      res.writeHead(201);
+      res.end();
+    });
+    return;
+  }
+  if (req.method === "DELETE") {
+    const m = (url.searchParams.get("ingredient_id") ?? "").match(/^in\.\((.*)\)$/);
+    for (const id of m ? m[1].split(",").map((s) => s.replace(/^"|"$/g, "")) : []) cabinet.delete(id);
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+  sendJson(res, 405, { message: "mock-supabase: unsupported cabinet method" });
+}
+
 // "Database down" switch for e2e/db-down.spec.ts (POST /__mock/db-down with
 // {"down": true|false}). While on, every PostgREST request returns 500; auth
 // keeps working. That spec runs in its own Playwright project after the others.
@@ -299,6 +341,10 @@ const server = http.createServer((req, res) => {
   if (req.method === "POST" && url.pathname === "/rest/v1/rpc/current_taster_id") {
     const email = bearerEmail(req);
     sendJson(res, 200, email ? (accounts.get(email) ?? null) : null);
+    return;
+  }
+  if (match?.[1] === "cabinet_items") {
+    handleCabinet(req, res, url);
     return;
   }
   if (req.method === "POST" && match?.[1] === "tastings") {

@@ -6,6 +6,8 @@ export interface SignedInUser {
   email: string;
   /** The taster this account belongs to, or null if the email isn't linked to one. */
   taster: { id: string; initials: string; displayName: string } | null;
+  /** True when the taster lookup itself failed (DB unreachable), so a null taster means "unknown", not "none". */
+  lookupFailed?: boolean;
 }
 
 /**
@@ -22,14 +24,16 @@ export const getSignedInUser = cache(async (): Promise<SignedInUser | null> => {
   } = await supabase.auth.getUser();
   if (!user?.email) return null;
 
-  const { data: tasterId } = await supabase.rpc("current_taster_id");
+  const { data: tasterId, error: rpcError } = await supabase.rpc("current_taster_id");
+  if (rpcError) return { email: user.email, taster: null, lookupFailed: true };
   if (typeof tasterId !== "string") return { email: user.email, taster: null };
 
-  const { data: taster } = await supabase
+  const { data: taster, error: tasterError } = await supabase
     .from("tasters")
     .select("id, initials, display_name")
     .eq("id", tasterId)
     .maybeSingle();
+  if (tasterError) return { email: user.email, taster: null, lookupFailed: true };
   return {
     email: user.email,
     taster: taster
