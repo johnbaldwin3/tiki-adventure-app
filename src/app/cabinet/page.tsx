@@ -5,11 +5,14 @@ import { PageShell, SectionHeading } from "@/components/page-shell";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { summarizeCabinet } from "@/lib/cabinet";
 import {
+  fetchBar,
   fetchCabinet,
   fetchShoppingList,
   type Cabinet,
 } from "@/lib/cabinet-data";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
+import { LevelMeter } from "@/components/level-meter";
+import { describeLeft, isLow } from "@/lib/inventory";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
 
@@ -112,11 +115,21 @@ export default async function CabinetPage({
   }
 
   const summary = summarizeCabinet(records, new Set(cabinet.keys()));
-  // Owned items are hidden on the shopping page, so don't count them here.
-  const toBuy = list
-    ? [...list].filter((id) => !cabinet!.has(id)).length
-    : null;
+  const inventory =
+    (
+      await fetchBar().catch((err) => {
+        unstable_rethrow(err);
+        console.error("cabinet: failed to load levels", err);
+        return null;
+      })
+    )?.inventory ?? new Map();
   const name = (id: string) => getIngredient(id)?.name ?? id;
+  const low = [...inventory.entries()]
+    .filter(([id, level]) => cabinet!.has(id) && isLow(level))
+    .sort((a, b) => name(a[0]).localeCompare(name(b[0])));
+  // Owned items show on the shopping list only when running low (to restock).
+  const lowIds = new Set(low.map(([id]) => id));
+  const toBuy = list ? [...list].filter((id) => !cabinet!.has(id) || lowIds.has(id)).length : null;
 
   return (
     <PageShell
@@ -150,6 +163,32 @@ export default async function CabinetPage({
         </Link>
       )}
       <ShoppingStatus status={sp.shopping} />
+
+      {low.length > 0 && (
+        <section aria-labelledby="low-heading" id="low" className="flex flex-col gap-2 scroll-mt-4">
+          <SectionHeading id="low-heading">Running low ({low.length})</SectionHeading>
+          <ul className="flex flex-col gap-2">
+            {low.map(([id, level]) => (
+              <li key={id} className={card}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <Link href={`/ingredients/${id}`} prefetch={false} className="text-sm font-bold text-teal-deep underline-offset-2 hover:underline">
+                    {name(id)}
+                  </Link>
+                  <span className="flex shrink-0 items-center gap-1.5 text-xs text-coral-deep">
+                    <LevelMeter level={level} />
+                    {describeLeft(level)}
+                  </span>
+                </div>
+                {list && (
+                  <div className="mt-2">
+                    <ShoppingButton ids={[id]} onList={list.has(id)} returnTo="/cabinet" itemName={name(id)} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="ready-heading" className="flex flex-col gap-2">
         <SectionHeading id="ready-heading">
@@ -234,7 +273,12 @@ export default async function CabinetPage({
           aria-labelledby="shelf-heading"
           className="flex flex-col gap-2"
         >
-          <SectionHeading id="shelf-heading">On the shelf</SectionHeading>
+          <div className="flex items-center justify-between gap-2">
+            <SectionHeading id="shelf-heading">On the shelf</SectionHeading>
+            <Link href="/cabinet/levels" className="shrink-0 px-1 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline">
+              Bottle levels <span aria-hidden="true">→</span>
+            </Link>
+          </div>
           <ul className={`${card} flex flex-col divide-y divide-teal/10 py-1`}>
             {[...cabinet.entries()]
               .sort((a, b) => name(a[0]).localeCompare(name(b[0])))
@@ -250,11 +294,16 @@ export default async function CabinetPage({
                   >
                     {name(id)}
                   </Link>
-                  {bottle && (
-                    <span className="text-right text-xs text-ink-soft">
-                      {bottle}
-                    </span>
-                  )}
+                  <span className="flex flex-col items-end gap-0.5 text-right text-xs text-ink-soft">
+                    {bottle && <span>{bottle}</span>}
+                    {inventory.get(id)?.remainingMl != null && (
+                      <span className="flex items-center gap-1.5">
+                        <LevelMeter level={inventory.get(id)!} />
+                        {describeLeft(inventory.get(id)!)}
+                        {isLow(inventory.get(id)!) && <span className="font-semibold text-coral-deep"> (low)</span>}
+                      </span>
+                    )}
+                  </span>
                 </li>
               ))}
           </ul>

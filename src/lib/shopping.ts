@@ -15,8 +15,10 @@ export interface ShoppingItemSummary<D extends CabinetDrink = CabinetDrink> {
    * that need this item. Not-yet-tried drinks first, then by Difford's rank.
    */
   completes: D[];
-  /** How many of the drinks need this ingredient at all. */
+  /** How many of the drinks need this ingredient at all (that we can't already make). */
   usedBy: number;
+  /** We have it, but it's running low: buying another bottle. */
+  restock: boolean;
 }
 
 export interface ShoppingSummary<D extends CabinetDrink = CabinetDrink> {
@@ -30,16 +32,18 @@ const byTriedThenRank = <D extends CabinetDrink>(a: D, b: D) =>
 
 /**
  * The list's items are the ids in `list` the catalog knows, minus staples
- * and anything already in the cabinet. Order: most completes, then name.
+ * and anything already in the cabinet -- unless it's running low (`restock`),
+ * then it stays to buy another bottle. Order: most completes, then name.
  */
 export function summarizeShopping<D extends CabinetDrink>(
   drinks: D[],
   have: Set<string>,
-  list: Iterable<string>
+  list: Iterable<string>,
+  restock: Set<string> = new Set()
 ): ShoppingSummary<D> {
   const listed = [...new Set(list)].filter((id) => {
     const i = getIngredient(id);
-    return !!i && !i.staple && !have.has(id);
+    return !!i && !i.staple && (!have.has(id) || restock.has(id));
   });
   const after = new Set([...have, ...listed]);
   const unlocks: D[] = [];
@@ -59,7 +63,12 @@ export function summarizeShopping<D extends CabinetDrink>(
 
   const name = (id: string) => getIngredient(id)?.name ?? id;
   const items = listed
-    .map((id) => ({ ingredientId: id, completes: completes.get(id)!.sort(byTriedThenRank), usedBy: usedBy.get(id)! }))
+    .map((id) => ({
+      ingredientId: id,
+      completes: completes.get(id)!.sort(byTriedThenRank),
+      usedBy: usedBy.get(id)!,
+      restock: have.has(id),
+    }))
     .sort((a, b) => b.completes.length - a.completes.length || name(a.ingredientId).localeCompare(name(b.ingredientId)));
   return { items, unlocks: unlocks.sort(byTriedThenRank) };
 }

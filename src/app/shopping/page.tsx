@@ -6,6 +6,7 @@ import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { summarizeCabinet } from "@/lib/cabinet";
 import {
+  fetchBar,
   fetchCabinet,
   fetchShoppingList,
   type Cabinet,
@@ -13,6 +14,7 @@ import {
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
 import { summarizeShopping } from "@/lib/shopping";
+import { describeLeft, isLow } from "@/lib/inventory";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
 import { boughtShoppingItem, removeFromShopping } from "./actions";
 
@@ -111,7 +113,15 @@ export default async function ShoppingPage({
   }
 
   const have = new Set(cabinet.keys());
-  const summary = summarizeShopping(records, have, list);
+  const inventory = (
+    await fetchBar().catch((err) => {
+      unstable_rethrow(err);
+      console.error("shopping: failed to load levels", err);
+      return null;
+    })
+  )?.inventory;
+  const low = new Set([...(inventory ?? new Map()).entries()].filter(([, l]) => isLow(l)).map(([id]) => id));
+  const summary = summarizeShopping(records, have, list, low);
   const suggestions = summarizeCabinet(records, have)
     .buyNext.filter((b) => !list!.has(b.ingredientId))
     .slice(0, SUGGESTIONS);
@@ -166,7 +176,15 @@ export default async function ShoppingPage({
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-ink-soft">
-                    {item.completes.length > 0 ? (
+                    {item.restock ? (
+                      <>
+                        Restock — we&apos;re running low
+                        {inventory?.get(item.ingredientId) && describeLeft(inventory.get(item.ingredientId)!)
+                          ? ` (${describeLeft(inventory.get(item.ingredientId)!)})`
+                          : ""}
+                        .
+                      </>
+                    ) : item.completes.length > 0 ? (
                       <>
                         With the rest of the list, completes:{" "}
                         <DrinkLinks drinks={item.completes} />

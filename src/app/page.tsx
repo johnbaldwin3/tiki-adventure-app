@@ -4,7 +4,8 @@ import { redirect, unstable_rethrow } from "next/navigation";
 import { IngredientFilter } from "@/components/ingredient-filter";
 import { SearchBox } from "@/components/search-box";
 import { SuggestionCard } from "@/components/suggestion-card";
-import { fetchCabinet } from "@/lib/cabinet-data";
+import { fetchBar, fetchCabinet } from "@/lib/cabinet-data";
+import { isLow } from "@/lib/inventory";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient, lineIds } from "@/lib/ingredients";
 import {
@@ -106,6 +107,22 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   for (const ids of idsBySlug.values()) for (const id of ids) usageCounts[id] = (usageCounts[id] ?? 0) + 1;
 
   const cabinet = await cabinetPromise;
+  // Tasters only (same cached read as the cabinet): bottles running low.
+  const inventory = cabinet
+    ? ((
+        await fetchBar().catch((err) => {
+          unstable_rethrow(err);
+          console.error("home: failed to load levels", err);
+          return null;
+        })
+      )?.inventory ?? null)
+    : null;
+  const lowIds = inventory
+    ? [...inventory.entries()]
+        .filter(([, l]) => isLow(l))
+        .map(([id]) => id)
+        .sort((a, b) => (getIngredient(a)?.name ?? a).localeCompare(getIngredient(b)?.name ?? b))
+    : [];
   const tryNext = loadError
     ? []
     : suggestNext(listed, { have: cabinet ? new Set(cabinet.keys()) : null, limit: 3 });
@@ -229,6 +246,16 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           </Link>
         </div>
       </div>
+
+      {lowIds.length > 0 && (
+        <p className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-ink shadow-sm">
+          <span className="font-semibold text-coral-deep">Running low:</span>{" "}
+          {lowIds.map((id) => getIngredient(id)?.name ?? id).join(", ")}.{" "}
+          <Link href="/cabinet#low" className="font-semibold text-teal underline underline-offset-2">
+            See our bar
+          </Link>
+        </p>
+      )}
 
       {tryNext.length > 0 && (
         <section aria-labelledby="try-next-heading" className="flex flex-col gap-2">

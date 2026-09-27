@@ -234,3 +234,98 @@ test("signed out, the shopping list asks you to sign in", async ({ page }) => {
   await page.goto("/ingredients/falernum");
   await expect(page.getByRole("button", { name: /shopping list/ })).toHaveCount(0);
 });
+
+test("bottle levels, 'We made this' counting down (and undo), and running-low alerts", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "mutates the shared cabinet");
+  const row = (name: string) =>
+    page.getByRole("listitem").filter({ has: page.getByRole("heading", { level: 2, name: new RegExp(`^${name}`) }) });
+
+  await signIn(page, JOHN, "/cabinet/edit");
+  for (const [family, box] of [
+    ["Rum", /^Navy rum/],
+    ["Juices & purées", /^Pineapple juice/],
+    ["Other", /^Cream of coconut/],
+  ] as const) {
+    await openFamily(page, family);
+    await page.getByRole("checkbox", { name: box }).check();
+  }
+  await page.getByRole("button", { name: "Save our bar" }).click();
+  await expect(page).toHaveURL(/\/cabinet\?saved=1$/);
+
+  await page.getByRole("link", { name: /Bottle levels/ }).click();
+  await expect(page).toHaveURL(/\/cabinet\/levels$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Bottle levels" })).toBeVisible();
+
+  await row("Navy rum").getByLabel("Bottle size").selectOption("700");
+  await row("Navy rum").getByRole("button", { name: "½ full" }).click();
+  await expect(page).toHaveURL(/\/cabinet\/levels\?levels=saved&id=navy-rum#level-navy-rum$/);
+  await expect(row("Navy rum").getByRole("status")).toHaveText("Saved Navy rum.");
+  await expect(row("Navy rum").getByRole("status")).toBeFocused();
+  await expect(row("Navy rum")).toContainText("about 350 ml (11 3/4 fl oz) left");
+
+  await row("Pineapple juice").getByLabel("Bottle size").selectOption("1000");
+  await row("Pineapple juice").getByRole("button", { name: "Full", exact: true }).click();
+  await expect(row("Pineapple juice")).toContainText("about 1000 ml");
+  await expect(row("Cream of coconut")).toContainText("Not tracked");
+  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  const levelsScan = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(levelsScan.violations).toEqual([]);
+
+  // Renaming a bottle on the edit page keeps its level.
+  await page.goto("/cabinet/edit");
+  await page.locator("#bottle-navy-rum").fill("Pusser's Gunpowder Proof");
+  await page.getByRole("button", { name: "Save our bar" }).click();
+  await page.goto("/cabinet/levels");
+  await expect(row("Navy rum")).toContainText("about 350 ml");
+
+  // Make two Painkillers.
+  await page.goto("/cocktails/painkiller?serves=2");
+  const making = page.getByRole("region", { name: "Making it" });
+  await expect(making).toContainText("Counts down our bar: Navy rum 90 ml, Pineapple juice 180 ml.");
+  await expect(making).toContainText("Not tracked: Cream of coconut.");
+  // A double submit (same form, twice) records once.
+  await making.locator("form").filter({ has: page.getByRole("button", { name: "We made this (2 drinks)" }) }).evaluate((f: HTMLFormElement) => {
+    f.requestSubmit();
+    f.requestSubmit();
+  });
+  await expect(page).toHaveURL(/\/cocktails\/painkiller\?serves=2&made=[0-9a-f-]{36}#made$/);
+  const done = page.getByRole("status").filter({ hasText: "Cheers! Recorded 2 drinks." });
+  await expect(done).toBeFocused();
+  await expect(done).toContainText("Navy rum: −90 ml, about 260 ml (8 3/4 fl oz) left");
+  await expect(done).toContainText("Pineapple juice: −180 ml, about 820 ml");
+  await expect(making.getByRole("button", { name: "Made another round (2 drinks)" })).toBeVisible();
+  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  const cardScan = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(cardScan.violations).toEqual([]);
+
+  // Undo puts back exactly what was taken, keeps the servings, and a second undo says so.
+  const undoUrl = page.url();
+  await making.getByRole("button", { name: "Undo" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/painkiller\?serves=2&made=undone#made$/);
+  await expect(page.getByRole("status").filter({ hasText: "Undone" })).toBeVisible();
+  await page.goto(undoUrl);
+  await expect(page.getByRole("status").filter({ hasText: "Cheers" })).toHaveCount(0); // that pour is gone
+  await page.goto("/cabinet/levels");
+  await expect(row("Navy rum")).toContainText("about 350 ml");
+
+  // Nearly empty -> running low on our bar and the home page, then restock via the shopping list.
+  await row("Navy rum").getByRole("button", { name: "Nearly empty" }).click();
+  await expect(row("Navy rum")).toContainText("Running low");
+  await page.goto("/cabinet");
+  const low = page.getByRole("region", { name: /Running low/ });
+  await expect(low.getByRole("link", { name: "Navy rum" })).toBeVisible();
+  await expect(low).toContainText("about 70 ml");
+  await low.getByRole("button", { name: "Add to shopping list: Navy rum" }).click();
+  await expect(page.getByRole("link", { name: /Shopping list \(1\)/ })).toBeVisible();
+  await page.goto("/");
+  await expect(page.getByText(/Running low:\s*Navy rum/)).toBeVisible();
+
+  await page.goto("/shopping");
+  const item = page.getByRole("list", { name: "To buy" }).getByRole("listitem").filter({ hasText: "Navy rum" }).first();
+  await expect(item).toContainText("Restock — we're running low (about 70 ml");
+  await page.getByRole("button", { name: "Got it — add to our bar: Navy rum" }).click();
+  await expect(page).toHaveURL(/shopping=bought/);
+  await page.goto("/cabinet/levels");
+  await expect(row("Navy rum")).toContainText("about 700 ml");
+  await expect(row("Navy rum")).not.toContainText("Running low");
+});

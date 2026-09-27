@@ -261,7 +261,7 @@ const tables = { cocktails, tasters, tastings };
 // tasters, and the owner column must be the signed-in taster -- mirroring
 // RLS. Upserts honour Prefer: resolution=ignore-duplicates like PostgREST.
 const shared = {
-  cabinet_items: { rows: new Map(), owner: "updated_by", columns: ["bottle"] },
+  cabinet_items: { rows: new Map(), owner: "updated_by", columns: ["bottle", "size_ml", "remaining_ml"] },
   shopping_items: { rows: new Map(), owner: "added_by", columns: [] },
 };
 
@@ -296,13 +296,30 @@ function handleShared(name, req, res, url) {
         return;
       }
       for (const r of rows) {
-        if (ignoreDuplicates && table.rows.has(r.ingredient_id)) continue;
-        const row = { ingredient_id: r.ingredient_id, [table.owner]: r[table.owner] };
-        for (const c of table.columns) row[c] = r[c] ?? null;
+        const existing = table.rows.get(r.ingredient_id);
+        if (ignoreDuplicates && existing) continue;
+        // Like PostgREST: an upsert updates only the columns it was sent.
+        const row = existing ?? { ingredient_id: r.ingredient_id, ...Object.fromEntries(table.columns.map((c) => [c, null])) };
+        row[table.owner] = r[table.owner];
+        for (const c of table.columns) if (c in r) row[c] = r[c] ?? null;
         table.rows.set(r.ingredient_id, row);
       }
       res.writeHead(201);
       res.end();
+    });
+    return;
+  }
+  if (req.method === "PATCH") {
+    // update ... where ingredient_id = eq.<id> (bottle levels)
+    const id = (url.searchParams.get("ingredient_id") ?? "").replace(/^eq\./, "");
+    readBody(req).then((patch) => {
+      if (patch[table.owner] !== taster) {
+        sendJson(res, 403, { code: "42501", message: `new row violates row-level security policy for table "${name}"` });
+        return;
+      }
+      const row = table.rows.get(id);
+      if (row) for (const c of [...table.columns, table.owner]) if (c in patch) row[c] = patch[c];
+      sendJson(res, 200, row ? [project(row, url.searchParams.get("select"))] : []);
     });
     return;
   }
@@ -337,6 +354,68 @@ function project(row, select) {
   return out;
 }
 
+// Pours (migration 0009): record_pour / undo_pour RPCs count the tracked
+// cabinet bottles down/up (never below 0 or above the bottle size), and
+// pours rows can be read back by id. Tasters only, like the real RLS.
+const pours = new Map();
+function handlePours(req, res, url) {
+  const email = bearerEmail(req);
+  const taster = email ? accounts.get(email) : null;
+  const cabinet = shared.cabinet_items.rows;
+  if (req.method === "POST" && url.pathname === "/rest/v1/rpc/record_pour") {
+    readBody(req).then((body) => {
+      if (!taster) {
+        sendJson(res, 403, { code: "42501", message: "not a taster" });
+        return;
+      }
+      const lines = body.p_lines;
+      if (!Array.isArray(lines) || lines.some((l) => typeof l.ml !== "number" || l.ml <= 0 || l.ml > 5000)) {
+        return sendJson(res, 400, { code: "22023", message: "bad pour line" });
+      }
+      const id = body.p_pour_id;
+      if (pours.has(id)) return sendJson(res, 200, id); // double submit
+      const byId = new Map();
+      for (const l of lines) byId.set(l.ingredient_id, (byId.get(l.ingredient_id) ?? 0) + l.ml);
+      const recorded = [...byId.entries()].sort().map(([ingredient_id, ml]) => {
+        const row = cabinet.get(ingredient_id);
+        const have = row && row.remaining_ml !== null && row.remaining_ml !== undefined ? Number(row.remaining_ml) : null;
+        const taken = have === null ? 0 : Math.min(have, ml);
+        if (taken > 0) row.remaining_ml = have - taken;
+        return { ingredient_id, ml, taken_ml: taken };
+      });
+      pours.set(id, { id, cocktail_id: body.p_cocktail_id, servings: body.p_servings, lines: recorded, poured_by: taster });
+      sendJson(res, 200, id);
+    });
+    return true;
+  }
+  if (req.method === "POST" && url.pathname === "/rest/v1/rpc/undo_pour") {
+    readBody(req).then((body) => {
+      if (!taster) return sendJson(res, 403, { code: "42501", message: "not a taster" });
+      const pour = pours.get(body.p_pour_id);
+      if (!pour) return sendJson(res, 200, false);
+      pours.delete(pour.id);
+      for (const l of pour.lines) {
+        const row = cabinet.get(l.ingredient_id);
+        if (l.taken_ml > 0 && row && row.remaining_ml !== null && row.remaining_ml !== undefined) {
+          const cap = row.size_ml ? Number(row.size_ml) : 99999;
+          row.remaining_ml = Math.min(cap, Number(row.remaining_ml) + l.taken_ml);
+        }
+      }
+      sendJson(res, 200, true);
+    });
+    return true;
+  }
+  if (req.method === "GET" && url.pathname === "/rest/v1/pours") {
+    const id = (url.searchParams.get("id") ?? "").replace(/^eq\./, "");
+    const cocktailId = (url.searchParams.get("cocktail_id") ?? "").replace(/^eq\./, "");
+    const found = taster ? pours.get(id) : null;
+    const pour = found && (!cocktailId || found.cocktail_id === cocktailId) ? found : null;
+    sendJson(res, 200, pour ? [project(pour, url.searchParams.get("select"))] : []);
+    return true;
+  }
+  return false;
+}
+
 const handleRecipeMocks = createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, readBody, sendJson, project });
 
 const server = http.createServer((req, res) => {
@@ -351,6 +430,7 @@ const server = http.createServer((req, res) => {
   // retried or re-run test starts clean.
   if (req.method === "POST" && url.pathname === "/__mock/reset-shared") {
     for (const t of Object.values(shared)) t.rows.clear();
+    pours.clear();
     res.writeHead(204);
     res.end();
     return;
@@ -372,6 +452,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (handleRecipeMocks(req, res, url, match?.[1])) return;
+  if (handlePours(req, res, url)) return;
   if (req.method === "POST" && url.pathname === "/rest/v1/rpc/current_taster_id") {
     const email = bearerEmail(req);
     sendJson(res, 200, email ? (accounts.get(email) ?? null) : null);

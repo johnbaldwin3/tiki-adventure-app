@@ -84,6 +84,16 @@ in; see below.
   don't undo each other (`planCabinetSave` in `src/lib/cabinet.ts`). Stored
   in `cabinet_items` (migration 0006; RLS: tasters only, `updated_by` must
   be you).
+- **Living bar inventory** -- on `/cabinet/levels` set each bottle's size
+  and roughly how full it is. "We made this" on a recipe card (for the
+  chosen servings) records the pour and counts tracked bottles down;
+  "Undo" puts back exactly what was taken. Only liquid volume lines count
+  (not dashes/drops, barspoons, optional lines or staples). Bottles below
+  about a fifth (at least ~60 ml) show as **running low** on our bar and the
+  home page, can go on the shopping list as a restock, and "Got it" refills
+  them. The bookkeeping is in the database (`record_pour`/`undo_pour`,
+  migration 0009): validated, locked in a fixed order, and idempotent per
+  submit so a double tap counts once.
 - **Shopping list (`/shopping`)** -- one shared list (signed-in tasters
   only). Add from a recipe card ("Add all 3 to shopping list"), an
   ingredient page, "Buy next" in our bar, or the ideas on the list itself.
@@ -153,7 +163,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0008` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0009` in order (Supabase SQL editor
    or `supabase db push`).
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
@@ -218,20 +228,17 @@ review pass:
 13. ✅ Search & "What to try next" — search box on the list, explainable suggestions on the home page and /next
 14. ✅ Our own recipes + AI recipe helper — add from a photo, link or text (reviewed before saving), mixed into the list; edit/delete
 15. ✅ Servings & units — 1×–8× and as written / fl oz / ml on every recipe card
+16. ✅ Living bar inventory — bottle levels, "We made this" pours (with undo), running-low alerts and restocking
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **"We made this"** -- a button on the recipe card (for the chosen number
-  of servings) that records what was poured, turning our bar into a living
-  inventory with how much is left per bottle, and alerts when something is
-  running low (feeds the shopping list)
 - **Bottle snapshot** -- take a photo of a bottle and the app adds it to
   our bar: AI identifies the product and style (matched to our catalog),
   its size (e.g. 750 ml), and estimates how much is left from the fill
-  line; you confirm before it's saved. Pairs with the living inventory
-  below (a quick way to top up or correct amounts)
+  line; you confirm before it's saved (a quick way to set or correct
+  bottle levels)
 - **Receipt capture** -- photograph a receipt from the grocery store,
   WineXpress or a liquor store; AI reads the products and sizes, you check
   them, and they're added to our bar (with bottle and amount)

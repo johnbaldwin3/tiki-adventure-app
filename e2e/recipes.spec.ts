@@ -9,6 +9,8 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ request }) => {
   await request.post(`${MOCK_URL}/__mock/reset-recipes`);
+  // Start from an empty bar (other specs stock it).
+  await request.post(`${MOCK_URL}/__mock/reset-shared`);
 });
 test.afterAll(async ({ request }) => {
   await request.post(`${MOCK_URL}/__mock/reset-recipes`);

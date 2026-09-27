@@ -69,3 +69,12 @@ describe("withParam", () => {
     expect(withParam("/?show=untasted#x", "a", "1")).toBe("/?show=untasted&a=1#x");
   });
 });
+
+describe("restocking", () => {
+  it("keeps an owned item on the list only when it's running low", () => {
+    const drinks = [{ slug: "p", name: "P", diffordsRank: 1, tried: false, ingredientTexts: ["Pineapple juice"] }];
+    expect(summarizeShopping(drinks, new Set(["pineapple-juice"]), ["pineapple-juice"]).items).toEqual([]);
+    const s = summarizeShopping(drinks, new Set(["pineapple-juice"]), ["pineapple-juice"], new Set(["pineapple-juice"]));
+    expect(s.items).toEqual([{ ingredientId: "pineapple-juice", completes: [], usedBy: 0, restock: true }]);
+  });
+});

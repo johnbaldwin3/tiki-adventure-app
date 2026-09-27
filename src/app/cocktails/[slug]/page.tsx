@@ -13,7 +13,9 @@ import {
 } from "@/lib/cocktails";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { drinkAvailability } from "@/lib/cabinet";
-import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
+import { fetchBar, fetchCabinet, fetchPour, fetchShoppingList } from "@/lib/cabinet-data";
+import { MadeThis } from "@/components/made-this";
+import { pourLines } from "@/lib/inventory";
 import { FocusMessage } from "@/components/focus-message";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { getIngredient, resolveLine } from "@/lib/ingredients";
@@ -216,6 +218,12 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
 
   if (!cocktail) notFound();
 
+  const barPromise = fetchBar().catch((err) => {
+    unstable_rethrow(err);
+    console.error("recipe card: failed to load bar levels", err);
+    return null;
+  });
+  const pourPromise = typeof sp.made === "string" && /^[0-9a-f-]{36}$/i.test(sp.made) ? fetchPour(sp.made, cocktail.id) : Promise.resolve(null);
   const cabinetPromise = fetchCabinet().catch((err) => {
     unstable_rethrow(err);
     console.error("recipe card: failed to load cabinet", err);
@@ -226,7 +234,14 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     console.error("recipe card: failed to load shopping list", err);
     return null;
   });
-  const [records, user, cabinet, list] = await Promise.all([recordsPromise, userPromise, cabinetPromise, listPromise]);
+  const [records, user, cabinet, list, bar, pour] = await Promise.all([
+    recordsPromise,
+    userPromise,
+    cabinetPromise,
+    listPromise,
+    barPromise,
+    pourPromise,
+  ]);
   // Only for signed-in tasters (RLS); null otherwise.
   const availability = cabinet
     ? drinkAvailability(
@@ -398,6 +413,17 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           </div>
         )}
       </section>
+
+      {bar && user?.taster && (
+        <MadeThis
+          slug={cocktail.slug}
+          servings={servings}
+          lines={pourLines(cocktail.ingredients, servings)}
+          inventory={bar.inventory}
+          made={typeof sp.made === "string" ? sp.made : undefined}
+          pour={pour}
+        />
+      )}
 
       <section aria-label="Glass and garnish" className="grid grid-cols-2 gap-3">
         {[

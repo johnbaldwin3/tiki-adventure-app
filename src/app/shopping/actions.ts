@@ -78,7 +78,7 @@ export async function removeFromShopping(formData: FormData): Promise<void> {
   done(returnTo, "removed");
 }
 
-/** "Got it": into the bar (keeping any bottle already noted there), off the list. */
+/** "Got it": into the bar (keeping any bottle already noted there; a tracked bottle is refilled), off the list. */
 export async function boughtShoppingItem(formData: FormData): Promise<void> {
   const returnTo = safeNextPath(String(formData.get("returnTo") ?? "/shopping"));
   const taster = await requireTaster(returnTo);
@@ -94,6 +94,22 @@ export async function boughtShoppingItem(formData: FormData): Promise<void> {
   if (addError) {
     console.error("boughtShoppingItem: cabinet add failed", addError);
     redirect(withParam(returnTo, "shopping", "error"));
+  }
+  // A new bottle of something we track: refill its level.
+  const { data: tracked } = await db
+    .from("cabinet_items")
+    .select("ingredient_id, size_ml, remaining_ml")
+    .in("ingredient_id", ids)
+    .not("remaining_ml", "is", null)
+    .not("size_ml", "is", null);
+  for (const row of ((tracked ?? []) as { ingredient_id: string; size_ml: number | string | null; remaining_ml: unknown }[]).filter(
+    (r) => ids.includes(r.ingredient_id) && r.size_ml != null && r.remaining_ml != null
+  )) {
+    const { error } = await db
+      .from("cabinet_items")
+      .update({ remaining_ml: Number(row.size_ml), updated_by: taster.id })
+      .eq("ingredient_id", row.ingredient_id);
+    if (error) console.error("boughtShoppingItem: refill failed", error);
   }
   const { error: removeError } = await db.from("shopping_items").delete().in("ingredient_id", ids);
   if (removeError) {
