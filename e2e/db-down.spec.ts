@@ -31,6 +31,7 @@ test("home shows a friendly error and no fake zeros", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("alert").filter({ hasText: "Couldn't load the tasting log" })).toBeVisible();
   await expect(page.getByText("0 / 0")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Try next" })).toHaveCount(0);
   await expect(page.getByRole("navigation", { name: "Filter cocktails" })).toHaveCount(0);
   await expectAccessible(page);
 });
@@ -115,5 +116,12 @@ test("a failed shopping-list change says so", async ({ page }) => {
   await page.getByRole("button", { name: "Add to shopping list", exact: true }).click();
   await expect(page).toHaveURL(/\/ingredients\/falernum\?shopping=error$/);
   await expect(page.getByRole("alert").filter({ hasText: "Couldn't update the shopping list" })).toBeFocused();
+  await expectAccessible(page);
+});
+
+test("what to try next shows a friendly error", async ({ page }) => {
+  await page.goto("/next");
+  await expect(page.getByRole("alert").filter({ hasText: "Couldn't load suggestions" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Suggestions" })).toHaveCount(0);
   await expectAccessible(page);
 });

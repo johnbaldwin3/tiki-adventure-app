@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("tapping a cocktail opens its full recipe card, and Back returns to the list", async ({ page }) => {
   await page.goto("/?show=tasted");
-  await page.getByRole("link", { name: /Tiki Max/ }).click();
+  await page.getByRole("list", { name: "Cocktails" }).getByRole("link", { name: /Tiki Max/ }).click();
 
   await expect(page).toHaveURL(/\/cocktails\/tiki-max$/);
   await expect(page).toHaveTitle(/Tiki Max/);

@@ -27,7 +27,7 @@ test("list shows all 100 by default and filters to tasted / not yet", async ({ p
   await filters.getByRole("link", { name: /Not yet/ }).click();
   await expect(page).toHaveURL(/\?show=untasted$/);
   await expect(list).toHaveCount(79);
-  await expect(page.getByRole("link", { name: /Tiki Max/ })).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "Cocktails" }).getByRole("link", { name: /Tiki Max/ })).toHaveCount(0);
 
   await filters.getByRole("link", { name: /^All/ }).click();
   await expect(list).toHaveCount(100);

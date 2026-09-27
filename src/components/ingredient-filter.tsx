@@ -5,6 +5,10 @@ import { getIngredient, ingredientsByFamily } from "@/lib/ingredients";
 import { listHref, type IngredientMatch, type ListFilter } from "@/lib/list";
 
 interface Props {
+  /** Current search (?q=), kept across ingredient changes. */
+  q?: string;
+  /** Show the results count here (off when the page shows one combined count). */
+  showCount?: boolean;
   show: ListFilter;
   selected: string[];
   match: IngredientMatch;
@@ -20,7 +24,7 @@ interface Props {
  * (great on phones) and an Add button, plus link chips to remove each
  * choice. Every state is a shareable URL.
  */
-export function IngredientFilter({ show, selected, match, usageCounts, resultCount }: Props) {
+export function IngredientFilter({ q = "", showCount = true, show, selected, match, usageCounts, resultCount }: Props) {
   const chosen = selected.map((id) => getIngredient(id)).filter((i) => !!i);
   const groups = ingredientsByFamily()
     .map((g) => ({ ...g, items: g.items.filter((i) => !selected.includes(i.id) && (usageCounts[i.id] ?? 0) > 0) }))
@@ -44,7 +48,7 @@ export function IngredientFilter({ show, selected, match, usageCounts, resultCou
             {chosen.map((i) => (
               <li key={i.id}>
                 <Link
-                  href={listHref({ show, ing: selected.filter((id) => id !== i.id), match })}
+                  href={listHref({ show, ing: selected.filter((id) => id !== i.id), match, q })}
                   scroll={false}
                   aria-label={`Remove ${i.name}`}
                   className="inline-flex items-center gap-1.5 rounded-full bg-teal-deep px-3 py-1.5 text-xs font-semibold text-white"
@@ -63,7 +67,7 @@ export function IngredientFilter({ show, selected, match, usageCounts, resultCou
             {(["all", "any"] as const).map((m) => (
               <Link
                 key={m}
-                href={listHref({ show, ing: selected, match: m })}
+                href={listHref({ show, ing: selected, match: m, q })}
                 scroll={false}
                 aria-current={match === m ? "true" : undefined}
                 className={`rounded-full px-2.5 py-1.5 font-semibold ${
@@ -77,6 +81,7 @@ export function IngredientFilter({ show, selected, match, usageCounts, resultCou
         )}
 
         <Form action="/" scroll={false} className="flex items-end gap-2">
+          {q !== "" && <input type="hidden" name="q" value={q} />}
           {show !== "all" && <input type="hidden" name="show" value={show} />}
           {selected.length > 0 && <input type="hidden" name="ing" value={selected.join(",")} />}
           {match === "any" && <input type="hidden" name="match" value="any" />}
@@ -115,11 +120,15 @@ export function IngredientFilter({ show, selected, match, usageCounts, resultCou
 
         <div className="flex min-h-5 items-center justify-between text-xs">
           {/* Always rendered so screen readers announce changes, incl. the first Add. */}
-          <p role="status" className="text-ink-soft">
-            {selected.length > 0 ? `${resultCount} ${resultCount === 1 ? "drink matches" : "drinks match"}` : ""}
-          </p>
+          {showCount ? (
+            <p role="status" className="text-ink-soft">
+              {selected.length > 0 ? `${resultCount} ${resultCount === 1 ? "drink matches" : "drinks match"}` : ""}
+            </p>
+          ) : (
+            <span />
+          )}
           {selected.length > 0 && (
-            <Link href={listHref({ show })} scroll={false} className="font-semibold text-teal underline-offset-2 hover:underline">
+            <Link href={listHref({ show, q })} scroll={false} className="font-semibold text-teal underline-offset-2 hover:underline">
               Clear ingredients
             </Link>
           )}

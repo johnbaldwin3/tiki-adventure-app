@@ -82,15 +82,62 @@ export function listHref({
   show = "all",
   ing = [],
   match = "all",
+  q = "",
 }: {
   show?: ListFilter;
   ing?: string[];
   match?: IngredientMatch;
+  q?: string;
 }): string {
   const params = new URLSearchParams();
+  if (q !== "") params.set("q", q);
   if (show !== "all") params.set("show", show);
   if (ing.length > 0) params.set("ing", ing.join(","));
   if (ing.length > 1 && match === "any") params.set("match", "any");
   const qs = params.toString().replace(/%2C/g, ",");
   return qs ? `/?${qs}` : "/";
+}
+
+// ---------------------------------------------------------------------------
+// Search (?q=mai tai)
+// ---------------------------------------------------------------------------
+
+export const SEARCH_MAX_LENGTH = 60;
+
+/** Reads ?q=: collapsed spaces, trimmed, capped at 60 characters; "" when absent or unsearchable. */
+export function parseSearch(value: string | string[] | undefined): string {
+  const v = Array.isArray(value) ? value[0] : value;
+  if (typeof v !== "string") return "";
+  const q = Array.from(v.replace(/\s+/g, " ").trim()).slice(0, SEARCH_MAX_LENGTH).join("").trim();
+  // Nothing searchable (e.g. only emoji or punctuation) counts as no search.
+  return foldForSearch(q) === "" ? "" : q;
+}
+
+/** Lowercase, accents and punctuation folded away: "Piña" -> "pina", "Mai-Tai" -> "mai tai". */
+export function foldForSearch(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/['‘’]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+/**
+ * Does a cocktail match the search? Every word must appear (as the start of
+ * a word) somewhere in its name, primary spirits or ingredients -- so
+ * "jamaican falernum" finds drinks with both, and "rum" doesn't match
+ * "drum". `haystack` is the pre-folded searchable text.
+ */
+export function matchesSearch(haystack: string, q: string): boolean {
+  const words = foldForSearch(q).split(" ").filter(Boolean);
+  if (words.length === 0) return true;
+  const padded = ` ${haystack} `;
+  return words.every((w) => padded.includes(` ${w}`));
+}
+
+/** The folded text a cocktail is searched by. */
+export function searchText(parts: { name: string; primarySpirits: string[]; ingredients: string[] }): string {
+  return foldForSearch([parts.name, ...parts.primarySpirits, ...parts.ingredients].join(" | "));
 }

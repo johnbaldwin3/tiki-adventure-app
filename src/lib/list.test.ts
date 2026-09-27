@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   filterCocktails,
+  foldForSearch,
   listHref,
+  matchesSearch,
+  parseSearch,
+  searchText,
   matchesIngredients,
   parseIngredientFilter,
   parseIngredientMatch,
@@ -96,5 +100,47 @@ describe("ingredient filter helpers", () => {
     );
     // "any" is meaningless with a single ingredient, so it's dropped.
     expect(listHref({ ing: ["navy-rum"], match: "any" })).toBe("/?ing=navy-rum");
+  });
+});
+
+describe("search", () => {
+  const zombie = searchText({
+    name: "Zombie",
+    primarySpirits: ["Jamaican Rum", "Demerara Rum"],
+    ingredients: ["Falernum liqueur", "Aged Jamaican rum (funky)", "Pernod anise"],
+  });
+  const pina = searchText({ name: "Piña Colada", primarySpirits: ["Light White Rum"], ingredients: ["Pineapple juice"] });
+  const mai = searchText({ name: "Mai-Tai (Trader Vic's)", primarySpirits: [], ingredients: [] });
+
+  it.each([
+    [zombie, "zombie", true],
+    [zombie, "ZOM", true],
+    [zombie, "jamaican falernum", true],
+    [zombie, "falernum gin", false],
+    [zombie, "rum", true],
+    [pina, "pina", true],
+    [pina, "piña colada", true],
+    [pina, "ina", false], // matches from the start of a word only
+    [mai, "mai tai", true],
+    [mai, "trader vics", true],
+    [mai, "", true],
+  ])("%s ~ %s -> %s", (hay, q, expected) => {
+    expect(matchesSearch(hay, q)).toBe(expected);
+  });
+
+  it("parses ?q= safely", () => {
+    expect(parseSearch(undefined)).toBe("");
+    expect(parseSearch(["  mai   tai ", "x"])).toBe("mai tai");
+    expect(parseSearch("a".repeat(80))).toHaveLength(60);
+    expect(parseSearch("🍹 ---")).toBe("");
+  });
+
+  it("folds accents, case and punctuation", () => {
+    expect(foldForSearch("Piña Colada")).toBe("pina colada");
+    expect(foldForSearch("Difford's")).toBe("diffords");
+  });
+
+  it("keeps the search in list links", () => {
+    expect(listHref({ q: "mai tai", show: "untasted" })).toBe("/?q=mai+tai&show=untasted");
   });
 });

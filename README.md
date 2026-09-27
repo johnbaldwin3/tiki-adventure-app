@@ -41,8 +41,16 @@ in; see below.
 - **Home (`/`)** -- progress tiles and all 100 cocktails, filterable by
   All / Tasted / Not yet and by ingredient (pick one or more; drinks using
   all of them, or any of them). Every filter state is a shareable URL, e.g.
-  `/?show=untasted&ing=aged-jamaican-rum,falernum&match=any`. Tap a drink for
-  its recipe card.
+  `/?show=untasted&ing=aged-jamaican-rum,falernum&match=any`. A search box
+  (`?q=`) matches names, spirits and ingredients: every word must start a
+  word somewhere, ignoring case, accents and punctuation ("pina", "jamaican
+  falernum", "trader vics"). "Try next" shows three suggestions. Tap a drink
+  for its recipe card.
+- **What to try next (`/next`)** -- ten drinks we haven't tried, ranked by
+  how much they share ingredients with drinks we rated above our average
+  (and below it, downwards), plus a boost for what our bar can make when
+  signed in; each says why ("Like Zombie (our 8.9): both use …"). Pure
+  logic in `src/lib/suggest.ts`.
 - **Recipe card (`/cocktails/[slug]`)** -- ingredients, glass, garnish,
   method, "Our tasting" (ratings, dates, notes), and a credit link to the
   original on Difford's Guide.
@@ -186,6 +194,7 @@ review pass:
 10. ✅ Filter by ingredient — pick ingredients on the home list (all-of / any-of), combined with Tasted / Not yet
 11. ✅ Bar cabinet — "Our bar": what we have, what we can make now, what to buy next; markers on recipe cards and ingredient pages
 12. ✅ Shopping list — shared list from recipe cards, ingredient pages and our bar; what each item completes, where to buy, "Got it" into our bar
+13. ✅ Search & "What to try next" — search box on the list, explainable suggestions on the home page and /next
 
 ## Future ideas (not yet scheduled)
 
@@ -194,5 +203,5 @@ Captured from John so they don't get lost:
 - **AI recipe import** -- an assistant (via OpenRouter) that adds a new
   recipe to our list from typed text, a photo of a recipe book/card, or a
   link to an online recipe, then lets us review it before saving
-- Smaller ideas: search box, "what should we try next?" suggestions,
-  Add to Home Screen (PWA), photos on tastings, progress over time
+- Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
+  over time

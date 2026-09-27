@@ -1,6 +1,10 @@
+import Form from "next/form";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { IngredientFilter } from "@/components/ingredient-filter";
+import { SearchBox } from "@/components/search-box";
+import { SuggestionCard } from "@/components/suggestion-card";
+import { fetchCabinet } from "@/lib/cabinet-data";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient, resolveIngredient } from "@/lib/ingredients";
 import {
@@ -8,11 +12,15 @@ import {
   LIST_FILTERS,
   listHref,
   matchesIngredients,
+  matchesSearch,
+  parseSearch,
+  searchText,
   parseIngredientFilter,
   parseIngredientMatch,
   parseListFilter,
   type ListFilter,
 } from "@/lib/list";
+import { suggestNext } from "@/lib/suggest";
 import { rankCocktails, summarizeProgress } from "@/lib/tasting";
 
 // This page reads live from Supabase on every request rather than being
@@ -29,8 +37,19 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const passwordUpdated = sp.password === "updated";
   const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
   const match = parseIngredientMatch(sp.match);
+  const q = parseSearch(sp.q);
   // The picker form submits ?add=<id>; fold it into a clean, shareable URL.
-  if (sp.add !== undefined) redirect(listHref({ show: filter, ing: ingredientIds, match }));
+  // Tidy the search too: an empty box submits ?q=, and stray spaces or an
+  // over-long query shouldn't make a second URL for the same view.
+  if (sp.add !== undefined || (sp.q !== undefined && sp.q !== q)) {
+    redirect(listHref({ show: filter, ing: ingredientIds, match, q }));
+  }
+  // Only for signed-in tasters (RLS); null otherwise. Started now, used below.
+  const cabinetPromise = fetchCabinet().catch((err) => {
+    unstable_rethrow(err);
+    console.error("home: failed to load cabinet", err);
+    return null;
+  });
 
   let records: CocktailRecord[];
   let loadError: string | null = null;
@@ -59,8 +78,21 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       new Set(r.ingredientTexts.map((t) => resolveIngredient(t)?.ingredient.id).filter((id): id is string => !!id)),
     ])
   );
-  const ingredientMatched = listed.filter((c) =>
-    matchesIngredients(idsBySlug.get(c.slug) ?? new Set(), ingredientIds, match)
+  const ingredientMatched = listed.filter(
+    (c) =>
+      matchesIngredients(idsBySlug.get(c.slug) ?? new Set(), ingredientIds, match) &&
+      (q === "" ||
+      matchesSearch(
+        searchText({
+          name: c.name,
+          primarySpirits: c.primarySpirits,
+          ingredients: [
+            ...c.ingredientTexts,
+            ...[...(idsBySlug.get(c.slug) ?? [])].map((id) => getIngredient(id)?.name ?? ""),
+          ],
+        }),
+        q
+      ))
   );
   const visible = filterCocktails(ingredientMatched, filter);
   const matchedTried = ingredientMatched.filter((c) => c.tried).length;
@@ -71,6 +103,11 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   };
   const usageCounts: Record<string, number> = {};
   for (const ids of idsBySlug.values()) for (const id of ids) usageCounts[id] = (usageCounts[id] ?? 0) + 1;
+
+  const cabinet = await cabinetPromise;
+  const tryNext = loadError
+    ? []
+    : suggestNext(listed, { have: cabinet ? new Set(cabinet.keys()) : null, limit: 3 });
 
   const kpis = [
     {
@@ -166,6 +203,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             Shopping list <span aria-hidden="true">→</span>
           </Link>
           <Link
+            href="/next"
+            className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+          >
+            What to try next <span aria-hidden="true">→</span>
+          </Link>
+          <Link
             href="/ingredients"
             className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
           >
@@ -180,6 +223,27 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </div>
       </div>
 
+      {tryNext.length > 0 && (
+        <section aria-labelledby="try-next-heading" className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <h2 id="try-next-heading" className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+              Try next
+            </h2>
+            <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
+            <Link href="/next" className="shrink-0 text-xs font-semibold text-teal underline-offset-2 hover:underline">
+              More ideas to try <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+          <ul className="flex flex-col gap-2">
+            {tryNext.map((s) => (
+              <li key={s.drink.slug}>
+                <SuggestionCard s={s} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section aria-labelledby="cocktail-list-heading" className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <h2
@@ -191,13 +255,51 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
         </div>
 
+        <Form action="/" scroll={false} role="search" className="flex items-end gap-2">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <label htmlFor="search" className="text-xs font-semibold text-ink-soft">
+              Search by name, spirit or ingredient
+            </label>
+            <SearchBox q={q} />
+          </div>
+          {/* After the search box, so the URL comes out in listHref's order (?q=…&show=…). */}
+          {filter !== "all" && <input type="hidden" name="show" value={filter} />}
+          {ingredientIds.length > 0 && <input type="hidden" name="ing" value={ingredientIds.join(",")} />}
+          {match === "any" && <input type="hidden" name="match" value="any" />}
+          <button
+            type="submit"
+            className="shrink-0 rounded-full bg-teal-deep px-4 py-2.5 text-sm font-bold text-white shadow-sm"
+          >
+            Search
+          </button>
+        </Form>
+        <div className="-mt-1 flex min-h-4 items-center justify-between text-xs">
+          {/* The one results count (search and ingredients), always rendered so screen readers announce changes. */}
+          <p role="status" className="text-ink-soft">
+            {q !== "" || ingredientIds.length > 0
+              ? `${visible.length} ${visible.length === 1 ? "drink matches" : "drinks match"}${q !== "" ? ` “${q}”` : ""}${
+                  ingredientIds.length > 0 ? (q !== "" ? " with those ingredients" : "") : ""
+                }${filter === "tasted" ? " (tasted)" : filter === "untasted" ? " (not tried yet)" : ""}`
+              : ""}
+          </p>
+          {q !== "" && (
+            <Link
+              href={listHref({ show: filter, ing: ingredientIds, match })}
+              scroll={false}
+              className="font-semibold text-teal underline-offset-2 hover:underline"
+            >
+              Clear search
+            </Link>
+          )}
+        </div>
+
         <nav aria-label="Filter cocktails" className="flex gap-2">
           {LIST_FILTERS.map((f) => {
             const active = f.value === filter;
             return (
               <Link
                 key={f.value}
-                href={listHref({ show: f.value, ing: ingredientIds, match })}
+                href={listHref({ show: f.value, ing: ingredientIds, match, q })}
                 scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={`flex-1 rounded-full px-3 py-2 text-center text-sm font-semibold shadow-sm transition-colors ${
@@ -213,6 +315,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </nav>
 
         <IngredientFilter
+          q={q}
+          showCount={false}
           show={filter}
           selected={ingredientIds}
           match={match}
@@ -228,7 +332,11 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
         {visible.length === 0 && !loadError && (
           <p className="rounded-xl bg-card p-4 text-center text-sm text-ink-soft shadow-sm">
-            {ingredientIds.length > 0
+            {q !== "" && ingredientIds.length > 0
+              ? `No drinks match “${q}” with those ingredients${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}.`
+              : q !== ""
+              ? `No drinks match “${q}”${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}.`
+              : ingredientIds.length > 0
               ? `${
                   ingredientIds.length === 1
                     ? "No drinks here use that"
