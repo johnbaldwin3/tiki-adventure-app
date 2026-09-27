@@ -26,6 +26,21 @@ export function resolveIngredient(text: string): ResolvedIngredient | null {
   return { ingredient, optional: /\(optional\)/i.test(text) };
 }
 
+/**
+ * Resolves one recipe line: an explicit catalog id (set on lines of recipes
+ * we added ourselves) wins; otherwise the exact wording is looked up.
+ */
+export function resolveLine(text: string, catalogId?: string | null): ResolvedIngredient | null {
+  const explicit = catalogId ? BY_ID.get(catalogId) : undefined;
+  if (explicit) return { ingredient: explicit, optional: /\(optional\)/i.test(text) };
+  return resolveIngredient(text);
+}
+
+/** Catalog ids of a drink's lines (index-aligned with its texts; null where unknown). */
+export function lineIds(texts: string[], ids?: (string | null | undefined)[]): (string | null)[] {
+  return texts.map((t, i) => resolveLine(t, ids?.[i])?.ingredient.id ?? null);
+}
+
 /** Catalog grouped by family, in FAMILIES order, each family sorted by name. */
 export function ingredientsByFamily(list: Ingredient[] = INGREDIENTS): { family: Family; items: Ingredient[] }[] {
   return FAMILIES.map((family) => ({
@@ -37,6 +52,8 @@ export function ingredientsByFamily(list: Ingredient[] = INGREDIENTS): { family:
 export interface CocktailIngredientLines {
   slug: string;
   ingredientTexts: string[];
+  /** Explicit catalog ids per line (our own recipes), index-aligned with ingredientTexts. */
+  ingredientIds?: (string | null)[];
 }
 
 /**
@@ -46,9 +63,7 @@ export interface CocktailIngredientLines {
 export function cocktailsByIngredient(cocktails: CocktailIngredientLines[]): Map<string, string[]> {
   const index = new Map<string, string[]>();
   for (const c of cocktails) {
-    const ids = new Set(
-      c.ingredientTexts.map((t) => resolveIngredient(t)?.ingredient.id).filter((id): id is string => !!id)
-    );
+    const ids = new Set(lineIds(c.ingredientTexts, c.ingredientIds).filter((id): id is string => !!id));
     for (const id of ids) index.set(id, [...(index.get(id) ?? []), c.slug]);
   }
   return index;

@@ -1,3 +1,4 @@
+import { byListOrder } from "./order";
 import type { CocktailRecord } from "./cocktails";
 import { rankCocktails } from "./tasting";
 
@@ -54,6 +55,8 @@ export interface DashboardStats {
   tried: number;
   total: number;
   bands: BandProgress[];
+  /** Our own recipes (not in any Difford's band); null when we haven't added any. */
+  ours: { tried: number; total: number } | null;
   jb: TasterStats;
   gm: TasterStats;
   bothRated: number;
@@ -89,7 +92,7 @@ function tasterStats(records: CocktailRecord[], pick: (r: CocktailRecord) => unk
   // Ties go to the higher Difford's-ranked cocktail so results are stable.
   const byRating = rated
     .slice()
-    .sort((a, b) => b.rating - a.rating || a.diffordsRank - b.diffordsRank);
+    .sort((a, b) => b.rating - a.rating || byListOrder(a, b));
   const strip = ({ name, slug, rating }: (typeof rated)[number]) => ({ name, slug, rating });
   const lowestRating = byRating[byRating.length - 1].rating;
   return {
@@ -117,9 +120,12 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
 
   const bands: BandProgress[] = [1, 26, 51, 76].map((from) => {
     const to = from + 24;
-    const inBand = records.filter((r) => r.diffordsRank >= from && r.diffordsRank <= to);
+    // Difford's rank bands; our own recipes (no rank) aren't in any band.
+    const inBand = records.filter((r) => r.diffordsRank !== null && r.diffordsRank >= from && r.diffordsRank <= to);
     return { label: `${from}–${to}`, tried: inBand.filter((r) => r.tried).length, total: inBand.length };
   });
+  const oursList = records.filter((r) => r.source === "ours");
+  const ours = oursList.length > 0 ? { tried: oursList.filter((r) => r.tried).length, total: oursList.length } : null;
 
   const histogram: HistogramBin[] = HISTOGRAM_BINS.map((b) => ({ ...b, jb: 0, gm: 0 }));
   // Out-of-range ratings can't happen (DB check 0-10), but skip rather than crash.
@@ -141,7 +147,7 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
   }));
   const sortedGaps = gaps
     .filter((g) => g.gap > 0)
-    .sort((a, b) => b.gap - a.gap || a.diffordsRank - b.diffordsRank);
+    .sort((a, b) => b.gap - a.gap || byListOrder(a, b));
   const disagreements = takeWithTies(sortedGaps, topN, (g) => g.gap)
     .map(({ name, slug, jb, gm, gap }) => ({ name, slug, jb, gm, gap }));
 
@@ -156,6 +162,7 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
     tried,
     total: records.length,
     bands,
+    ours,
     jb: tasterStats(records, (r) => r.jbRating),
     gm: tasterStats(records, (r) => r.gmRating),
     bothRated: both.length,

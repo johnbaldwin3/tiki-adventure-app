@@ -18,6 +18,8 @@ function make(name: string, diffordsRank: number, tried: boolean, rank: number |
     name,
     slug: name.toLowerCase(),
     diffordsRank,
+    ingredientIds: [],
+    source: "diffords",
     diffordsGuideUrl: "https://example.com",
     primarySpirits: [],
     ingredientTexts: [],

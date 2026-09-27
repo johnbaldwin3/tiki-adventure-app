@@ -17,6 +17,7 @@ import crypto from "node:crypto";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRecipeMocks } from "./mock-recipes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const seed = JSON.parse(
@@ -51,6 +52,10 @@ const cocktails = seed.map((c, i) => ({
   garnish: c.garnish ?? null,
   method_summary: c.methodSummary ?? null,
   ingredients: c.ingredients ?? [],
+  source: "diffords",
+  source_url: null,
+  source_note: null,
+  added_by: null,
 }));
 
 const tastings = [];
@@ -332,6 +337,8 @@ function project(row, select) {
   return out;
 }
 
+const handleRecipeMocks = createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, readBody, sendJson, project });
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
   const match = url.pathname.match(/^\/rest\/v1\/(\w+)$/);
@@ -364,6 +371,7 @@ const server = http.createServer((req, res) => {
     sendJson(res, 200, outbox.filter((m) => !to || m.to === to));
     return;
   }
+  if (handleRecipeMocks(req, res, url, match?.[1])) return;
   if (req.method === "POST" && url.pathname === "/rest/v1/rpc/current_taster_id") {
     const email = bearerEmail(req);
     sendJson(res, 200, email ? (accounts.get(email) ?? null) : null);
@@ -417,7 +425,8 @@ const server = http.createServer((req, res) => {
   const order = url.searchParams.get("order");
   if (order) {
     const [col, dir] = order.split(".");
-    result.sort((a, b) => (a[col] < b[col] ? -1 : a[col] > b[col] ? 1 : 0) * (dir === "desc" ? -1 : 1));
+    const key = (r) => (r[col] === null || r[col] === undefined ? Infinity : r[col]);
+    result.sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0) * (dir === "desc" ? -1 : 1));
   }
   const body = result.map((r) => project(r, url.searchParams.get("select")));
   res.writeHead(200, { "content-type": "application/json" });

@@ -12,7 +12,7 @@ interface Props {
   show: ListFilter;
   selected: string[];
   match: IngredientMatch;
-  /** Drinks (of all 100) using each ingredient id, shown in the picker. */
+  /** Drinks (of the whole list) using each ingredient id, shown in the picker. */
   usageCounts: Record<string, number>;
   resultCount: number;
 }
@@ -133,7 +133,7 @@ export function IngredientFilter({ q = "", showCount = true, show, selected, mat
             </Link>
           )}
         </div>
-        <p className="text-[11px] text-ink-faint">Numbers show how many of the 100 drinks use each ingredient.</p>
+        <p className="text-[11px] text-ink-faint">Numbers show how many drinks on the list use each ingredient.</p>
       </div>
     </details>
   );

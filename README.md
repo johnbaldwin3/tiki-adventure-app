@@ -88,6 +88,22 @@ in; see below.
   ticking it in our bar also takes it off the list. Stored in
   `shopping_items` (migration 0007; RLS: tasters only, `added_by` must be
   you). Pure logic in `src/lib/shopping.ts`.
+- **Our own recipes (`/cocktails/new`, tasters only)** -- add drinks beyond
+  the Top 100; they're mixed into the list (after the 100, marked ★ "Our
+  recipe"), searchable, rateable, and understood by our bar, the shopping
+  list and the ingredient filter. The **recipe helper** reads a photo of a
+  book page or card, a web link, or pasted text with an AI model via
+  OpenRouter (`TIKI_OPEN_ROUTER_API_KEY`, server-only; model
+  `google/gemini-3.8-flash`, override with `TIKI_OPENROUTER_MODEL`), and
+  fills in a form you check and fix before saving -- nothing is saved
+  without review. It keeps the source's amounts, paraphrases the method,
+  suggests a catalog style per ingredient, and lists what it wasn't sure
+  of. Links are fetched server-side with SSRF protection
+  (`src/lib/server/net-guard.ts`: public addresses only, checked at
+  connect time; ports 80/443; ≤3 redirects; 2 MB; one 50 s deadline).
+  Either taster can edit one of our recipes; only the taster who added it
+  can delete it (which also removes both tasters' ratings for it). The
+  verified Top 100 stay read-only (migration 0008: RLS + column grants).
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -132,7 +148,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0007` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0008` in order (Supabase SQL editor
    or `supabase db push`).
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
@@ -195,13 +211,11 @@ review pass:
 11. ✅ Bar cabinet — "Our bar": what we have, what we can make now, what to buy next; markers on recipe cards and ingredient pages
 12. ✅ Shopping list — shared list from recipe cards, ingredient pages and our bar; what each item completes, where to buy, "Got it" into our bar
 13. ✅ Search & "What to try next" — search box on the list, explainable suggestions on the home page and /next
+14. ✅ Our own recipes + AI recipe helper — add from a photo, link or text (reviewed before saving), mixed into the list; edit/delete
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **AI recipe import** -- an assistant (via OpenRouter) that adds a new
-  recipe to our list from typed text, a photo of a recipe book/card, or a
-  link to an online recipe, then lets us review it before saving
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time

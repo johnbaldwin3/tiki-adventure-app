@@ -5,13 +5,15 @@ import { cache } from "react";
 import {
   fetchCocktailBySlug,
   fetchCocktailRecords,
+  type CocktailDetail,
   type TasterEntry,
 } from "@/lib/cocktails";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { drinkAvailability } from "@/lib/cabinet";
 import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
+import { FocusMessage } from "@/components/focus-message";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
-import { getIngredient, resolveIngredient } from "@/lib/ingredients";
+import { getIngredient, resolveLine } from "@/lib/ingredients";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
@@ -53,8 +55,8 @@ function formatDate(iso: string): string {
 }
 
 /** Recipe wording, linked to its ingredient page (style, brands to buy, other drinks). */
-function IngredientText({ text }: { text: string }) {
-  const resolved = resolveIngredient(text);
+function IngredientText({ text, catalogId }: { text: string; catalogId: string | null }) {
+  const resolved = resolveLine(text, catalogId);
   if (!resolved) return <span className="text-ink">{text}</span>;
   return (
     <Link
@@ -64,6 +66,47 @@ function IngredientText({ text }: { text: string }) {
     >
       {text}
     </Link>
+  );
+}
+
+/** Where one of our recipes came from, plus edit/delete for tasters. */
+function OurRecipeFooter({ cocktail, canEdit }: { cocktail: CocktailDetail; canEdit: boolean }) {
+  let host: string | null = null;
+  try {
+    host = cocktail.sourceUrl ? new URL(cocktail.sourceUrl).hostname.replace(/^www\./, "") : null;
+  } catch {
+    host = null;
+  }
+  return (
+    <div className="flex flex-col items-center gap-2 pt-2 text-center text-xs text-ink-faint">
+      <p>
+        Added by us{cocktail.sourceNote ? ` — from ${cocktail.sourceNote}` : ""}
+        {host && cocktail.sourceUrl && (
+          <>
+            {cocktail.sourceNote ? " (" : " — from "}
+            <a
+              href={cocktail.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="font-semibold text-teal underline underline-offset-2"
+            >
+              {host}
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            {cocktail.sourceNote ? ")" : ""}
+          </>
+        )}
+        .
+      </p>
+      {canEdit && (
+        <Link
+          href={`/cocktails/${cocktail.slug}/edit`}
+          className="rounded-full border border-teal/30 bg-card px-3 py-1.5 font-semibold text-teal-deep"
+        >
+          Edit or delete this recipe
+        </Link>
+      )}
+    </div>
   );
 }
 
@@ -129,7 +172,7 @@ function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: stri
 
 export default async function CocktailPage({ params, searchParams }: PageProps<"/cocktails/[slug]">) {
   const { slug } = await params;
-  const { shopping } = await searchParams;
+  const { shopping, recipe } = await searchParams;
   // Junk/bot URLs 404 without touching the database.
   if (!SLUG_PATTERN.test(slug)) notFound();
 
@@ -179,7 +222,12 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
   // Only for signed-in tasters (RLS); null otherwise.
   const availability = cabinet
     ? drinkAvailability(
-        { ...cocktail, tried: false, ingredientTexts: cocktail.ingredients.map((i) => i.ingredient) },
+        {
+          ...cocktail,
+          tried: false,
+          ingredientTexts: cocktail.ingredients.map((i) => i.ingredient),
+          ingredientIds: cocktail.ingredients.map((i) => i.catalogId),
+        },
         new Set(cabinet.keys())
       )
     : null;
@@ -199,6 +247,12 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
       <BackLink />
 
+      {(recipe === "added" || recipe === "saved") && (
+        <FocusMessage role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
+          {recipe === "added" ? "Recipe added to our list." : "Recipe saved."}
+        </FocusMessage>
+      )}
+
       <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         <span
           aria-hidden="true"
@@ -207,7 +261,9 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           🍹
         </span>
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-          Difford&apos;s Top 100 · #{cocktail.diffordsRank}
+          {cocktail.source === "ours"
+            ? `Our recipe${cocktail.addedBy ? ` · added by ${cocktail.addedBy}` : ""}`
+            : `Difford's Top 100 · #${cocktail.diffordsRank}`}
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{cocktail.name}</h1>
         {cocktail.primarySpirits.length > 0 && (
@@ -246,7 +302,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
                 <span className="min-w-20 shrink-0 whitespace-nowrap font-bold text-teal-deep">
                   {[ing.amount, ing.unit].filter(Boolean).join(" ")}
                 </span>
-                <IngredientText text={ing.ingredient} />
+                <IngredientText text={ing.ingredient} catalogId={ing.catalogId} />
               </li>
             ))}
           </ul>
@@ -387,18 +443,22 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         )}
       </section>
 
-      <p className="pt-2 text-center text-xs text-ink-faint">
-        Recipe adapted from Difford&apos;s Guide —{" "}
-        <a
-          href={cocktail.diffordsGuideUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-teal underline underline-offset-2"
-        >
-          see the original recipe<span className="sr-only"> (opens in a new tab)</span>
-        </a>
-        .
-      </p>
+      {cocktail.source === "ours" ? (
+        <OurRecipeFooter cocktail={cocktail} canEdit={!!user?.taster} />
+      ) : (
+        <p className="pt-2 text-center text-xs text-ink-faint">
+          Recipe adapted from Difford&apos;s Guide —{" "}
+          <a
+            href={cocktail.diffordsGuideUrl ?? "https://www.diffordsguide.com/"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-teal underline underline-offset-2"
+          >
+            see the original recipe<span className="sr-only"> (opens in a new tab)</span>
+          </a>
+          .
+        </p>
+      )}
     </main>
   );
 }

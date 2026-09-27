@@ -12,7 +12,7 @@ export default async function IngredientsPage() {
   let usage: Map<string, string[]> | null = null;
   try {
     const records = await fetchCocktailRecords();
-    usage = cocktailsByIngredient(records.map((r) => ({ slug: r.slug, ingredientTexts: r.ingredientTexts })));
+    usage = cocktailsByIngredient(records.map((r) => ({ slug: r.slug, ingredientTexts: r.ingredientTexts, ingredientIds: r.ingredientIds })));
   } catch (err) {
     console.error("ingredients: failed to load usage counts", err);
   }
@@ -34,7 +34,7 @@ export default async function IngredientsPage() {
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Adventures in Tiki</p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">Ingredients</h1>
         <p className="relative mt-2 max-w-xs text-sm text-white/90">
-          Every ingredient in the Top 100, by style, with example bottles to look for.
+          Every ingredient on our list, by style, with example bottles to look for.
         </p>
       </header>
 

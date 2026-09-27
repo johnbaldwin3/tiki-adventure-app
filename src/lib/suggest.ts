@@ -1,4 +1,5 @@
 import { drinkAvailability, requiredIngredientIds, type CabinetDrink } from "./cabinet";
+import { byListOrder } from "./order";
 
 /**
  * "What should we try next?" -- a simple, explainable ranking of the drinks
@@ -11,7 +12,7 @@ import { drinkAvailability, requiredIngredientIds, type CabinetDrink } from "./c
  *     there's little overlap, so it's in "rating points above our average".
  *  2. Convenience (signed in only): a bonus if our bar has everything, a
  *     smaller one if it's one ingredient away.
- *  3. Ties go to Difford's rank.
+ *  3. Ties go to list order (Difford's rank, then our own recipes by name).
  */
 
 export interface SuggestDrink extends CabinetDrink {
@@ -41,7 +42,7 @@ export function suggestNext<D extends SuggestDrink>(
   drinks: D[],
   { have = null, limit = 10 }: { have?: Set<string> | null; limit?: number } = {}
 ): Suggestion<D>[] {
-  const ids = new Map(drinks.map((d) => [d.slug, requiredIngredientIds(d.ingredientTexts)]));
+  const ids = new Map(drinks.map((d) => [d.slug, requiredIngredientIds(d.ingredientTexts, d.ingredientIds)]));
   const rated = drinks.filter((d) => d.tried && d.avgRating !== null);
   const mean = rated.length > 0 ? rated.reduce((sum, d) => sum + d.avgRating!, 0) / rated.length : 0;
 
@@ -78,5 +79,5 @@ export function suggestNext<D extends SuggestDrink>(
       missing,
     });
   }
-  return out.sort((a, b) => b.score - a.score || a.drink.diffordsRank - b.drink.diffordsRank).slice(0, limit);
+  return out.sort((a, b) => b.score - a.score || byListOrder(a.drink, b.drink)).slice(0, limit);
 }

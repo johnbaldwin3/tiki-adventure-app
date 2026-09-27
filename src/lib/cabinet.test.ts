@@ -68,7 +68,7 @@ describe("summarizeCabinet", () => {
     const all = new Set(drinks.flatMap((d) => [...requiredIngredientIds(d.ingredientTexts)]));
     const s = summarizeCabinet(drinks, all);
     expect(s.ready).toHaveLength(100);
-    expect(s.ready.map((d) => d.diffordsRank)).toEqual([...s.ready.map((d) => d.diffordsRank)].sort((a, b) => a - b));
+    expect(s.ready.map((d) => d.diffordsRank)).toEqual([...s.ready.map((d) => d.diffordsRank)].sort((a, b) => a! - b!));
     expect(s.oneAway).toEqual([]);
   });
 });

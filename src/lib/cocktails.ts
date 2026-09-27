@@ -1,23 +1,36 @@
+import { byListOrder } from "./order";
 import { supabase } from "./supabase";
 import type { TastingRecord } from "./tasting";
+
+export type CocktailSource = "diffords" | "ours";
 
 export interface CocktailRecord extends TastingRecord {
   slug: string;
   /** Each recipe line's ingredient wording, in pour order (see src/data/ingredients.ts). */
   ingredientTexts: string[];
-  diffordsRank: number;
+  /** Explicit catalog ids per line (set on our own recipes), index-aligned with ingredientTexts. */
+  ingredientIds: (string | null)[];
+  /** Difford's Top 100 rank; null for recipes we added ourselves. */
+  diffordsRank: number | null;
   primarySpirits: string[];
-  diffordsGuideUrl: string;
+  diffordsGuideUrl: string | null;
+  source: CocktailSource;
 }
 
 interface RawCocktailRow {
   id: string;
   name: string;
   slug: string;
-  diffords_rank: number;
-  diffords_guide_url: string;
+  diffords_rank: number | null;
+  diffords_guide_url: string | null;
   primary_spirits: string[] | null;
   ingredients?: unknown;
+  source?: string | null;
+}
+
+function toSource(value: unknown, diffordsRank: number | null): CocktailSource {
+  if (value === "ours" || value === "diffords") return value;
+  return diffordsRank === null ? "ours" : "diffords";
 }
 
 interface RawTastingRow {
@@ -74,16 +87,19 @@ export function mapRowsToCocktailRecords(
 
   return cocktailRows
     .slice()
-    .sort((a, b) => a.diffords_rank - b.diffords_rank)
+    .sort((a, b) => byListOrder({ diffordsRank: a.diffords_rank, name: a.name }, { diffordsRank: b.diffords_rank, name: b.name }))
     .map((c) => {
       const t = tastingsByCocktail.get(c.id);
+      const lines = parseIngredients(c.ingredients);
       return {
         name: c.name,
         slug: c.slug,
         diffordsRank: c.diffords_rank,
         diffordsGuideUrl: c.diffords_guide_url,
         primarySpirits: c.primary_spirits ?? [],
-        ingredientTexts: parseIngredients(c.ingredients).map((i) => i.ingredient),
+        ingredientTexts: lines.map((i) => i.ingredient),
+        ingredientIds: lines.map((i) => i.catalogId),
+        source: toSource(c.source, c.diffords_rank),
         tried: t?.tried ?? false,
         jbRating: t?.jbRating ?? null,
         gmRating: t?.gmRating ?? null,
@@ -103,8 +119,8 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
   ] = await Promise.all([
     supabase
       .from("cocktails")
-      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients")
-      .order("diffords_rank", { ascending: true }),
+      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source")
+      .order("diffords_rank", { ascending: true, nullsFirst: false }),
     supabase.from("tastings").select("cocktail_id, rating, tried, tasters(initials)"),
   ]);
 
@@ -129,6 +145,8 @@ export interface Ingredient {
   amount: string;
   unit: string;
   ingredient: string;
+  /** Catalog style id, set on lines of our own recipes (null otherwise). */
+  catalogId: string | null;
 }
 
 export interface TasterEntry {
@@ -141,10 +159,17 @@ export interface TasterEntry {
 }
 
 export interface CocktailDetail {
+  id: string;
   name: string;
   slug: string;
-  diffordsRank: number;
-  diffordsGuideUrl: string;
+  source: CocktailSource;
+  diffordsRank: number | null;
+  diffordsGuideUrl: string | null;
+  /** Where one of our recipes came from. */
+  sourceUrl: string | null;
+  sourceNote: string | null;
+  /** Initials of the taster who added it (our recipes). */
+  addedBy: string | null;
   primarySpirits: string[];
   glass: string | null;
   garnish: string | null;
@@ -155,6 +180,9 @@ export interface CocktailDetail {
 }
 
 export interface RawCocktailDetailRow extends RawCocktailRow {
+  source_url?: string | null;
+  source_note?: string | null;
+  added_by?: string | null;
   glass: string | null;
   garnish: string | null;
   method_summary: string | null;
@@ -201,6 +229,7 @@ export function parseIngredients(value: unknown): Ingredient[] {
         typeof v.amount === "string" ? v.amount : typeof v.amount === "number" ? String(v.amount) : "",
       unit: typeof v.unit === "string" ? v.unit : "",
       ingredient: v.ingredient as string,
+      catalogId: typeof v.catalog_id === "string" && v.catalog_id !== "" ? v.catalog_id : null,
     }));
 }
 
@@ -240,10 +269,15 @@ export function mapRowsToCocktailDetail(
     });
 
   return {
+    id: cocktailRow.id,
     name: cocktailRow.name,
     slug: cocktailRow.slug,
+    source: toSource(cocktailRow.source, cocktailRow.diffords_rank),
     diffordsRank: cocktailRow.diffords_rank,
     diffordsGuideUrl: cocktailRow.diffords_guide_url,
+    sourceUrl: cocktailRow.source_url ?? null,
+    sourceNote: cocktailRow.source_note ?? null,
+    addedBy: tasterRows.find((t) => t.id === cocktailRow.added_by)?.initials ?? null,
     primarySpirits: cocktailRow.primary_spirits ?? [],
     glass: cocktailRow.glass,
     garnish: cocktailRow.garnish,
@@ -263,7 +297,7 @@ export async function fetchCocktailBySlug(slug: string): Promise<CocktailDetail 
       supabase
         .from("cocktails")
         .select(
-          "id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, glass, garnish, method_summary, ingredients"
+          "id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, glass, garnish, method_summary, ingredients, source, source_url, source_note, added_by"
         )
         .eq("slug", slug)
         .maybeSingle(),

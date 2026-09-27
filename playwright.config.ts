@@ -16,7 +16,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: /db-down\.spec\.ts/,
+      testIgnore: /(db-down|recipes)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
@@ -25,7 +25,19 @@ export default defineConfig({
     // Chromium-based mobile viewport (avoids requiring a separate WebKit install).
     {
       name: "mobile-chrome",
-      testIgnore: /db-down\.spec\.ts/,
+      testIgnore: /(db-down|recipes)\.spec\.ts/,
+      use: {
+        ...devices["Pixel 7"],
+        launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+      },
+    },
+    // Adds, edits and deletes our own recipes, which changes the list every
+    // other spec counts on -- so it runs on its own, after them.
+    {
+      name: "recipes",
+      testMatch: /recipes\.spec\.ts/,
+      dependencies: ["chromium", "mobile-chrome"],
+      fullyParallel: false,
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
@@ -36,7 +48,7 @@ export default defineConfig({
     {
       name: "db-down",
       testMatch: /db-down\.spec\.ts/,
-      dependencies: ["chromium", "mobile-chrome"],
+      dependencies: ["recipes"],
       fullyParallel: false,
       use: {
         ...devices["Pixel 7"],
@@ -65,6 +77,11 @@ export default defineConfig({
         NEXT_DIST_DIR: ".next-e2e",
         NEXT_PUBLIC_SUPABASE_URL: MOCK_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "e2e-mock-anon-key",
+        // The AI recipe helper talks to the mock's OpenRouter stand-in, and
+        // may fetch the mock's recipe page on 127.0.0.1.
+        TIKI_OPEN_ROUTER_API_KEY: "e2e-openrouter-key",
+        OPENROUTER_BASE_URL: `${MOCK_SUPABASE_URL}/__openrouter`,
+        IMPORT_ALLOW_PRIVATE_HOSTS: "1",
       },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,

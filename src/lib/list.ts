@@ -1,4 +1,5 @@
 import type { CocktailRecord } from "./cocktails";
+import { byListOrder } from "./order";
 import type { RankedTastingRecord } from "./tasting";
 
 export type ListFilter = "all" | "tasted" | "untasted";
@@ -25,10 +26,10 @@ export type ListedCocktail = CocktailRecord & Pick<RankedTastingRecord, "avgRati
  *  - "tasted": only tried cocktails, best-rated first (our rank), with
  *    tried-but-unrated ones after, in Difford's order
  *  - "untasted": only untried cocktails, in Difford's order
- *  - "all": all 100, in Difford's order
+ *  - "all": everything, in list order (Difford's rank, then our recipes)
  */
 export function filterCocktails(records: ListedCocktail[], filter: ListFilter): ListedCocktail[] {
-  const byDiffords = (a: ListedCocktail, b: ListedCocktail) => a.diffordsRank - b.diffordsRank;
+  const byDiffords = byListOrder;
 
   if (filter === "untasted") {
     return records.filter((r) => !r.tried).sort(byDiffords);

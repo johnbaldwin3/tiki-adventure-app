@@ -4,8 +4,9 @@ import { notFound, unstable_rethrow } from "next/navigation";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
-import { aliasesFor, getIngredient, resolveIngredient } from "@/lib/ingredients";
+import { aliasesFor, getIngredient, resolveLine } from "@/lib/ingredients";
 import { listHref } from "@/lib/list";
+import { byListOrder } from "@/lib/order";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
 import { rankCocktails } from "@/lib/tasting";
 
@@ -50,13 +51,15 @@ export default async function IngredientPage({ params, searchParams }: PageProps
     const avgByName = new Map(rankCocktails(records).map((r) => [r.name, r.avgRating]));
     drinks = records
       .map((r) => {
-        const lines = r.ingredientTexts.map(resolveIngredient).filter((x) => x?.ingredient.id === id);
+        const lines = r.ingredientTexts
+          .map((t, i) => resolveLine(t, r.ingredientIds[i]))
+          .filter((x) => x?.ingredient.id === id);
         return lines.length === 0
           ? null
           : { ...r, avgRating: avgByName.get(r.name) ?? null, optionalOnly: lines.every((l) => l!.optional) };
       })
       .filter((d): d is NonNullable<typeof d> => d !== null)
-      .sort((a, b) => a.diffordsRank - b.diffordsRank);
+      .sort(byListOrder);
   } catch (err) {
     console.error("ingredient page: failed to load drinks", id, err);
   }
@@ -175,8 +178,17 @@ export default async function IngredientPage({ params, searchParams }: PageProps
                   className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm hover:shadow-md"
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-teal/30 bg-sand text-xs font-bold text-teal-deep">
-                    <span className="sr-only">Difford&apos;s rank </span>
-                    {d.diffordsRank}
+                    {d.diffordsRank !== null ? (
+                      <>
+                        <span className="sr-only">Difford&apos;s rank </span>
+                        {d.diffordsRank}
+                      </>
+                    ) : (
+                      <>
+                        <span aria-hidden="true">★</span>
+                        <span className="sr-only">Our recipe</span>
+                      </>
+                    )}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="text-sm font-semibold text-ink">{d.name}</span>

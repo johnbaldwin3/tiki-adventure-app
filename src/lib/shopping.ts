@@ -1,4 +1,5 @@
 import { drinkAvailability, type CabinetDrink } from "./cabinet";
+import { byListOrder } from "./order";
 import { safeNextPath } from "./auth/validate";
 import { getIngredient } from "./ingredients";
 
@@ -25,7 +26,7 @@ export interface ShoppingSummary<D extends CabinetDrink = CabinetDrink> {
 }
 
 const byTriedThenRank = <D extends CabinetDrink>(a: D, b: D) =>
-  Number(a.tried) - Number(b.tried) || a.diffordsRank - b.diffordsRank;
+  Number(a.tried) - Number(b.tried) || byListOrder(a, b);
 
 /**
  * The list's items are the ids in `list` the catalog knows, minus staples

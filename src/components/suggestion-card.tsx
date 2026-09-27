@@ -21,7 +21,9 @@ export function suggestionReasons(s: Suggestion<SuggestDrink>): string[] {
   if (s.like && s.like.shared.length > 0) {
     reasons.push(`Like ${s.like.drink.name} (our ${s.like.drink.avgRating}): both use ${joinNames(s.like.shared)}`);
   }
-  if (reasons.length === 0) reasons.push(`#${s.drink.diffordsRank} on Difford's list`);
+  if (reasons.length === 0) {
+    reasons.push(s.drink.diffordsRank !== null ? `#${s.drink.diffordsRank} on Difford's list` : "One of our own recipes");
+  }
   return reasons;
 }
 

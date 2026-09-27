@@ -187,10 +187,15 @@ describe("parseIngredients", () => {
         { amount: { bad: true }, unit: "fl oz", ingredient: "Lime juice" },
       ])
     ).toEqual([
-      { amount: "1 1/2", unit: "fl oz", ingredient: "Rum" },
-      { amount: "2", unit: "dash", ingredient: "Bitters" },
-      { amount: "", unit: "", ingredient: "Mint sprig" },
-      { amount: "", unit: "fl oz", ingredient: "Lime juice" },
+      { amount: "1 1/2", unit: "fl oz", ingredient: "Rum", catalogId: null },
+      { amount: "2", unit: "dash", ingredient: "Bitters", catalogId: null },
+      { amount: "", unit: "", ingredient: "Mint sprig", catalogId: null },
+      { amount: "", unit: "fl oz", ingredient: "Lime juice", catalogId: null },
+    ]);
+  });
+  it("keeps a catalog id on our own recipes' lines", () => {
+    expect(parseIngredients([{ amount: "2", unit: "fl oz", ingredient: "House rum", catalog_id: "navy-rum" }])).toEqual([
+      { amount: "2", unit: "fl oz", ingredient: "House rum", catalogId: "navy-rum" },
     ]);
   });
   it("returns [] for a non-array value", () => {
@@ -247,5 +252,30 @@ describe("mapRowsToCocktailDetail", () => {
     const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, []);
     expect(detail.tasters).toHaveLength(2);
     expect(detail.tasters.every((t) => !t.tried && t.rating === null && t.notes === null)).toBe(true);
+  });
+});
+
+describe("our own recipes", () => {
+  it("sorts them after the Top 100 by name and keeps their catalog ids", () => {
+    const records = mapRowsToCocktailRecords(
+      [
+        { id: "o2", name: "Zeta", slug: "zeta", diffords_rank: null, diffords_guide_url: null, primary_spirits: [], ingredients: [], source: "ours" },
+        {
+          id: "o1",
+          name: "Alpha",
+          slug: "alpha",
+          diffords_rank: null,
+          diffords_guide_url: null,
+          primary_spirits: [],
+          ingredients: [{ amount: "1", unit: "oz", ingredient: "House rum", catalog_id: "navy-rum" }],
+          source: "ours",
+        },
+        { id: "d1", name: "Mai Tai", slug: "mai-tai", diffords_rank: 2, diffords_guide_url: "https://x", primary_spirits: [], ingredients: [] },
+      ],
+      []
+    );
+    expect(records.map((r) => r.name)).toEqual(["Mai Tai", "Alpha", "Zeta"]);
+    expect(records[0].source).toBe("diffords");
+    expect(records[1]).toMatchObject({ source: "ours", diffordsRank: null, ingredientIds: ["navy-rum"] });
   });
 });

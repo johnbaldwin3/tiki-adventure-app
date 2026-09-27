@@ -6,7 +6,7 @@ import { SearchBox } from "@/components/search-box";
 import { SuggestionCard } from "@/components/suggestion-card";
 import { fetchCabinet } from "@/lib/cabinet-data";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
-import { getIngredient, resolveIngredient } from "@/lib/ingredients";
+import { getIngredient, lineIds } from "@/lib/ingredients";
 import {
   filterCocktails,
   LIST_FILTERS,
@@ -35,6 +35,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const sp = await searchParams;
   const filter = parseListFilter(sp.show);
   const passwordUpdated = sp.password === "updated";
+  const recipeDeleted = sp.recipe === "deleted";
   const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
   const match = parseIngredientMatch(sp.match);
   const q = parseSearch(sp.q);
@@ -75,7 +76,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const idsBySlug = new Map(
     records.map((r) => [
       r.slug,
-      new Set(r.ingredientTexts.map((t) => resolveIngredient(t)?.ingredient.id).filter((id): id is string => !!id)),
+      new Set(lineIds(r.ingredientTexts, r.ingredientIds).filter((id): id is string => !!id)),
     ])
   );
   const ingredientMatched = listed.filter(
@@ -150,6 +151,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           canon.
         </p>
       </header>
+
+      {recipeDeleted && (
+        <p role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
+          The recipe was deleted.
+        </p>
+      )}
 
       {passwordUpdated && (
         <p role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
@@ -250,9 +257,18 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             id="cocktail-list-heading"
             className="text-sm font-bold uppercase tracking-wide text-ink-soft"
           >
-            The Top 100
+            {records.some((r) => r.source === "ours") ? "The Top 100 + our recipes" : "The Top 100"}
           </h2>
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
+          {/* Only tasters can add; the cabinet loads only for them. */}
+          {cabinet && (
+            <Link
+              href="/cocktails/new"
+              className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline"
+            >
+              + Add a recipe
+            </Link>
+          )}
         </div>
 
         <Form action="/" scroll={false} role="search" className="flex items-end gap-2">
@@ -356,12 +372,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             // rank on the Tasted view (sorted by rating), Difford's rank
             // everywhere else (sorted by Difford's list).
             const showOurRank = filter === "tasted";
-            const circle = showOurRank ? (c.rank ?? "–") : c.diffordsRank;
+            const circle = showOurRank ? (c.rank ?? "–") : (c.diffordsRank ?? "★");
             const circleLabel = showOurRank
               ? c.rank
                 ? `Our rank ${c.rank}`
                 : "Not yet rated"
-              : `Difford's rank ${c.diffordsRank}`;
+              : c.diffordsRank !== null
+                ? `Difford's rank ${c.diffordsRank}`
+                : "Our recipe";
             return (
               <li key={c.slug}>
                 <Link

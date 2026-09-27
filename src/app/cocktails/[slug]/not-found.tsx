@@ -6,7 +6,7 @@ export default function CocktailNotFound() {
       <p aria-hidden="true" className="text-5xl">🏝️</p>
       <h1 className="text-2xl font-extrabold text-teal-deep">Cocktail not found</h1>
       <p className="text-sm text-ink-soft">
-        That drink isn&apos;t on the Top 100 list. It may have been renamed, or the link is mistyped.
+        That drink isn&apos;t on our list. It may have been renamed, or the link is mistyped.
       </p>
       <Link
         href="/"

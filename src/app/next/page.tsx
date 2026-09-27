@@ -90,7 +90,7 @@ export default async function NextPage() {
             When we&apos;re signed in, drinks our bar can make now get a boost (fresh citrus, water, soda, salt and
             Angostura are assumed on hand), and ones a single ingredient away a smaller one.
           </li>
-          <li>Otherwise, Difford&apos;s ranking breaks ties.</li>
+          <li>Otherwise, Difford&apos;s ranking breaks ties (our own recipes come after the Top 100).</li>
         </ul>
       </details>
     </PageShell>

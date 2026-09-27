@@ -1,4 +1,5 @@
-import { getIngredient, resolveIngredient } from "./ingredients";
+import { getIngredient, resolveLine } from "./ingredients";
+import { byListOrder } from "./order";
 
 /**
  * Pure "what can we make?" logic for the bar cabinet.
@@ -12,15 +13,18 @@ import { getIngredient, resolveIngredient } from "./ingredients";
 export interface CabinetDrink {
   slug: string;
   name: string;
-  diffordsRank: number;
+  /** Difford's Top 100 rank; null for recipes we added ourselves. */
+  diffordsRank: number | null;
   tried: boolean;
   ingredientTexts: string[];
+  /** Explicit catalog ids per line (our own recipes), index-aligned with ingredientTexts. */
+  ingredientIds?: (string | null)[];
 }
 
-export function requiredIngredientIds(ingredientTexts: string[]): Set<string> {
+export function requiredIngredientIds(ingredientTexts: string[], ingredientIds?: (string | null)[]): Set<string> {
   const required = new Set<string>();
-  for (const text of ingredientTexts) {
-    const r = resolveIngredient(text);
+  for (const [i, text] of ingredientTexts.entries()) {
+    const r = resolveLine(text, ingredientIds?.[i]);
     if (!r || r.optional || r.ingredient.staple) continue;
     required.add(r.ingredient.id);
   }
@@ -32,8 +36,8 @@ export function requiredIngredientIds(ingredientTexts: string[]): Set<string> {
  * in the database after the catalog was written). We can't tell whether
  * they're on the shelf, so a drink with any is never shown as ready.
  */
-export function unrecognisedLines(ingredientTexts: string[]): string[] {
-  return ingredientTexts.filter((t) => !resolveIngredient(t) && !/\(optional\)/i.test(t));
+export function unrecognisedLines(ingredientTexts: string[], ingredientIds?: (string | null)[]): string[] {
+  return ingredientTexts.filter((t, i) => !resolveLine(t, ingredientIds?.[i]) && !/\(optional\)/i.test(t));
 }
 
 export interface DrinkAvailability<D extends CabinetDrink = CabinetDrink> {
@@ -44,8 +48,8 @@ export interface DrinkAvailability<D extends CabinetDrink = CabinetDrink> {
 }
 
 export function drinkAvailability<D extends CabinetDrink>(drink: D, have: Set<string>): DrinkAvailability<D> {
-  const missing = [...requiredIngredientIds(drink.ingredientTexts)].filter((id) => !have.has(id));
-  return { drink, missing, unknown: unrecognisedLines(drink.ingredientTexts) };
+  const missing = [...requiredIngredientIds(drink.ingredientTexts, drink.ingredientIds)].filter((id) => !have.has(id));
+  return { drink, missing, unknown: unrecognisedLines(drink.ingredientTexts, drink.ingredientIds) };
 }
 
 export interface CabinetSummary<D extends CabinetDrink = CabinetDrink> {
@@ -61,7 +65,7 @@ export interface CabinetSummary<D extends CabinetDrink = CabinetDrink> {
 }
 
 export function summarizeCabinet<D extends CabinetDrink>(drinks: D[], have: Set<string>): CabinetSummary<D> {
-  const byRank = (a: D, b: D) => a.diffordsRank - b.diffordsRank;
+  const byRank = byListOrder;
   const ready: D[] = [];
   const oneAway: { drink: D; missingId: string }[] = [];
   for (const d of drinks) {

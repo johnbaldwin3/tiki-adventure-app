@@ -13,6 +13,8 @@ function rec(
     name,
     slug: `drink-${diffordsRank}`,
     diffordsRank,
+    ingredientIds: [],
+    source: "diffords",
     diffordsGuideUrl: "https://example.com",
     primarySpirits: [],
     ingredientTexts: [],

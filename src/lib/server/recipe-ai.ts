@@ -1,0 +1,210 @@
+import "server-only";
+import http from "node:http";
+import https from "node:https";
+import {
+  draftFromModel,
+  pageText,
+  RECIPE_JSON_SCHEMA,
+  recipeJsonLd,
+  SYSTEM_PROMPT,
+  userPrompt,
+  type ImportKind,
+  type ImportResult,
+} from "../recipe-import";
+import { makeSafeLookup } from "./net-guard";
+
+/**
+ * Server-side half of the AI recipe import: calls OpenRouter, and fetches
+ * recipe web pages safely. The API key never leaves the server.
+ *
+ * Env: TIKI_OPEN_ROUTER_API_KEY (required), TIKI_OPENROUTER_MODEL
+ * (optional, default below), OPENROUTER_BASE_URL (tests point it at the
+ * mock), IMPORT_ALLOW_PRIVATE_HOSTS=1 (tests only: lets the mock's page
+ * on 127.0.0.1 be fetched).
+ */
+
+export const DEFAULT_MODEL = "google/gemini-3.8-flash";
+const MAX_PAGE_BYTES = 2_000_000;
+/** The whole import (page fetch + model) must finish inside the route's 60s maxDuration. */
+const DEADLINE_MS = 50_000;
+/** Only the first part of a page is read (keeps parsing fast on huge pages). */
+const MAX_HTML_CHARS = 300_000;
+
+export class ImportError extends Error {
+  constructor(
+    message: string,
+    /** Safe to show the user. */
+    readonly userMessage: string
+  ) {
+    super(message);
+  }
+}
+
+type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
+
+async function callModel(parts: ContentPart[], signal: AbortSignal): Promise<unknown> {
+  const key = process.env.TIKI_OPEN_ROUTER_API_KEY;
+  if (!key) throw new ImportError("TIKI_OPEN_ROUTER_API_KEY is not set", "The recipe helper isn't set up yet.");
+  // Tests point this at the mock; never overridable in production (the key goes wherever it points).
+  const base = (TEST_OVERRIDES && process.env.OPENROUTER_BASE_URL) || "https://openrouter.ai/api/v1";
+  const res = await fetch(`${base}/chat/completions`, {
+    method: "POST",
+    signal,
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://tiki-adventure-app-beige.vercel.app",
+      "X-Title": "Adventures in Tiki",
+    },
+    body: JSON.stringify({
+      model: process.env.TIKI_OPENROUTER_MODEL || DEFAULT_MODEL,
+      temperature: 0,
+      max_tokens: 2000,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: parts },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: "cocktail_recipe", strict: true, schema: RECIPE_JSON_SCHEMA },
+      },
+    }),
+  }).catch((err) => {
+    if (err?.name === "AbortError" || err?.name === "TimeoutError") {
+      throw new ImportError("OpenRouter timeout", "The recipe helper took too long. Please try again.");
+    }
+    throw new ImportError(`OpenRouter request failed: ${err}`, "Couldn't reach the recipe helper. Please try again.");
+  });
+  if (!res.ok) {
+    const detail = (await res.text().catch(() => "")).slice(0, 300);
+    throw new ImportError(
+      `OpenRouter ${res.status}: ${detail}`,
+      res.status === 429 ? "The recipe helper is busy. Try again in a minute." : "The recipe helper had a problem. Please try again."
+    );
+  }
+  const body = (await res.json().catch(() => null)) as { choices?: { message?: { content?: unknown } }[] } | null;
+  const content = body?.choices?.[0]?.message?.content;
+  if (typeof content !== "string") throw new ImportError("OpenRouter: no content", "The recipe helper didn't answer. Please try again.");
+  try {
+    // Some models wrap JSON in a code fence despite structured output.
+    return JSON.parse(content.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+  } catch {
+    throw new ImportError("OpenRouter: invalid JSON", "The recipe helper's answer didn't make sense. Please try again.");
+  }
+}
+
+const TEST_OVERRIDES = process.env.VERCEL_ENV !== "production";
+/** Tests only (never in production): allow the mock's page on 127.0.0.1. */
+const allowPrivate = () => TEST_OVERRIDES && process.env.IMPORT_ALLOW_PRIVATE_HOSTS === "1";
+const safeLookup = makeSafeLookup();
+
+interface Page {
+  status: number;
+  location: string | null;
+  contentType: string;
+  body: Buffer;
+}
+
+/** One GET with the SSRF-safe DNS lookup, a size cap and the shared deadline. */
+function getOnce(url: URL, signal: AbortSignal): Promise<Page> {
+  return new Promise((resolve, reject) => {
+    const client = url.protocol === "https:" ? https : http;
+    const req = client.request(
+      url,
+      {
+        method: "GET",
+        signal,
+        lookup: allowPrivate() ? undefined : (safeLookup as never),
+        headers: { "User-Agent": "AdventuresInTiki/1.0 (private recipe import)", Accept: "text/html,text/plain" },
+      },
+      (res) => {
+        const status = res.statusCode ?? 0;
+        const location = typeof res.headers.location === "string" ? res.headers.location : null;
+        const contentType = String(res.headers["content-type"] ?? "");
+        if ((status >= 300 && status < 400) || status >= 400) {
+          res.resume();
+          resolve({ status, location, contentType, body: Buffer.alloc(0) });
+          return;
+        }
+        const chunks: Buffer[] = [];
+        let size = 0;
+        res.on("data", (c: Buffer) => {
+          size += c.length;
+          if (size > MAX_PAGE_BYTES) {
+            res.destroy();
+            resolve({ status, location, contentType, body: Buffer.concat(chunks) });
+            return;
+          }
+          chunks.push(c);
+        });
+        res.on("end", () => resolve({ status, location, contentType, body: Buffer.concat(chunks) }));
+        res.on("error", reject);
+      }
+    );
+    req.on("error", reject);
+    req.end();
+  });
+}
+
+/** Fetches a public web page (http/https on ports 80/443, ≤3 redirects, ≤2 MB, HTML/text only). */
+export async function fetchRecipePage(raw: string, signal: AbortSignal): Promise<{ url: string; html: string }> {
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new ImportError("bad url", "That doesn't look like a web address.");
+  }
+  for (let hop = 0; hop <= 3; hop++) {
+    if ((url.protocol !== "https:" && url.protocol !== "http:") || url.username || url.password) {
+      throw new ImportError("bad scheme", "Use a normal web link (https://…).");
+    }
+    if (url.port && !allowPrivate() && url.port !== "80" && url.port !== "443") {
+      throw new ImportError("bad port", "That link can't be opened from here.");
+    }
+    const page = await getOnce(url, signal).catch((err: NodeJS.ErrnoException) => {
+      if (err?.code === "EBLOCKED") throw new ImportError(err.message, "That link can't be opened from here.");
+      if (err?.name === "AbortError" || err?.name === "TimeoutError") throw new ImportError("page timeout", "That page took too long to load.");
+      throw new ImportError(`fetch failed: ${err}`, "Couldn't open that page.");
+    });
+    if (page.status >= 300 && page.status < 400 && page.location) {
+      url = new URL(page.location, url);
+      continue;
+    }
+    if (page.status < 200 || page.status >= 300) {
+      throw new ImportError(`page ${page.status}`, `That page answered with an error (${page.status}).`);
+    }
+    if (!/text\/html|text\/plain|application\/xhtml/.test(page.contentType)) {
+      throw new ImportError(`content-type ${page.contentType}`, "That link isn't a web page.");
+    }
+    return { url: url.toString(), html: page.body.toString("utf8") };
+  }
+  throw new ImportError("too many redirects", "That link redirects too many times.");
+}
+
+/** Runs one import. Throws ImportError (with a user-safe message) on failure; null = no recipe found. */
+export async function importRecipe(
+  kind: ImportKind,
+  input: { text?: string; url?: string; imageDataUrl?: string }
+): Promise<ImportResult | null> {
+  const signal = AbortSignal.timeout(DEADLINE_MS);
+  if (kind === "photo") {
+    const raw = await callModel(
+      [
+        { type: "text", text: userPrompt("photo", {}) },
+        { type: "image_url", image_url: { url: input.imageDataUrl! } },
+      ],
+      signal
+    );
+    return draftFromModel(raw);
+  }
+  if (kind === "link") {
+    const page = await fetchRecipePage(input.url!, signal);
+    const html = page.html.slice(0, MAX_HTML_CHARS);
+    const ld = recipeJsonLd(html);
+    const text = `${ld ? `Structured recipe data:\n${ld}\n\n` : ""}Page text:\n${pageText(html)}`;
+    const raw = await callModel([{ type: "text", text: userPrompt("link", { url: page.url, text }) }], signal);
+    return draftFromModel(raw, page.url);
+  }
+  const raw = await callModel([{ type: "text", text: userPrompt("text", { text: input.text }) }], signal);
+  return draftFromModel(raw);
+}

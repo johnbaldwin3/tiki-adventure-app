@@ -293,6 +293,17 @@ export default async function StatsPage() {
                   <Meter value={b.tried} total={b.total} label={`Tasted, Difford's ${b.label}`} />
                 </div>
               ))}
+              {stats.ours && (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-ink">Our recipes</span>
+                    <span className="tabular-nums text-ink-soft">
+                      {stats.ours.tried} / {stats.ours.total}
+                    </span>
+                  </div>
+                  <Meter value={stats.ours.tried} total={stats.ours.total} label="Tasted, our recipes" />
+                </div>
+              )}
             </div>
           </section>
 

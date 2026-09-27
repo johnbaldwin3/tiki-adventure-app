@@ -3,6 +3,8 @@ import { FAMILIES, INGREDIENT_ALIASES, INGREDIENTS } from "@/data/ingredients";
 import seed from "../../seed-data/cocktails.json";
 import {
   aliasesFor,
+  lineIds,
+  resolveLine,
   cocktailsByIngredient,
   getIngredient,
   ingredientsByFamily,
@@ -90,5 +92,15 @@ describe("helpers", () => {
     expect(aliasesFor("navy-rum")).toHaveLength(3);
     expect(getIngredient("navy-rum")?.family).toBe("Rum");
     expect(getIngredient("nope")).toBeUndefined();
+  });
+});
+
+describe("resolveLine / lineIds", () => {
+  it("prefers an explicit catalog id, else the wording", () => {
+    expect(resolveLine("House rum", "navy-rum")?.ingredient.id).toBe("navy-rum");
+    expect(resolveLine("House rum (optional)", "navy-rum")?.optional).toBe(true);
+    expect(resolveLine("Falernum liqueur", "not-real")?.ingredient.id).toBe("falernum");
+    expect(resolveLine("House rum")).toBeNull();
+    expect(lineIds(["House rum", "Falernum liqueur", "?"], ["navy-rum", null])).toEqual(["navy-rum", "falernum", null]);
   });
 });
