@@ -68,6 +68,15 @@ export async function saveCabinet(prev: CabinetFormState, formData: FormData): P
     }
   }
 
+  // Anything newly in the bar comes off the shopping list (best effort:
+  // the shopping page hides owned items anyway).
+  const added = plan.upsert.map((u) => u.ingredientId);
+  if (added.length > 0) {
+    const { error } = await db.from("shopping_items").delete().in("ingredient_id", added);
+    if (error) console.error("saveCabinet: shopping list tidy-up failed", error);
+  }
+
   revalidatePath("/cabinet");
+  revalidatePath("/shopping");
   redirect("/cabinet?saved=1");
 }

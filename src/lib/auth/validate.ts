@@ -46,13 +46,24 @@ export function validateSignUp(
 /**
  * Only allow redirects back into this site after sign-in: a same-origin
  * path like "/cocktails/zombie/tasting/jb". Anything else (absolute URLs,
- * protocol-relative "//evil.com", backslash tricks) falls back to "/".
+ * protocol-relative "//evil.com", backslash or dot-segment tricks) falls
+ * back to "/". Returns the normalised path.
  */
 export function safeNextPath(raw: string | null | undefined): string {
   if (!raw || typeof raw !== "string") return "/";
   if (!raw.startsWith("/") || raw.startsWith("//") || raw.includes("\\")) return "/";
   if (/[\u0000-\u001f]/.test(raw)) return "/";
-  return raw;
+  // Resolve dot segments the way a browser would: "/.//evil.com" must not
+  // turn into the protocol-relative "//evil.com" later on.
+  const base = "http://local.invalid";
+  let url: URL;
+  try {
+    url = new URL(raw, base);
+  } catch {
+    return "/";
+  }
+  if (url.origin !== base || url.pathname.startsWith("//")) return "/";
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
 interface AuthErrorLike {

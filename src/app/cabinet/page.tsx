@@ -4,7 +4,12 @@ import { unstable_rethrow } from "next/navigation";
 import { PageShell, SectionHeading } from "@/components/page-shell";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { summarizeCabinet } from "@/lib/cabinet";
-import { fetchCabinet, type Cabinet } from "@/lib/cabinet-data";
+import {
+  fetchCabinet,
+  fetchShoppingList,
+  type Cabinet,
+} from "@/lib/cabinet-data";
+import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
 
@@ -74,11 +79,18 @@ export default async function CabinetPage({
 
   let cabinet: Cabinet | null = null;
   let records: CocktailRecord[] | null = null;
+  let list: Set<string> | null = null;
   if (user.taster) {
     try {
-      [cabinet, records] = await Promise.all([
+      // The shopping list is extra: if it can't load, the bar still shows.
+      [cabinet, records, list] = await Promise.all([
         fetchCabinet(),
         fetchCocktailRecords(),
+        fetchShoppingList().catch((err) => {
+          unstable_rethrow(err);
+          console.error("cabinet: failed to load shopping list", err);
+          return null;
+        }),
       ]);
     } catch (err) {
       unstable_rethrow(err);
@@ -100,6 +112,10 @@ export default async function CabinetPage({
   }
 
   const summary = summarizeCabinet(records, new Set(cabinet.keys()));
+  // Owned items are hidden on the shopping page, so don't count them here.
+  const toBuy = list
+    ? [...list].filter((id) => !cabinet!.has(id)).length
+    : null;
   const name = (id: string) => getIngredient(id)?.name ?? id;
 
   return (
@@ -124,6 +140,16 @@ export default async function CabinetPage({
       >
         {cabinet.size === 0 ? "Add what we have" : "Edit our bar"}
       </Link>
+      {toBuy !== null && (
+        <Link
+          href="/shopping"
+          className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+        >
+          <span aria-hidden="true">🛒 </span>Shopping list ({toBuy}){" "}
+          <span aria-hidden="true">→</span>
+        </Link>
+      )}
+      <ShoppingStatus status={sp.shopping} />
 
       <section aria-labelledby="ready-heading" className="flex flex-col gap-2">
         <SectionHeading id="ready-heading">
@@ -187,6 +213,16 @@ export default async function CabinetPage({
                 <p className="mt-1 text-xs text-ink-soft">
                   <DrinkLinks drinks={b.unlocks} />
                 </p>
+                {list && (
+                  <div className="mt-2">
+                    <ShoppingButton
+                      ids={[b.ingredientId]}
+                      onList={list.has(b.ingredientId)}
+                      returnTo="/cabinet"
+                      itemName={name(b.ingredientId)}
+                    />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

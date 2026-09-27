@@ -9,7 +9,8 @@ import {
 } from "@/lib/cocktails";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { drinkAvailability } from "@/lib/cabinet";
-import { fetchCabinet } from "@/lib/cabinet-data";
+import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
+import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { getIngredient, resolveIngredient } from "@/lib/ingredients";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
@@ -126,8 +127,9 @@ function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: stri
   );
 }
 
-export default async function CocktailPage({ params }: PageProps<"/cocktails/[slug]">) {
+export default async function CocktailPage({ params, searchParams }: PageProps<"/cocktails/[slug]">) {
   const { slug } = await params;
+  const { shopping } = await searchParams;
   // Junk/bot URLs 404 without touching the database.
   if (!SLUG_PATTERN.test(slug)) notFound();
 
@@ -168,7 +170,12 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
     console.error("recipe card: failed to load cabinet", err);
     return null;
   });
-  const [records, user, cabinet] = await Promise.all([recordsPromise, userPromise, cabinetPromise]);
+  const listPromise = fetchShoppingList().catch((err) => {
+    unstable_rethrow(err);
+    console.error("recipe card: failed to load shopping list", err);
+    return null;
+  });
+  const [records, user, cabinet, list] = await Promise.all([recordsPromise, userPromise, cabinetPromise, listPromise]);
   // Only for signed-in tasters (RLS); null otherwise.
   const availability = cabinet
     ? drinkAvailability(
@@ -177,6 +184,8 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
       )
     : null;
   const missing = availability?.missing ?? null;
+  const notListed = missing && list ? missing.filter((id) => !list.has(id)) : null;
+  const missingNames = (missing ?? []).map((id) => getIngredient(id)?.name ?? id).join(", ");
   const myInitials = user?.taster?.initials ?? null;
   const ourRank = records
     ? (rankCocktails(records).find((r) => r.name === cocktail.name)?.rank ?? null)
@@ -245,6 +254,7 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
           <p className="mt-2 text-sm italic text-ink-faint">No ingredients listed.</p>
         )}
         {missing && (
+          <>
           <p className="mt-3 rounded-xl bg-sand-deep px-3 py-2 text-sm text-teal-deep">
             {missing.length === 0 && availability!.unknown.length > 0 ? (
               <>
@@ -280,6 +290,39 @@ export default async function CocktailPage({ params }: PageProps<"/cocktails/[sl
               </>
             )}
           </p>
+          {missing.length > 0 && notListed && (
+            <div className="mt-2">
+              {notListed.length === 0 ? (
+                <ShoppingButton
+                  ids={missing}
+                  onList
+                  returnTo={`/cocktails/${slug}`}
+                  itemName={missingNames}
+                />
+              ) : (
+                <ShoppingButton
+                  ids={notListed}
+                  onList={false}
+                  returnTo={`/cocktails/${slug}`}
+                  label={
+                    notListed.length === 1
+                      ? missing.length === 1
+                        ? "Add to shopping list"
+                        : `Add ${getIngredient(notListed[0])?.name ?? notListed[0]} to shopping list`
+                      : notListed.length === missing.length
+                        ? `Add all ${missing.length} to shopping list`
+                        : `Add the ${notListed.length} not on the shopping list`
+                  }
+                />
+              )}
+            </div>
+          )}
+          </>
+        )}
+        {typeof shopping === "string" && (
+          <div className="mt-2">
+            <ShoppingStatus status={shopping} />
+          </div>
         )}
       </section>
 

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, unstable_rethrow } from "next/navigation";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
-import { fetchCabinet } from "@/lib/cabinet-data";
+import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
+import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { aliasesFor, getIngredient, resolveIngredient } from "@/lib/ingredients";
 import { listHref } from "@/lib/list";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
@@ -25,8 +26,9 @@ function noBrandsNote(family: string): string {
   return "Hard to find — check the original Difford's recipe for guidance.";
 }
 
-export default async function IngredientPage({ params }: PageProps<"/ingredients/[id]">) {
+export default async function IngredientPage({ params, searchParams }: PageProps<"/ingredients/[id]">) {
   const { id } = await params;
+  const { shopping } = await searchParams;
   const ingredient = getIngredient(id);
   if (!ingredient) notFound();
 
@@ -34,6 +36,11 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
   const cabinetPromise = fetchCabinet().catch((err) => {
     unstable_rethrow(err);
     console.error("ingredient page: failed to load cabinet", err);
+    return null;
+  });
+  const listPromise = fetchShoppingList().catch((err) => {
+    unstable_rethrow(err);
+    console.error("ingredient page: failed to load shopping list", err);
     return null;
   });
 
@@ -54,7 +61,7 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
     console.error("ingredient page: failed to load drinks", id, err);
   }
   const aliases = aliasesFor(id);
-  const cabinet = await cabinetPromise;
+  const [cabinet, list] = await Promise.all([cabinetPromise, listPromise]);
   const owned = cabinet?.has(id) ?? false;
 
   return (
@@ -80,6 +87,11 @@ export default async function IngredientPage({ params }: PageProps<"/ingredients
           </p>
         )}
       </header>
+
+      <ShoppingStatus status={shopping} />
+      {cabinet && list && !owned && !ingredient.staple && (
+        <ShoppingButton ids={[id]} onList={list.has(id)} returnTo={`/ingredients/${id}`} />
+      )}
 
       {ingredient.description && (
         <p className="rounded-2xl bg-card p-4 text-sm leading-relaxed text-ink shadow-sm">{ingredient.description}</p>

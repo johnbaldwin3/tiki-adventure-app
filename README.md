@@ -71,6 +71,15 @@ in; see below.
   don't undo each other (`planCabinetSave` in `src/lib/cabinet.ts`). Stored
   in `cabinet_items` (migration 0006; RLS: tasters only, `updated_by` must
   be you).
+- **Shopping list (`/shopping`)** -- one shared list (signed-in tasters
+  only). Add from a recipe card ("Add all 3 to shopping list"), an
+  ingredient page, "Buy next" in our bar, or the ideas on the list itself.
+  Each item shows what it would complete together with the rest of the
+  list, bottles to look for with Total Wine search links, and WineXpress's
+  number. "Got it" moves it into our bar (keeping any bottle already noted);
+  ticking it in our bar also takes it off the list. Stored in
+  `shopping_items` (migration 0007; RLS: tasters only, `added_by` must be
+  you). Pure logic in `src/lib/shopping.ts`.
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -115,7 +124,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0006` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0007` in order (Supabase SQL editor
    or `supabase db push`).
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
@@ -176,6 +185,7 @@ review pass:
 9. ✅ Ingredient catalog — tidy styles & families for all 153 recipe wordings, researched example bottles, ingredient browser and pages, Total Wine / WineXpress links
 10. ✅ Filter by ingredient — pick ingredients on the home list (all-of / any-of), combined with Tasted / Not yet
 11. ✅ Bar cabinet — "Our bar": what we have, what we can make now, what to buy next; markers on recipe cards and ingredient pages
+12. ✅ Shopping list — shared list from recipe cards, ingredient pages and our bar; what each item completes, where to buy, "Got it" into our bar
 
 ## Future ideas (not yet scheduled)
 
@@ -184,7 +194,5 @@ Captured from John so they don't get lost:
 - **AI recipe import** -- an assistant (via OpenRouter) that adds a new
   recipe to our list from typed text, a photo of a recipe book/card, or a
   link to an online recipe, then lets us review it before saving
-- **Shopping list** -- bottles we're missing for drinks we want to try, with
-  the Total Wine / WineXpress links (the bar's "Buy next" is a start)
 - Smaller ideas: search box, "what should we try next?" suggestions,
   Add to Home Screen (PWA), photos on tastings, progress over time

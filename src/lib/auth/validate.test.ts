@@ -51,6 +51,11 @@ describe("safeNextPath", () => {
     ["/\\evil.example", "/"],
     ["javascript:alert(1)", "/"],
     ["/ok\nSet-Cookie: x", "/"],
+    ["/.//evil.com", "/"],
+    ["/..//evil.com", "/"],
+    ["/%2e//evil.com", "/"],
+    ["/a/..//evil.com", "/"],
+    ["/cabinet#shelf", "/cabinet#shelf"],
   ])("%s -> %s", (input, expected) => {
     expect(safeNextPath(input as string | null)).toBe(expected);
   });

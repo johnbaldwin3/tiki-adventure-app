@@ -251,19 +251,31 @@ async function handleAuth(req, res, url) {
 
 const tables = { cocktails, tasters, tastings };
 
-// Bar cabinet (migration 0006): rows are only visible/editable to signed-in
-// tasters, and updated_by must be the signed-in taster -- mirroring RLS.
-const cabinet = new Map(); // ingredient_id -> { ingredient_id, bottle, updated_by }
+// Shared household tables -- the bar cabinet (migration 0006) and the
+// shopping list (0007): rows are only visible/editable to signed-in
+// tasters, and the owner column must be the signed-in taster -- mirroring
+// RLS. Upserts honour Prefer: resolution=ignore-duplicates like PostgREST.
+const shared = {
+  cabinet_items: { rows: new Map(), owner: "updated_by", columns: ["bottle"] },
+  shopping_items: { rows: new Map(), owner: "added_by", columns: [] },
+};
 
-function handleCabinet(req, res, url) {
+function handleShared(name, req, res, url) {
+  const table = shared[name];
   const email = bearerEmail(req);
   const taster = email ? accounts.get(email) : null;
   if (req.method === "GET") {
-    sendJson(res, 200, taster ? [...cabinet.values()].map((r) => project(r, url.searchParams.get("select"))) : []);
+    sendJson(res, 200, taster ? [...table.rows.values()].map((r) => project(r, url.searchParams.get("select"))) : []);
     return;
   }
   if (!taster) {
-    sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "cabinet_items"' });
+    // RLS: a DELETE just matches no rows; an INSERT is refused.
+    if (req.method === "DELETE") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+    sendJson(res, 403, { code: "42501", message: `new row violates row-level security policy for table "${name}"` });
     return;
   }
   if (req.method === "POST") {
@@ -271,13 +283,19 @@ function handleCabinet(req, res, url) {
       sendJson(res, 400, { message: "mock-supabase: expected on_conflict=ingredient_id" });
       return;
     }
+    const ignoreDuplicates = /resolution=ignore-duplicates/.test(req.headers.prefer ?? "");
     readBody(req).then((body) => {
       const rows = [body].flat();
-      if (rows.some((r) => r.updated_by !== taster)) {
-        sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "cabinet_items"' });
+      if (rows.some((r) => r[table.owner] !== taster)) {
+        sendJson(res, 403, { code: "42501", message: `new row violates row-level security policy for table "${name}"` });
         return;
       }
-      for (const r of rows) cabinet.set(r.ingredient_id, { ingredient_id: r.ingredient_id, bottle: r.bottle ?? null, updated_by: r.updated_by });
+      for (const r of rows) {
+        if (ignoreDuplicates && table.rows.has(r.ingredient_id)) continue;
+        const row = { ingredient_id: r.ingredient_id, [table.owner]: r[table.owner] };
+        for (const c of table.columns) row[c] = r[c] ?? null;
+        table.rows.set(r.ingredient_id, row);
+      }
       res.writeHead(201);
       res.end();
     });
@@ -285,12 +303,12 @@ function handleCabinet(req, res, url) {
   }
   if (req.method === "DELETE") {
     const m = (url.searchParams.get("ingredient_id") ?? "").match(/^in\.\((.*)\)$/);
-    for (const id of m ? m[1].split(",").map((s) => s.replace(/^"|"$/g, "")) : []) cabinet.delete(id);
+    for (const id of m ? m[1].split(",").map((s) => s.replace(/^"|"$/g, "")) : []) table.rows.delete(id);
     res.writeHead(204);
     res.end();
     return;
   }
-  sendJson(res, 405, { message: "mock-supabase: unsupported cabinet method" });
+  sendJson(res, 405, { message: `mock-supabase: unsupported ${name} method` });
 }
 
 // "Database down" switch for e2e/db-down.spec.ts (POST /__mock/db-down with
@@ -322,6 +340,14 @@ const server = http.createServer((req, res) => {
     handleAuth(req, res, url);
     return;
   }
+  // Empties the shared household tables (cabinet, shopping list), so a
+  // retried or re-run test starts clean.
+  if (req.method === "POST" && url.pathname === "/__mock/reset-shared") {
+    for (const t of Object.values(shared)) t.rows.clear();
+    res.writeHead(204);
+    res.end();
+    return;
+  }
   if (req.method === "POST" && url.pathname === "/__mock/db-down") {
     readBody(req).then((body) => {
       dbDown = !!body.down;
@@ -343,8 +369,8 @@ const server = http.createServer((req, res) => {
     sendJson(res, 200, email ? (accounts.get(email) ?? null) : null);
     return;
   }
-  if (match?.[1] === "cabinet_items") {
-    handleCabinet(req, res, url);
+  if (match && Object.hasOwn(shared, match[1])) {
+    handleShared(match[1], req, res, url);
     return;
   }
   if (req.method === "POST" && match?.[1] === "tastings") {

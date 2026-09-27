@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { GENNY, JOHN, signIn } from "./auth";
+import { GENNY, JOHN, MOCK_URL, signIn } from "./auth";
 import type { Page } from "@playwright/test";
 
 /** Expand a family's <details> (families you own start open). */
@@ -8,6 +8,17 @@ async function openFamily(page: Page, family: string) {
   const details = page.locator("details").filter({ has: page.locator("summary", { hasText: `${family} ·` }) });
   if ((await details.getAttribute("open")) === null) await details.locator("summary").click();
 }
+
+// Both tests that change shared state run in order, in one worker.
+test.describe.configure({ mode: "serial" });
+
+// Start (and restart, on retry) from an empty bar and shopping list. Only in
+// the project that mutates them, so it never resets mid-test under another.
+test.beforeEach(async ({ request }, testInfo) => {
+  if (testInfo.project.name !== "chromium") return;
+  const res = await request.post(`${MOCK_URL}/__mock/reset-shared`);
+  expect(res.ok()).toBe(true);
+});
 
 // The cabinet is one shared bar for the whole app, and the mock keeps writes
 // in memory while projects run in parallel. So the test that changes it runs
@@ -97,7 +108,7 @@ test("stock the bar, see what we can make, and share it between tasters", async 
   await expect(genny.getByText(/2 ingredients on the shelf/)).toBeVisible();
   await expect(genny.getByRole("list", { name: "Ready to make" })).toHaveCount(0);
   await expect(
-    genny.getByRole("region", { name: "Buy next" }).getByRole("link", { name: "Pineapple juice" })
+    genny.getByRole("region", { name: "Buy next" }).getByRole("link", { name: "Pineapple juice", exact: true })
   ).toBeVisible();
   await ctx.close();
 
@@ -128,4 +139,98 @@ test("stock the bar, see what we can make, and share it between tasters", async 
   for (const id of owned) await page.locator(`#have-${id}`).uncheck();
   await page.getByRole("button", { name: "Save our bar" }).click();
   await expect(page.getByText(/0 ingredients on the shelf/)).toBeVisible();
+});
+
+test("shopping list: add missing, see what it unlocks, got it, remove", async ({ page, browser }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "mutates the shared shopping list and cabinet");
+
+  await signIn(page, JOHN, "/shopping");
+  await expect(page.getByRole("heading", { level: 1, name: "Shopping list" })).toBeVisible();
+  await expect(page.getByText(/The list is empty/)).toBeVisible();
+
+  // From a recipe card: add everything it's missing.
+  await page.goto("/cocktails/painkiller");
+  await expect(page.getByText(/Missing from our bar:/)).toBeVisible();
+  await page.getByRole("button", { name: "Add all 3 to shopping list" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/painkiller\?shopping=added$/);
+  await expect(page.getByRole("status")).toContainText("Added to the shopping list.");
+  await expect(page.getByRole("link", { name: /On the shopping list/ })).toBeVisible();
+
+  await page.getByRole("link", { name: /On the shopping list/ }).click();
+  await expect(page).toHaveURL(/\/shopping$/);
+  await expect(page.getByText(/^3 to buy · would let us make \d+ more drinks?$/)).toBeVisible();
+  const list = page.getByRole("list", { name: "To buy" });
+  await expect(list.getByRole("listitem").filter({ has: page.getByRole("link", { name: "Navy rum", exact: true }) })).toContainText(
+    /With the rest of the list, completes:.*Painkiller/
+  );
+  await expect(page.getByRole("link", { name: /Search Total Wine for Pusser's/ }).first()).toHaveAttribute(
+    "href",
+    /totalwine\.com\/search\/all\?text=Pusser/
+  );
+  await expect(page.getByRole("link", { name: "(864) 283-6049" })).toHaveAttribute("href", "tel:+18642836049");
+
+  // Genny sees the same list.
+  const ctx = await browser.newContext();
+  const genny = await ctx.newPage();
+  await signIn(genny, GENNY, "/shopping");
+  await expect(genny.getByText(/^3 to buy/)).toBeVisible();
+  await ctx.close();
+
+  // Got it: onto the shelf, off the list.
+  await page.getByRole("button", { name: "Got it — add to our bar: Navy rum" }).click();
+  await expect(page).toHaveURL(/\/shopping\?shopping=bought$/);
+  await expect(page.getByRole("status")).toContainText("Moved to our bar.");
+  await expect(page.getByText(/^2 to buy/)).toBeVisible();
+  await page.goto("/cabinet");
+  await expect(page.getByRole("region", { name: "On the shelf" }).getByRole("link", { name: "Navy rum" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Shopping list \(2\)/ })).toBeVisible();
+
+  // Remove one.
+  await page.goto("/shopping");
+  await page.getByRole("button", { name: "Remove: Cream of coconut" }).click();
+  await expect(page.getByRole("status")).toBeFocused();
+  await expect(page.getByText(/^1 to buy/)).toBeVisible();
+
+  // A recipe card offers only what isn't on the list yet.
+  await page.goto("/cocktails/painkiller");
+  await expect(page.getByRole("button", { name: "Add Cream of coconut to shopping list" })).toBeVisible();
+
+  // From an ingredient page: add, then remove.
+  await page.goto("/ingredients/falernum");
+  await page.getByRole("button", { name: "Add to shopping list", exact: true }).click();
+  await expect(page).toHaveURL(/\/ingredients\/falernum\?shopping=added$/);
+  await expect(page.getByRole("link", { name: /On the shopping list/ })).toBeVisible();
+  await page.goto("/shopping");
+  await expect(page.getByText(/^2 to buy/)).toBeVisible();
+
+  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(results.violations).toEqual([]);
+
+  // An ingredient we already have offers no add button.
+  await page.goto("/ingredients/navy-rum");
+  await expect(page.getByText(/In our bar/)).toBeVisible();
+  await expect(page.getByRole("button", { name: /Add to shopping list/ })).toHaveCount(0);
+
+  // Clean up so reruns start empty.
+  await page.goto("/shopping");
+  for (const name of ["Pineapple juice", "Falernum liqueur"]) {
+    await page.getByRole("button", { name: `Remove: ${name}` }).click();
+    await expect(page).toHaveURL(/shopping=removed/);
+  }
+  await expect(page.getByText(/The list is empty/)).toBeVisible();
+  await page.goto("/cabinet/edit");
+  await page.locator("#have-navy-rum").uncheck();
+  await page.getByRole("button", { name: "Save our bar" }).click();
+  await expect(page.getByText(/^0 ingredients on the shelf/)).toBeVisible();
+});
+
+test("signed out, the shopping list asks you to sign in", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /Shopping list/ }).click();
+  await expect(page).toHaveURL(/\/shopping$/);
+  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login?next=%2Fshopping");
+  // No shopping controls on public pages.
+  await page.goto("/ingredients/falernum");
+  await expect(page.getByRole("button", { name: /shopping list/ })).toHaveCount(0);
 });

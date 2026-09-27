@@ -98,3 +98,22 @@ test("a failed bar save keeps what was ticked and typed", async ({ page }) => {
   await expect(page.locator("#bottle-navy-rum")).toHaveValue("Pusser's Blue Label");
   await expectAccessible(page);
 });
+
+test("the shopping list shows a friendly error", async ({ page }) => {
+  await setDbDown(page, false);
+  await signIn(page, JOHN);
+  await setDbDown(page, true);
+  await page.goto("/shopping");
+  await expect(page.getByRole("alert").filter({ hasText: "Couldn't load the shopping list" })).toBeVisible();
+  await expectAccessible(page);
+});
+
+test("a failed shopping-list change says so", async ({ page }) => {
+  await setDbDown(page, false);
+  await signIn(page, JOHN, "/ingredients/falernum");
+  await setDbDown(page, true);
+  await page.getByRole("button", { name: "Add to shopping list", exact: true }).click();
+  await expect(page).toHaveURL(/\/ingredients\/falernum\?shopping=error$/);
+  await expect(page.getByRole("alert").filter({ hasText: "Couldn't update the shopping list" })).toBeFocused();
+  await expectAccessible(page);
+});

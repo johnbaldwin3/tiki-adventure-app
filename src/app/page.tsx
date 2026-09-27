@@ -160,6 +160,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             Our bar <span aria-hidden="true">→</span>
           </Link>
           <Link
+            href="/shopping"
+            className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+          >
+            Shopping list <span aria-hidden="true">→</span>
+          </Link>
+          <Link
             href="/ingredients"
             className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
           >
