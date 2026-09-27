@@ -225,6 +225,11 @@ Captured from John so they don't get lost:
   of servings) that records what was poured, turning our bar into a living
   inventory with how much is left per bottle, and alerts when something is
   running low (feeds the shopping list)
+- **Bottle snapshot** -- take a photo of a bottle and the app adds it to
+  our bar: AI identifies the product and style (matched to our catalog),
+  its size (e.g. 750 ml), and estimates how much is left from the fill
+  line; you confirm before it's saved. Pairs with the living inventory
+  below (a quick way to top up or correct amounts)
 - **Receipt capture** -- photograph a receipt from the grocery store,
   WineXpress or a liquor store; AI reads the products and sizes, you check
   them, and they're added to our bar (with bottle and amount)
