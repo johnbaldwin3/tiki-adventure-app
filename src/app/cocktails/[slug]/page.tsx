@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, unstable_rethrow } from "next/navigation";
+import { cookies } from "next/headers";
 import { cache } from "react";
+import { AmountControls } from "@/components/amount-controls";
+import { displayAmount, parseServings, parseUnitMode, UNITS_COOKIE } from "@/lib/amounts";
 import {
   fetchCocktailBySlug,
   fetchCocktailRecords,
@@ -172,7 +175,12 @@ function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: stri
 
 export default async function CocktailPage({ params, searchParams }: PageProps<"/cocktails/[slug]">) {
   const { slug } = await params;
-  const { shopping, recipe } = await searchParams;
+  const sp = await searchParams;
+  const { shopping, recipe } = sp;
+  const servings = parseServings(sp.serves);
+  // The unit in the URL wins; otherwise the one last picked (cookie); else as written.
+  const urlUnits = parseUnitMode(sp.units);
+  const units = urlUnits ?? parseUnitMode((await cookies()).get(UNITS_COOKIE)?.value) ?? "original";
   // Junk/bot URLs 404 without touching the database.
   if (!SLUG_PATTERN.test(slug)) notFound();
 
@@ -294,20 +302,29 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           className="text-sm font-bold uppercase tracking-wide text-ink-soft"
         >
           Ingredients
+          {servings > 1 && <span className="font-normal normal-case tracking-normal"> · for {servings} drinks</span>}
         </h2>
+        {cocktail.ingredients.length > 0 && <AmountControls slug={cocktail.slug} servings={servings} units={units} urlUnits={urlUnits} />}
         {cocktail.ingredients.length > 0 ? (
           <ul className="mt-3 flex flex-col divide-y divide-teal/10">
-            {cocktail.ingredients.map((ing, i) => (
-              <li key={`${i}-${ing.ingredient}`} className="flex gap-3 py-2 text-sm">
-                <span className="min-w-20 shrink-0 whitespace-nowrap font-bold text-teal-deep">
-                  {[ing.amount, ing.unit].filter(Boolean).join(" ")}
-                </span>
-                <IngredientText text={ing.ingredient} catalogId={ing.catalogId} />
-              </li>
-            ))}
+            {cocktail.ingredients.map((ing, i) => {
+              const shown = displayAmount(ing.amount, ing.unit, servings, units);
+              return (
+                <li key={`${i}-${ing.ingredient}`} className="flex gap-3 py-2 text-sm">
+                  <span className="flex min-w-20 shrink-0 flex-col font-bold text-teal-deep">
+                    <span className="whitespace-nowrap">{[shown.amount, shown.unit].filter(Boolean).join(" ")}</span>
+                    {shown.note && <span className="text-xs font-normal text-ink-soft">{shown.note}</span>}
+                  </span>
+                  <IngredientText text={ing.ingredient} catalogId={ing.catalogId} />
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="mt-2 text-sm italic text-ink-faint">No ingredients listed.</p>
+        )}
+        {cocktail.ingredients.some((ing) => displayAmount(ing.amount, ing.unit, servings, units).converted) && (
+          <p className="mt-2 text-xs text-ink-faint">Converted at the bar standard 1 fl oz = 30 ml (1 cup = 8 fl oz).</p>
         )}
         {missing && (
           <>

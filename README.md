@@ -51,7 +51,12 @@ in; see below.
   (and below it, downwards), plus a boost for what our bar can make when
   signed in; each says why ("Like Zombie (our 8.9): both use …"). Pure
   logic in `src/lib/suggest.ts`.
-- **Recipe card (`/cocktails/[slug]`)** -- ingredients, glass, garnish,
+- **Recipe card (`/cocktails/[slug]`)** -- ingredients (make 1×–8×, and
+  show amounts as written, in fl oz or in ml: `?serves=2&units=ml`; the unit
+  choice is remembered; converted at 1 fl oz = 30 ml, Difford's own basis,
+  so ml shows Difford's original amounts exactly; dashes/drops round to
+  whole numbers; barspoons of powder are never converted -- see
+  `src/lib/amounts.ts`), glass, garnish,
   method, "Our tasting" (ratings, dates, notes), and a credit link to the
   original on Difford's Guide.
 - **Stats (`/stats`)** -- progress by Difford's rank band, John vs Genny,
@@ -212,15 +217,12 @@ review pass:
 12. ✅ Shopping list — shared list from recipe cards, ingredient pages and our bar; what each item completes, where to buy, "Got it" into our bar
 13. ✅ Search & "What to try next" — search box on the list, explainable suggestions on the home page and /next
 14. ✅ Our own recipes + AI recipe helper — add from a photo, link or text (reviewed before saving), mixed into the list; edit/delete
+15. ✅ Servings & units — 1×–8× and as written / fl oz / ml on every recipe card
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Unit conversion** -- show recipe amounts in ounces or millilitres
-  (and cups, tablespoons, etc.), with a toggle on the recipe card
-- **Servings** -- 1x / 2x / 3x (or more) on the recipe card, scaling every
-  amount shown
 - **"We made this"** -- a button on the recipe card (for the chosen number
   of servings) that records what was poured, turning our bar into a living
   inventory with how much is left per bottle, and alerts when something is

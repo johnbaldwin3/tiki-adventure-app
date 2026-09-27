@@ -28,6 +28,7 @@ const signedOutPages = [
   "/?ing=navy-rum,falernum",
   "/cocktails/tiki-max",
   "/cocktails/zombie",
+  "/cocktails/zombie?serves=4&units=oz",
   "/stats",
   "/ingredients",
   "/ingredients/aged-jamaican-rum",
