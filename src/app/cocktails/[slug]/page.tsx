@@ -15,6 +15,9 @@ import { getSignedInUser } from "@/lib/auth/current-taster";
 import { drinkAvailability } from "@/lib/cabinet";
 import { fetchBar, fetchCabinet, fetchPour, fetchShoppingList } from "@/lib/cabinet-data";
 import { MadeThis } from "@/components/made-this";
+import { CollectionsPanel } from "@/components/collections-panel";
+import { TIKI_SLUG } from "@/lib/collections";
+import { fetchCocktailCollections } from "@/lib/collections-data";
 import { pourLines } from "@/lib/inventory";
 import { FocusMessage } from "@/components/focus-message";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
@@ -240,14 +243,21 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     console.error("recipe card: failed to load shopping list", err);
     return null;
   });
-  const [records, user, cabinet, list, bar, pour] = await Promise.all([
+  const collectionsPromise = fetchCocktailCollections(cocktail.id).catch((err) => {
+    console.error("recipe card: failed to load collections", err);
+    return null;
+  });
+  const [records, user, cabinet, list, bar, pour, cols] = await Promise.all([
     recordsPromise,
     userPromise,
     cabinetPromise,
     listPromise,
     barPromise,
     pourPromise,
+    collectionsPromise,
   ]);
+  // The tiki look for tiki drinks (and when collections couldn't load, for Difford's tiki list).
+  const tikiLook = cols ? cols.mine.some((c) => c.slug === TIKI_SLUG) : cocktail.source === "diffords";
   // Only for signed-in tasters (RLS); null otherwise.
   const availability = cabinet
     ? drinkAvailability(
@@ -282,17 +292,21 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         </FocusMessage>
       )}
 
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+      <header
+        className={`${tikiLook ? "tiki-header" : "bar-header"} relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg`}
+      >
         <span
           aria-hidden="true"
           className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20"
         >
-          🍹
+          {tikiLook ? "🍹" : "🍸"}
         </span>
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
           {cocktail.source === "ours"
             ? `Our recipe${cocktail.addedBy ? ` · added by ${cocktail.addedBy}` : ""}`
-            : `Difford's Top 100 · #${cocktail.diffordsRank}`}
+            : cocktail.source === "iba"
+              ? (cocktail.sourceNote ?? "IBA official cocktail")
+              : `Difford's Top 100 · #${cocktail.diffordsRank}`}
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{cocktail.name}</h1>
         {cocktail.isGuess && (
@@ -499,8 +513,32 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         )}
       </section>
 
+      {cols && (
+        <CollectionsPanel
+          slug={cocktail.slug}
+          name={cocktail.name}
+          all={cols.all}
+          mine={cols.mine}
+          canEdit={!!user?.taster}
+          status={sp.collections}
+        />
+      )}
+
       {cocktail.source === "ours" ? (
         <OurRecipeFooter cocktail={cocktail} canEdit={!!user?.taster} />
+      ) : cocktail.source === "iba" ? (
+        <p className="pt-2 text-center text-xs text-ink-faint">
+          Recipe from the IBA official cocktail list (method in our own words) —{" "}
+          <a
+            href={cocktail.sourceUrl ?? "https://iba-world.com/cocktails/all-cocktails/"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-teal underline underline-offset-2"
+          >
+            see IBA&apos;s page<span className="sr-only"> (opens in a new tab)</span>
+          </a>
+          .
+        </p>
       ) : (
         <p className="pt-2 text-center text-xs text-ink-faint">
           Recipe adapted from Difford&apos;s Guide —{" "}

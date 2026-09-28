@@ -17,6 +17,7 @@ import crypto from "node:crypto";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createCollectionMocks, seedIba } from "./mock-collections.mjs";
 import { createRecipeMocks } from "./mock-recipes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -57,6 +58,8 @@ const cocktails = seed.map((c, i) => ({
   source_note: null,
   added_by: null,
 }));
+// The IBA official cocktails (migration 0012), after the Top 100.
+seedIba(here, cocktails, slugify);
 
 const tastings = [];
 seed.forEach((c, i) => {
@@ -417,6 +420,7 @@ function handlePours(req, res, url) {
 }
 
 const handleRecipeMocks = createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, readBody, sendJson, project });
+const handleCollectionMocks = createCollectionMocks({ here, cocktails, accounts, bearerEmail, readBody, sendJson, project });
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
@@ -452,6 +456,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (handleRecipeMocks(req, res, url, match?.[1])) return;
+  if (handleCollectionMocks(req, res, url, match?.[1])) return;
   if (handlePours(req, res, url)) return;
   if (req.method === "POST" && url.pathname === "/rest/v1/rpc/current_taster_id") {
     const email = bearerEmail(req);

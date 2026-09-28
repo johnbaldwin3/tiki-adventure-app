@@ -126,7 +126,7 @@ test("stock the bar, see what we can make, and share it between tasters", async 
   // Axe on both signed-in pages.
   for (const path of ["/cabinet", "/cabinet/edit"]) {
     await page.goto(path);
-    await expect(page).toHaveTitle(/Adventures in Tiki/);
+    await expect(page).toHaveTitle(/Equal Parts/);
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
     expect(results.violations, path).toEqual([]);
   }
@@ -203,7 +203,7 @@ test("shopping list: add missing, see what it unlocks, got it, remove", async ({
   await page.goto("/shopping");
   await expect(page.getByText(/^2 to buy/)).toBeVisible();
 
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(results.violations).toEqual([]);
 
@@ -267,7 +267,7 @@ test("bottle levels, 'We made this' counting down (and undo), and running-low al
   await row("Pineapple juice").getByRole("button", { name: "Full", exact: true }).click();
   await expect(row("Pineapple juice")).toContainText("about 1000 ml");
   await expect(row("Cream of coconut")).toContainText("Not tracked");
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const levelsScan = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(levelsScan.violations).toEqual([]);
 
@@ -294,7 +294,7 @@ test("bottle levels, 'We made this' counting down (and undo), and running-low al
   await expect(done).toContainText("Navy rum: −90 ml, about 260 ml (8 3/4 fl oz) left");
   await expect(done).toContainText("Pineapple juice: −180 ml, about 820 ml");
   await expect(making.getByRole("button", { name: "Made another round (2 drinks)" })).toBeVisible();
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const cardScan = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(cardScan.violations).toEqual([]);
 
@@ -348,7 +348,7 @@ test("scan a bottle (style, size, level) and a receipt into our bar", async ({ p
     await page.getByRole("button", { name: "Read the photo" }).click();
   };
   const axe = async () => {
-    await expect(page).toHaveTitle(/Adventures in Tiki/);
+    await expect(page).toHaveTitle(/Equal Parts/);
     const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
     expect(r.violations).toEqual([]);
   };

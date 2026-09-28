@@ -6,7 +6,7 @@ export default function StatsLoading() {
         Loading stats…
       </p>
       <div aria-hidden="true" className="h-5 w-28 animate-pulse rounded-full bg-sand-deep" />
-      <div aria-hidden="true" className="tiki-header h-40 animate-pulse rounded-3xl opacity-80" />
+      <div aria-hidden="true" className="bar-header h-40 animate-pulse rounded-3xl opacity-80" />
       <div aria-hidden="true" className="h-56 animate-pulse rounded-2xl bg-card shadow-sm" />
       <div aria-hidden="true" className="grid grid-cols-2 gap-3">
         <div className="h-28 animate-pulse rounded-2xl bg-sand-deep" />

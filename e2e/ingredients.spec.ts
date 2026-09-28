@@ -4,7 +4,7 @@ test("home links to the ingredients browser, grouped by family", async ({ page }
   await page.goto("/");
   await page.getByRole("link", { name: /Browse ingredients/ }).click();
   await expect(page).toHaveURL(/\/ingredients$/);
-  await expect(page).toHaveTitle(/Ingredients · Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Ingredients · Equal Parts/);
   await expect(page.getByRole("heading", { level: 1, name: "Ingredients" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Rum" })).toBeVisible();
 
@@ -38,8 +38,8 @@ test("an ingredient page shows the style, bottles to buy with source, and the dr
     /diffordsguide\.com\/beer-wine-spirits\/category\/1543\//
   );
 
-  const drinks = page.getByRole("region", { name: /Used in 15 drinks/ }).getByRole("listitem");
-  await expect(drinks).toHaveCount(15);
+  const drinks = page.getByRole("region", { name: /Used in 17 drinks/ }).getByRole("listitem");
+  await expect(drinks).toHaveCount(17);
   await expect(drinks.filter({ hasText: "Zombie" })).toHaveCount(1);
 
   await page.getByText(/Written in the recipes as/).click();

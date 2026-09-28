@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
 
 async function expectAccessible(page: Page) {
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(violations.map((v) => v.id)).toEqual([]);
 }

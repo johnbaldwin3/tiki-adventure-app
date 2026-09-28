@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/page-shell";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { fetchCocktailBySlug } from "@/lib/cocktails";
+import { fetchCocktailCollections } from "@/lib/collections-data";
 import { ingredientsByFamily } from "@/lib/ingredients";
 import type { RecipeDraft } from "@/lib/recipe-form";
 import { SLUG_PATTERN } from "@/lib/slug";
@@ -48,9 +49,14 @@ export default async function EditRecipePage({
       </PageShell>
     );
   }
-  // Difford's Top 100 recipes are verified and read-only.
+  // Difford's Top 100 and the IBA list are verified and read-only.
   if (!cocktail || cocktail.source !== "ours") notFound();
   if (!user.taster) redirect(`/cocktails/${slug}`);
+  // If collections can't load, the form leaves them out (and saving leaves them as they are).
+  const cols = await fetchCocktailCollections(cocktail.id).catch((err) => {
+    console.error("edit recipe: failed to load collections", err);
+    return null;
+  });
 
   const draft: RecipeDraft = {
     name: cocktail.name,
@@ -67,6 +73,7 @@ export default async function EditRecipePage({
     sourceUrl: cocktail.sourceUrl ?? "",
     sourceNote: cocktail.sourceNote ?? "",
     isGuess: cocktail.isGuess,
+    collections: cols?.mine.map((c) => c.id) ?? [],
   };
   const catalog = ingredientsByFamily().map((g) => ({
     family: g.family,
@@ -85,6 +92,7 @@ export default async function EditRecipePage({
         catalog={catalog}
         editSlug={slug}
         cancelHref={`/cocktails/${slug}`}
+        collections={cols?.all.map((c) => ({ id: c.id, name: c.name })) ?? null}
       />
 
       {cocktail.addedBy !== user.taster.initials ? (

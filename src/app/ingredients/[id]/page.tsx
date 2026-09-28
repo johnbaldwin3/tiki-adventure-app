@@ -76,7 +76,7 @@ export default async function IngredientPage({ params, searchParams }: PageProps
         <span aria-hidden="true">←</span> All ingredients
       </Link>
 
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+      <header className="bar-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">{ingredient.family}</p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{ingredient.name}</h1>
         {owned && (

@@ -130,6 +130,7 @@ export function draftFromModel(raw: unknown, sourceUrl = ""): ImportResult | nul
       sourceUrl,
       sourceNote: str(r.sourceNote, LIMITS.sourceNote),
       isGuess: false,
+      collections: [],
     },
     warnings,
   };

@@ -84,13 +84,17 @@ export function listHref({
   ing = [],
   match = "all",
   q = "",
+  c = null,
 }: {
   show?: ListFilter;
   ing?: string[];
   match?: IngredientMatch;
   q?: string;
+  /** Collection slug (null = all drinks). */
+  c?: string | null;
 }): string {
   const params = new URLSearchParams();
+  if (c) params.set("c", c);
   if (q !== "") params.set("q", q);
   if (show !== "all") params.set("show", show);
   if (ing.length > 0) params.set("ing", ing.join(","));

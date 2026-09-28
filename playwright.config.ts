@@ -16,7 +16,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: /(db-down|recipes)\.spec\.ts/,
+      testIgnore: /(db-down|recipes|collections)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
@@ -25,7 +25,7 @@ export default defineConfig({
     // Chromium-based mobile viewport (avoids requiring a separate WebKit install).
     {
       name: "mobile-chrome",
-      testIgnore: /(db-down|recipes)\.spec\.ts/,
+      testIgnore: /(db-down|recipes|collections)\.spec\.ts/,
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
@@ -35,7 +35,7 @@ export default defineConfig({
     // other spec counts on -- so it runs on its own, after them.
     {
       name: "recipes",
-      testMatch: /recipes\.spec\.ts/,
+      testMatch: /(recipes|collections)\.spec\.ts/,
       dependencies: ["chromium", "mobile-chrome"],
       fullyParallel: false,
       use: {

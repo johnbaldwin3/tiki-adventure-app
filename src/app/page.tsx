@@ -1,4 +1,5 @@
 import Form from "next/form";
+import { RecipeCredits } from "@/components/recipe-credits";
 import Link from "next/link";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { IngredientFilter } from "@/components/ingredient-filter";
@@ -7,6 +8,8 @@ import { SuggestionCard } from "@/components/suggestion-card";
 import { fetchBar, fetchCabinet } from "@/lib/cabinet-data";
 import { isLow } from "@/lib/inventory";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { APP_NAME, collectionCounts, inCollection, parseCollection, TIKI_SLUG, type Collection } from "@/lib/collections";
+import { fetchCollections } from "@/lib/collections-data";
 import { getIngredient, lineIds } from "@/lib/ingredients";
 import {
   filterCocktails,
@@ -40,11 +43,21 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
   const match = parseIngredientMatch(sp.match);
   const q = parseSearch(sp.q);
+  const collections: Collection[] = await fetchCollections()
+    .then((r) => r.collections)
+    .catch((err) => {
+      unstable_rethrow(err);
+      console.error("home: failed to load collections", err);
+      return [];
+    });
+  const collection = parseCollection(sp.c, collections);
+  const cSlug = collection?.slug ?? null;
   // The picker form submits ?add=<id>; fold it into a clean, shareable URL.
   // Tidy the search too: an empty box submits ?q=, and stray spaces or an
   // over-long query shouldn't make a second URL for the same view.
-  if (sp.add !== undefined || (sp.q !== undefined && sp.q !== q)) {
-    redirect(listHref({ show: filter, ing: ingredientIds, match, q }));
+  const badCollection = sp.c !== undefined && sp.c !== cSlug && collections.length > 0;
+  if (sp.add !== undefined || (sp.q !== undefined && sp.q !== q) || badCollection) {
+    redirect(listHref({ c: cSlug, show: filter, ing: ingredientIds, match, q }));
   }
   // Only for signed-in tasters (RLS); null otherwise. Started now, used below.
   const cabinetPromise = fetchCabinet().catch((err) => {
@@ -53,16 +66,20 @@ export default async function Page({ searchParams }: PageProps<"/">) {
     return null;
   });
 
-  let records: CocktailRecord[];
+  let allRecords: CocktailRecord[];
   let loadError: string | null = null;
   try {
-    records = await fetchCocktailRecords();
+    allRecords = await fetchCocktailRecords();
   } catch (err) {
     console.error("home: failed to load the tasting log", err);
     loadError =
       err instanceof Error ? err.message : "Failed to load the tasting log.";
-    records = [];
+    allRecords = [];
   }
+  const perCollection = collectionCounts(allRecords);
+  // Everything below is scoped to the chosen collection (or all drinks).
+  const records = inCollection(allRecords, collection);
+  const isTiki = cSlug === TIKI_SLUG;
 
   const ranked = rankCocktails(records);
   const summary = summarizeProgress(records);
@@ -144,30 +161,59 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20"
-        >
-          🌴
-        </span>
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-8 -left-4 text-7xl opacity-10"
-        >
-          🌺
-        </span>
-        <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-          Difford&apos;s Guide Top 100
-        </p>
-        <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">
-          🍹 Adventures in Tiki
-        </h1>
-        <p className="relative mt-2 max-w-xs text-sm text-white/90">
-          JB &amp; GM&apos;s tasting log for the tiki &amp; tropical cocktail
-          canon.
-        </p>
-      </header>
+      {isTiki ? (
+        <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+          <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20">
+            🌴
+          </span>
+          <span aria-hidden="true" className="pointer-events-none absolute -bottom-8 -left-4 text-7xl opacity-10">
+            🌺
+          </span>
+          <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
+            {APP_NAME} · Tiki collection
+          </p>
+          <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">🍹 Adventures in Tiki</h1>
+          <p className="relative mt-2 max-w-xs text-sm text-white/90">
+            JB &amp; GM&apos;s tasting log for the tiki &amp; tropical cocktail canon.
+          </p>
+        </header>
+      ) : (
+        <header className="bar-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+          <span aria-hidden="true" className="pointer-events-none absolute -right-3 -top-5 text-8xl opacity-15">
+            🍸
+          </span>
+          <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
+            JB &amp; GM&apos;s home bar
+          </p>
+          <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{APP_NAME}</h1>
+          <p className="relative mt-2 max-w-xs text-sm text-white/90">
+            {collection?.description ?? "Our cocktails, our bar and our tasting log — tiki, classics and more."}
+          </p>
+        </header>
+      )}
+
+      {collections.length > 0 && (
+        <nav aria-label="Collections" className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          {[null, ...collections].map((col) => {
+            const active = (col?.slug ?? null) === cSlug;
+            const count = col ? (perCollection.get(col.slug) ?? 0) : allRecords.length;
+            return (
+              <Link
+                key={col?.slug ?? "all"}
+                href={listHref({ c: col?.slug ?? null, show: filter, ing: ingredientIds, match, q })}
+                scroll={false}
+                aria-current={active ? "page" : undefined}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold shadow-sm ${
+                  active ? "bg-ink text-white" : "border border-teal/20 bg-card text-teal-deep hover:bg-sand-deep"
+                }`}
+              >
+                {col?.name ?? "All drinks"} <span className={active ? "text-white/80" : "text-ink-faint"}>{count}</span>
+              </Link>
+            );
+          })}
+
+        </nav>
+      )}
 
       {recipeDeleted && (
         <p role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
@@ -284,13 +330,21 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             id="cocktail-list-heading"
             className="text-sm font-bold uppercase tracking-wide text-ink-soft"
           >
-            {records.some((r) => r.source === "ours") ? "The Top 100 + our recipes" : "The Top 100"}
+            {collection ? collection.name : "All drinks"}
           </h2>
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
           {/* Only tasters can add; the cabinet loads only for them. */}
           {cabinet && (
             <Link
-              href="/cocktails/new"
+              href="/collections"
+              className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline"
+            >
+              Collections
+            </Link>
+          )}
+          {cabinet && (
+            <Link
+              href={cSlug ? `/cocktails/new?c=${encodeURIComponent(cSlug)}` : "/cocktails/new"}
               className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline"
             >
               + Add a recipe
@@ -299,6 +353,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </div>
 
         <Form action="/" scroll={false} role="search" className="flex items-end gap-2">
+          {/* First, so the URL comes out in listHref's order (?c=…&q=…). */}
+          {cSlug && <input type="hidden" name="c" value={cSlug} />}
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <label htmlFor="search" className="text-xs font-semibold text-ink-soft">
               Search by name, spirit or ingredient
@@ -327,7 +383,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           </p>
           {q !== "" && (
             <Link
-              href={listHref({ show: filter, ing: ingredientIds, match })}
+              href={listHref({ c: cSlug, show: filter, ing: ingredientIds, match })}
               scroll={false}
               className="font-semibold text-teal underline-offset-2 hover:underline"
             >
@@ -342,7 +398,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             return (
               <Link
                 key={f.value}
-                href={listHref({ show: f.value, ing: ingredientIds, match, q })}
+                href={listHref({ c: cSlug, show: f.value, ing: ingredientIds, match, q })}
                 scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={`flex-1 rounded-full px-3 py-2 text-center text-sm font-semibold shadow-sm transition-colors ${
@@ -359,6 +415,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
         <IngredientFilter
           q={q}
+          c={cSlug}
           showCount={false}
           show={filter}
           selected={ingredientIds}
@@ -399,14 +456,16 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             // rank on the Tasted view (sorted by rating), Difford's rank
             // everywhere else (sorted by Difford's list).
             const showOurRank = filter === "tasted";
-            const circle = showOurRank ? (c.rank ?? "–") : (c.diffordsRank ?? "★");
+            const circle = showOurRank ? (c.rank ?? "–") : (c.diffordsRank ?? (c.source === "iba" ? "◆" : "★"));
             const circleLabel = showOurRank
               ? c.rank
                 ? `Our rank ${c.rank}`
                 : "Not yet rated"
               : c.diffordsRank !== null
                 ? `Difford's rank ${c.diffordsRank}`
-                : "Our recipe";
+                : c.source === "iba"
+                  ? "IBA official cocktail"
+                  : "Our recipe";
             return (
               <li key={c.slug}>
                 <Link
@@ -463,18 +522,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </>
       )}
 
-      <p className="pt-2 text-center text-xs text-ink-faint">
-        Recipes adapted from{" "}
-        <a
-          href="https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-teal underline underline-offset-2"
-        >
-          Difford&apos;s Guide<span className="sr-only"> (opens in a new tab)</span>
-        </a>
-        .
-      </p>
+      <RecipeCredits />
     </main>
   );
 }

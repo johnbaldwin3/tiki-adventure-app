@@ -69,3 +69,8 @@ body {
 .tiki-header {
   background-image: linear-gradient(135deg, var(--color-teal-deep), var(--color-coral-deep));
 }
+
+/* Everything but the Tiki collection: a calmer home-bar look (white text stays AA on both stops). */
+.bar-header {
+  background-image: linear-gradient(135deg, var(--color-ink), var(--color-teal-deep));
+}

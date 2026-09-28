@@ -43,6 +43,8 @@ export interface RecipeDraft {
   sourceNote: string;
   /** A best guess (e.g. worked out from a menu description), not a tested recipe. */
   isGuess: boolean;
+  /** Collection ids it's in (checked against the real list on save). */
+  collections: string[];
 }
 
 export const EMPTY_LINE: RecipeLine = { amount: "", unit: "", ingredient: "", catalogId: "" };
@@ -58,6 +60,7 @@ export function emptyDraft(): RecipeDraft {
     sourceUrl: "",
     sourceNote: "",
     isGuess: false,
+    collections: [],
   };
 }
 
@@ -119,6 +122,13 @@ export function readRecipeForm(form: FormLike): RecipeDraft {
     sourceUrl: clean(form.get("sourceUrl"), LIMITS.sourceUrl),
     sourceNote: clean(form.get("sourceNote"), LIMITS.sourceNote),
     isGuess: form.get("isGuess") === "on",
+    collections: [
+      ...new Set(
+        (form.getAll?.("collection") ?? [])
+          .filter((v): v is string => typeof v === "string" && /^[0-9a-z-]{1,64}$/i.test(v))
+          .slice(0, 50)
+      ),
+    ],
   };
 }
 

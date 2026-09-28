@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/** Standard page frame: back link + tiki header banner. */
+/** Standard page frame: back link + header banner. */
 export function PageShell({
   back = { href: "/", label: "All cocktails" },
   eyebrow,
@@ -25,7 +25,7 @@ export function PageShell({
       >
         <span aria-hidden="true">←</span> {back.label}
       </Link>
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+      <header className="bar-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         {icon && (
           <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20">
             {icon}

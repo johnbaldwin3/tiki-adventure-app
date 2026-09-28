@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function expectAccessible(page: Page) {
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(" | ")}`)).toEqual([]);
 }
@@ -90,7 +90,7 @@ test("paste text: the helper drafts it, we review and save", async ({ page }) =>
 
   // It's in the list, the search, and the ingredient pages.
   await page.goto("/?q=swizzle");
-  await expect(page.getByRole("heading", { name: "The Top 100 + our recipes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "All drinks" })).toBeVisible();
   const row = page.getByRole("list", { name: "Cocktails" }).getByRole("link", { name: /Test Swizzle/ });
   await expect(row).toContainText("Our recipe");
   await page.goto("/ingredients/navy-rum");

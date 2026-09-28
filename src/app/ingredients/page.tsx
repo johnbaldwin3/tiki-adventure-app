@@ -27,11 +27,11 @@ export default async function IngredientsPage() {
         <span aria-hidden="true">←</span> All cocktails
       </Link>
 
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+      <header className="bar-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20">
           🍍
         </span>
-        <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Adventures in Tiki</p>
+        <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Equal Parts</p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">Ingredients</h1>
         <p className="relative mt-2 max-w-xs text-sm text-white/90">
           Every ingredient on our list, by style, with example bottles to look for.

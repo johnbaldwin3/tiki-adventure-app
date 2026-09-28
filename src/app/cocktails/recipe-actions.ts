@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { hasErrors, readRecipeForm, toCocktailRow, uniqueSlug, validateRecipe, type RecipeDraft, type RecipeErrors } from "@/lib/recipe-form";
 import { parseIngredients } from "@/lib/cocktails";
+import { planMembershipChange, readShownCollections } from "@/lib/collections";
 import type { GuessInfo, ImportKind } from "@/lib/recipe-import";
 import { guessFromMenu, importRecipe, ImportError } from "@/lib/server/recipe-ai";
 import { supabase } from "@/lib/supabase";
@@ -156,9 +157,60 @@ export async function saveRecipe(prev: SaveState, formData: FormData): Promise<S
     if (error) return back(saveError(error, draft.name));
   }
 
+  // Collections (only when the form showed them; otherwise they're left alone).
+  let collectionsOk = true;
+  if (formData.get("collectionsShown") === "1") {
+    collectionsOk = await syncCollections(db, slug, draft.collections, readShownCollections(formData));
+  }
+
   revalidatePath("/");
   revalidatePath(`/cocktails/${slug}`);
-  redirect(`/cocktails/${slug}?recipe=${editing ? "saved" : "added"}`);
+  redirect(`/cocktails/${slug}?recipe=${editing ? "saved" : "added"}${collectionsOk ? "" : "&collections=error"}`);
+}
+
+/** Puts a recipe in exactly the picked collections (ids checked against the real list). */
+async function syncCollections(
+  db: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  slug: string,
+  picks: string[],
+  shown: string[]
+): Promise<boolean> {
+  try {
+    const [{ data: drink, error: drinkError }, { data: cols, error: colError }] = await Promise.all([
+      db.from("cocktails").select("id").eq("slug", slug).maybeSingle(),
+      db.from("collections").select("id"),
+    ]);
+    if (drinkError || colError || !drink) throw drinkError ?? colError ?? new Error("recipe not found");
+    const known = new Set(((cols ?? []) as { id: string }[]).map((c) => c.id));
+    const picked = picks.filter((id) => known.has(id));
+    const { data: rows, error: memError } = await db
+      .from("cocktail_collections")
+      .select("collection_id")
+      .eq("cocktail_id", drink.id);
+    if (memError) throw memError;
+    const { add, remove } = planMembershipChange(
+      ((rows ?? []) as { collection_id: string }[]).map((r) => r.collection_id),
+      picked,
+      shown
+    );
+    if (add.length > 0) {
+      const { error } = await db
+        .from("cocktail_collections")
+        .upsert(
+          add.map((id) => ({ cocktail_id: drink.id, collection_id: id })),
+          { onConflict: "collection_id,cocktail_id", ignoreDuplicates: true }
+        );
+      if (error) throw error;
+    }
+    if (remove.length > 0) {
+      const { error } = await db.from("cocktail_collections").delete().eq("cocktail_id", drink.id).in("collection_id", remove);
+      if (error) throw error;
+    }
+    return true;
+  } catch (err) {
+    console.error("saveRecipe: collections failed", err);
+    return false;
+  }
 }
 
 function saveError(error: { code?: string; message?: string }, name: string): RecipeErrors {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageShell } from "@/components/page-shell";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { ingredientsByFamily } from "@/lib/ingredients";
+import { fetchCollections } from "@/lib/collections-data";
 import { ImportRecipe } from "./import-recipe";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 export const metadata: Metadata = { title: "Add a recipe", robots: { index: false } };
 
-export default async function NewRecipePage() {
+export default async function NewRecipePage({ searchParams }: PageProps<"/cocktails/new">) {
+  const sp = await searchParams;
   const user = await getSignedInUser();
   const shell = {
     eyebrow: "Our recipes",
@@ -40,9 +42,21 @@ export default async function NewRecipePage() {
     family: g.family,
     items: g.items.map((i) => ({ id: i.id, name: i.name })),
   }));
+  const collections = await fetchCollections()
+    .then((r) => r.collections)
+    .catch((err) => {
+      console.error("new recipe: failed to load collections", err);
+      return null;
+    });
+  // Came from a collection's list (?c=): start with that one ticked.
+  const from = collections?.find((c) => c.slug === sp.c);
   return (
     <PageShell {...shell}>
-      <ImportRecipe catalog={catalog} />
+      <ImportRecipe
+        catalog={catalog}
+        collections={collections?.map((c) => ({ id: c.id, name: c.name })) ?? null}
+        defaultCollections={from ? [from.id] : []}
+      />
     </PageShell>
   );
 }

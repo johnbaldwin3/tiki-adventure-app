@@ -1,8 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// Fixture facts (seed-data/cocktails.json): Aged Jamaican rum is in 15
-// drinks (6 tasted); Falernum in 17; both together only in Zombie; either
-// in 31.
+// Fixture facts (seed-data/cocktails.json + iba-cocktails.json, 196 drinks):
+// Aged Jamaican rum is in 17 drinks (6 tasted); Falernum in 19; both
+// together only in Zombie; either in 35. In the Tiki collection alone
+// (103 drinks) Aged Jamaican rum is in 16.
 const list = (page: Page) => page.getByRole("list", { name: "Cocktails" }).getByRole("listitem");
 
 async function addIngredient(page: Page, label: RegExp) {
@@ -15,13 +16,13 @@ async function addIngredient(page: Page, label: RegExp) {
 test("filter the list by one ingredient, then combine with Tasted", async ({ page }) => {
   await page.goto("/");
   await page.getByText("Filter by ingredient").click();
-  await addIngredient(page, /^Aged Jamaican rum \(funky\) — in 15$/);
+  await addIngredient(page, /^Aged Jamaican rum \(funky\) — in 17$/);
 
   await expect(page).toHaveURL(/\/\?ing=aged-jamaican-rum$/);
-  await expect(list(page)).toHaveCount(15);
-  await expect(page.getByRole("status").filter({ hasText: "15 drinks match" })).toBeVisible();
+  await expect(list(page)).toHaveCount(17);
+  await expect(page.getByRole("status").filter({ hasText: "17 drinks match" })).toBeVisible();
   const filters = page.getByRole("navigation", { name: "Filter cocktails" });
-  await expect(filters.getByRole("link", { name: /^All 15/ })).toBeVisible();
+  await expect(filters.getByRole("link", { name: /^All 17/ })).toBeVisible();
 
   await filters.getByRole("link", { name: /^Tasted 6/ }).click();
   await expect(page).toHaveURL(/\/\?show=tasted&ing=aged-jamaican-rum$/);
@@ -38,16 +39,27 @@ test("two ingredients: all-of vs any-of, remove and clear", async ({ page }) => 
   const matchNav = page.getByRole("navigation", { name: "Ingredient match" });
   await matchNav.getByRole("link", { name: "Any of these" }).click();
   await expect(page).toHaveURL(/match=any$/);
-  await expect(list(page)).toHaveCount(31);
+  await expect(list(page)).toHaveCount(35);
 
   await page.getByRole("link", { name: "Remove Falernum liqueur" }).click();
   await expect(page).toHaveURL(/\/\?ing=aged-jamaican-rum$/);
   await expect(page.getByLabel("Add another ingredient")).toBeFocused();
-  await expect(list(page)).toHaveCount(15);
+  await expect(list(page)).toHaveCount(17);
 
   await page.getByRole("link", { name: "Clear ingredients" }).click();
   await expect.poll(() => new URL(page.url()).search).toBe("");
-  await expect(list(page)).toHaveCount(100);
+  await expect(list(page)).toHaveCount(196);
+});
+
+test("the ingredient filter works within a collection and keeps it", async ({ page }) => {
+  await page.goto("/?c=tiki");
+  await page.getByText("Filter by ingredient").click();
+  await addIngredient(page, /^Aged Jamaican rum \(funky\) — in 16$/);
+  await expect(page).toHaveURL(/\/\?c=tiki&ing=aged-jamaican-rum$/);
+  await expect(list(page)).toHaveCount(16);
+  await page.getByRole("link", { name: "Clear ingredients" }).click();
+  await expect(page).toHaveURL(/\/\?c=tiki$/);
+  await expect(list(page)).toHaveCount(103);
 });
 
 test("the picker doesn't offer ingredients already chosen", async ({ page }) => {
@@ -65,7 +77,7 @@ test("no-match message suggests switching to any-of", async ({ page }) => {
 
 test("unknown ingredient ids in the URL are ignored", async ({ page }) => {
   await page.goto("/?ing=unicorn-tears");
-  await expect(list(page)).toHaveCount(100);
+  await expect(list(page)).toHaveCount(196);
 });
 
 test("an ingredient page links to the filtered list", async ({ page }) => {
@@ -94,7 +106,7 @@ test("tab links keep the ingredient filter", async ({ page }) => {
 test("an invalid ?add= is dropped via redirect", async ({ page }) => {
   await page.goto("/?add=unicorn-tears");
   await expect.poll(() => new URL(page.url()).search).toBe("");
-  await expect(list(page)).toHaveCount(100);
+  await expect(list(page)).toHaveCount(196);
 });
 
 test("any-of empty state wording", async ({ page }) => {

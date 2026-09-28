@@ -1,14 +1,20 @@
-# Adventures in Tiki Tracker
+# Equal Parts
 
-A mobile-first tasting log, spirits guide, and ranking tracker for Difford's
-Guide's Top 100 Tiki & Tropical Cocktails, built for John (JB) and Genny (GM).
+John (JB) and Genny (GM)'s home bar app: a mobile-first tasting log, bar
+inventory, shopping list and recipe book, organised into **collections**
+(Tiki, Classics, Prohibition, and any we add). It started as "Adventures in
+Tiki", a tracker for Difford's Guide's Top 100 Tiki & Tropical Cocktails;
+that's now the Tiki collection, which keeps its name and tropical look.
 
 **Live:** https://tiki-adventure-app-beige.vercel.app
 
 Recipe data (ingredients, amounts, glassware, garnish) is independently
 verified against each cocktail's actual recipe page on
 [diffordsguide.com](https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical) —
-see `seed-data/cocktails.json`. Method descriptions are written in our own
+see `seed-data/cocktails.json`. The Classics are the International
+Bartenders Association's [official cocktails](https://iba-world.com/cocktails/all-cocktails/),
+checked the same way against each drink's IBA page -- see
+`seed-data/iba-cocktails.json`. Method descriptions are written in our own
 words rather than copied from the source, and every recipe card credits and
 links back to the original.
 
@@ -38,7 +44,29 @@ in; see below.
 
 ## What's in the app
 
-- **Home (`/`)** -- progress tiles and all 100 cocktails, filterable by
+- **Collections** -- a row of collection pills on the home page (`?c=tiki`,
+  `?c=classics`, `?c=prohibition`, or All drinks) scopes the list, search,
+  filters, "Try next" and the progress tiles. Tiki shows the original
+  "Adventures in Tiki" header; everything else the calmer Equal Parts look.
+  Starting collections (migrations 0011/0012, from `seed-data/collections.json`):
+  - **Tiki** -- Difford's Top 100 Tiki & Tropical, our own recipes at the
+    time, plus IBA Tiki, Piña Colada and Planters Punch.
+  - **Classics** -- all 102 IBA official cocktails: 96 new rows
+    (`source = 'iba'`, read-only, ingredients as IBA publishes them in ml)
+    plus the six already in Difford's list (Mai Tai (Trader Vic's), Zombie,
+    Jungle Bird, Missionary's Downfall, Three Dots and a Dash, Suffering
+    Bastard), which keep Difford's recipe with a note that IBA's differs.
+  - **Prohibition** -- 18 drinks created or first recorded during US
+    Prohibition (1920–1933), plus the Daiquiri (popularised then), each
+    with a dated story and a source link on its card. Bloody Mary and Mimosa
+    are left out: neither is documented until after repeal.
+  A recipe card lists its collections (tasters can change them there);
+  `/collections` lets tasters add, rename and remove collections (the three
+  starting ones can be renamed, not removed); the recipe form has
+  collection checkboxes (pre-ticked when "Add a recipe" is used from a
+  collection). Stats show progress per collection. Logic in
+  `src/lib/collections.ts`.
+- **Home (`/`)** -- progress tiles and every drink, filterable by
   All / Tasted / Not yet and by ingredient (pick one or more; drinks using
   all of them, or any of them). Every filter state is a shareable URL, e.g.
   `/?show=untasted&ing=aged-jamaican-rum,falernum&match=any`. A search box
@@ -61,7 +89,7 @@ in; see below.
   original on Difford's Guide.
 - **Stats (`/stats`)** -- progress by Difford's rank band, John vs Genny,
   rating spread, where we disagree, favorites.
-- **Ingredients (`/ingredients`)** -- every ingredient in the Top 100 as a
+- **Ingredients (`/ingredients`)** -- every ingredient in our recipes as a
   brand-neutral style, grouped by family, with example bottles to look for
   and the drinks that use it. Recipe-card ingredient lines link here. The
   catalog lives in `src/data/ingredients.ts`: each style has a family,
@@ -125,7 +153,7 @@ in; see below.
   connect time; ports 80/443; ≤3 redirects; 2 MB; one 50 s deadline).
   Either taster can edit one of our recipes; only the taster who added it
   can delete it (which also removes both tasters' ratings for it). The
-  verified Top 100 stay read-only (migration 0008: RLS + column grants).
+  verified Top 100 and IBA drinks stay read-only (migration 0008: RLS + column grants).
 - **Recipe from a menu (`/cocktails/new` → "From a menu")** -- type what a
   bar menu says (ingredients, no amounts), optionally the drink name, the
   bar, and/or a photo of the menu. The recipe helper works out plausible
@@ -182,8 +210,13 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0010` in order (Supabase SQL editor
-   or `supabase db push`).
+1. Apply `supabase/migrations/0001` … `0012` in order (Supabase SQL editor
+   or `supabase db push`). 0012 (the IBA drinks and collections) is
+   generated from `seed-data/iba-cocktails.json` and
+   `seed-data/collections.json` by `node scripts/generate-collections-sql.mjs`
+   (a unit test checks it's up to date). Note: 0012's Tiki step files every
+   Difford's row -- so on a fresh project, run the migrations up to 0011,
+   then `supabase/seed.sql`, then 0012.
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
    `seed-data/cocktails.json` by `npm run db:seed-sql`.
@@ -250,10 +283,20 @@ review pass:
 16. ✅ Living bar inventory — bottle levels, "We made this" pours (with undo), running-low alerts and restocking
 17. ✅ Bar scanner — add bottles from a photo (style, size, estimated level) or from a receipt
 18. ✅ Recipe from a menu — a best-guess recipe from a menu listing, using our recipes' ratios (+ optional web search), badged until tested
+19. ✅ Equal Parts: collections — renamed from Adventures in Tiki; Tiki, Classics (the 102 IBA official cocktails) and Prohibition collections, add/rename your own, per-collection stats; 42 new catalog styles for the classics (vermouths, whiskeys, liqueurs…)
 
 ## Future ideas (not yet scheduled)
 
-Captured from John so they don't get lost:
+Captured from John so they don't get lost, in the order he picked (Sep 2026):
 
+1. Style tags -- structure (sour, stirred, highball…), base spirit and a few
+   flavor words, suggested by the recipe helper and reviewed; filters like
+   "stirred + whiskey".
+2. Suggestions from our ratings -- "what next" leans toward the styles each
+   of us rates highly, and says why; a "surprise me" stretch pick.
+3. Broader bar -- open-bottle freshness (vermouth), homemade syrups with a
+   made-on date, substitutions ("out of Campari? use Aperol").
+4. Hosting extras -- batching for a pitcher or punch bowl (with dilution),
+   party prep lists, cost per drink.
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time

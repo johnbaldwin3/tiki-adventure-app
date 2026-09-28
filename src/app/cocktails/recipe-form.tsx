@@ -19,6 +19,8 @@ interface Props {
   /** Things the recipe helper wasn't sure about. */
   warnings?: string[];
   cancelHref: string;
+  /** Collections to pick from; null if they couldn't load (then they're left alone on save). */
+  collections?: { id: string; name: string }[] | null;
 }
 
 
@@ -37,7 +39,7 @@ function Err({ id, message }: { id: string; message?: string }) {
  * ingredient style from our catalog (so our bar, the shopping list and the
  * ingredient filter understand it).
  */
-export function RecipeForm({ initial, catalog, editSlug, warnings = [], cancelHref }: Props) {
+export function RecipeForm({ initial, catalog, editSlug, warnings = [], cancelHref, collections = null }: Props) {
   const [state, formAction, pending] = useActionState<SaveState, FormData>(saveRecipe, {
     submission: 0,
     draft: initial,
@@ -327,6 +329,30 @@ export function RecipeForm({ initial, catalog, editSlug, warnings = [], cancelHr
           <Err id="sourceUrl-error" message={e.sourceUrl} />
         </div>
       </div>
+
+      {collections && collections.length > 0 && (
+        <fieldset>
+          <input type="hidden" name="collectionsShown" value="1" />
+          <legend className="text-sm font-semibold text-ink">
+            Collections <span className="font-normal text-ink-soft">(optional)</span>
+          </legend>
+          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1.5">
+            {collections.map((c) => (
+              <label key={c.id} className="flex items-center gap-2 text-sm text-ink">
+                <input type="hidden" name="shown" value={c.id} />
+                <input
+                  type="checkbox"
+                  name="collection"
+                  value={c.id}
+                  defaultChecked={d.collections.includes(c.id)}
+                  className="size-5 shrink-0 accent-teal-deep"
+                />
+                {c.name}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       <label className="flex items-start gap-2 text-sm text-ink">
         <input

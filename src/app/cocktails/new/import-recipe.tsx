@@ -146,7 +146,16 @@ function GuessPanel({ guess }: { guess: GuessInfo }) {
  * the recipe. Step 2: review/fix everything in the form, then save.
  * Nothing is saved until "Save recipe".
  */
-export function ImportRecipe({ catalog }: { catalog: CatalogGroup[] }) {
+export function ImportRecipe({
+  catalog,
+  collections = null,
+  defaultCollections = [],
+}: {
+  catalog: CatalogGroup[];
+  collections?: { id: string; name: string }[] | null;
+  /** Ticked to start with (the collection "Add a recipe" was used from). */
+  defaultCollections?: string[];
+}) {
   const [state, formAction, pending] = useActionState<ImportState, FormData>(
     extractRecipe,
     {
@@ -176,8 +185,9 @@ export function ImportRecipe({ catalog }: { catalog: CatalogGroup[] }) {
     else messageRef.current?.focus();
   }, [state.submission, state.status]);
 
-  const draft =
+  const baseDraft =
     state.status === "draft" ? state.draft : manual ? emptyDraft() : null;
+  const draft = baseDraft ? { ...baseDraft, collections: defaultCollections } : null;
   const needs =
     kind === "photo" && !photo
       ? "Choose a photo first."
@@ -218,6 +228,7 @@ export function ImportRecipe({ catalog }: { catalog: CatalogGroup[] }) {
           catalog={catalog}
           warnings={state.status === "draft" ? state.warnings : []}
           cancelHref="/"
+          collections={collections}
         />
       </section>
     );

@@ -10,7 +10,7 @@ import { GENNY, signIn } from "./auth";
 async function expectNoViolations(page: Page) {
   // Next streams <title> in after the body; wait for it so axe doesn't
   // scan a half-rendered page mid-navigation.
-  await expect(page).toHaveTitle(/Adventures in Tiki/);
+  await expect(page).toHaveTitle(/Equal Parts/);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();

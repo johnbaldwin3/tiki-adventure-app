@@ -1,8 +1,11 @@
+import { collectionSlugsByCocktail } from "./collections";
+import { fetchCollections } from "./collections-data";
 import { byListOrder } from "./order";
 import { supabase } from "./supabase";
 import type { TastingRecord } from "./tasting";
 
-export type CocktailSource = "diffords" | "ours";
+/** diffords: Difford's Top 100 (tiki); iba: the IBA official list; ours: added by JB & GM. */
+export type CocktailSource = "diffords" | "ours" | "iba";
 
 export interface CocktailRecord extends TastingRecord {
   slug: string;
@@ -17,6 +20,10 @@ export interface CocktailRecord extends TastingRecord {
   source: CocktailSource;
   /** One of our recipes that's a best guess (e.g. from a menu), not tested yet. */
   isGuess?: boolean;
+  /** Database id (joins collection memberships). */
+  id?: string;
+  /** Slugs of the collections it's in, in collection order. */
+  collections?: string[];
 }
 
 interface RawCocktailRow {
@@ -32,7 +39,7 @@ interface RawCocktailRow {
 }
 
 function toSource(value: unknown, diffordsRank: number | null): CocktailSource {
-  if (value === "ours" || value === "diffords") return value;
+  if (value === "ours" || value === "diffords" || value === "iba") return value;
   return diffordsRank === null ? "ours" : "diffords";
 }
 
@@ -57,7 +64,8 @@ interface RawTastingRow {
  */
 export function mapRowsToCocktailRecords(
   cocktailRows: RawCocktailRow[],
-  tastingRows: RawTastingRow[]
+  tastingRows: RawTastingRow[],
+  collectionsByCocktail: Map<string, string[]> = new Map()
 ): CocktailRecord[] {
   const tastingsByCocktail = new Map<
     string,
@@ -95,8 +103,10 @@ export function mapRowsToCocktailRecords(
       const t = tastingsByCocktail.get(c.id);
       const lines = parseIngredients(c.ingredients);
       return {
+        id: c.id,
         name: c.name,
         slug: c.slug,
+        collections: collectionsByCocktail.get(c.id) ?? [],
         diffordsRank: c.diffords_rank,
         diffordsGuideUrl: c.diffords_guide_url,
         primarySpirits: c.primary_spirits ?? [],
@@ -120,12 +130,18 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
   const [
     { data: cocktailRows, error: cocktailsError },
     { data: tastingRows, error: tastingsError },
+    { collections, memberships },
   ] = await Promise.all([
     supabase
       .from("cocktails")
       .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source, is_guess")
       .order("diffords_rank", { ascending: true, nullsFirst: false }),
     supabase.from("tastings").select("cocktail_id, rating, tried, tasters(initials)"),
+    // Collections are extra: if they can't load, the list still works (no collection tags).
+    fetchCollections().catch((err) => {
+      console.error("cocktails: failed to load collections", err);
+      return { collections: [], memberships: [] };
+    }),
   ]);
 
   if (cocktailsError) {
@@ -137,7 +153,8 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
 
   return mapRowsToCocktailRecords(
     (cocktailRows ?? []) as RawCocktailRow[],
-    (tastingRows ?? []) as unknown as RawTastingRow[]
+    (tastingRows ?? []) as unknown as RawTastingRow[],
+    collectionSlugsByCocktail(collections, memberships)
   );
 }
 

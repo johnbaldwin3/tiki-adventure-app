@@ -15,11 +15,15 @@ test("home links to the stats dashboard", async ({ page }) => {
 
 test("stats dashboard shows progress, tasters, spread, disagreements and top 5", async ({ page }) => {
   await page.goto("/stats");
-  await expect(page.getByText("of 100 tasted")).toBeVisible();
+  await expect(page.getByText("of 196 tasted")).toBeVisible();
 
+  // All, the three collections, and Difford's four bands.
   const meters = page.getByRole("meter");
-  await expect(meters).toHaveCount(5);
-  await expect(page.getByRole("meter", { name: "Tasted, all 100" })).toHaveAttribute("aria-valuenow", "21");
+  await expect(meters).toHaveCount(8);
+  await expect(page.getByRole("meter", { name: "Tasted, all 196" })).toHaveAttribute("aria-valuenow", "21");
+  await expect(page.getByRole("meter", { name: "Tasted, Tiki" })).toHaveAttribute("aria-valuenow", "21");
+  await expect(page.getByRole("meter", { name: "Tasted, Classics" })).toHaveAttribute("aria-valuemax", "102");
+  await expect(page.getByRole("meter", { name: "Tasted, Prohibition" })).toHaveAttribute("aria-valuemax", "18");
   // The four Difford's bands add up to the total.
   const bandValues = await Promise.all(
     ["1–25", "26–50", "51–75", "76–100"].map((b) =>

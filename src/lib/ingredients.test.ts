@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { FAMILIES, INGREDIENT_ALIASES, INGREDIENTS } from "@/data/ingredients";
 import seed from "../../seed-data/cocktails.json";
+import iba from "../../seed-data/iba-cocktails.json";
 import {
   aliasesFor,
   lineIds,
@@ -11,14 +12,14 @@ import {
   resolveIngredient,
 } from "./ingredients";
 
-const recipes = seed as { name: string; ingredients: { ingredient: string }[] }[];
+const recipes = [...seed, ...iba.cocktails] as { name: string; ingredients: { ingredient: string }[] }[];
 const allWordings = new Set(recipes.flatMap((c) => c.ingredients.map((i) => i.ingredient)));
 
 describe("ingredient catalog", () => {
-  it("maps every ingredient line in all 100 verified recipes", () => {
+  it("maps every ingredient line in the verified recipes (Difford's 100 + the IBA list)", () => {
     const unmapped = [...allWordings].filter((w) => !resolveIngredient(w));
     expect(unmapped).toEqual([]);
-    expect(allWordings.size).toBe(153);
+    expect(recipes).toHaveLength(196);
   });
 
   it("has no stale aliases (every alias is a wording the recipes actually use)", () => {
@@ -40,10 +41,10 @@ describe("ingredient catalog", () => {
     expect(INGREDIENTS.every((i) => (FAMILIES as readonly string[]).includes(i.family))).toBe(true);
   });
 
-  it("marks only John's chosen staples as always-on-hand", () => {
+  it("marks only John's chosen staples (plus plain sugar) as always-on-hand", () => {
     const staples = INGREDIENTS.filter((i) => i.staple).map((i) => i.id).sort();
     expect(staples).toEqual(
-      ["angostura-bitters", "grapefruit-juice", "lemon-juice", "lime", "orange-juice", "saline", "soda-water", "water"].sort()
+      ["angostura-bitters", "grapefruit-juice", "lemon-juice", "lime", "orange-juice", "saline", "soda-water", "sugar", "water"].sort()
     );
   });
 

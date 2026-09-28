@@ -90,7 +90,7 @@ export async function callModelWithCitations(
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "https://tiki-adventure-app-beige.vercel.app",
-      "X-Title": "Adventures in Tiki",
+      "X-Title": "Equal Parts",
     },
     body: JSON.stringify({
       model: process.env.TIKI_OPENROUTER_MODEL || DEFAULT_MODEL,

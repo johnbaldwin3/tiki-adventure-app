@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { RecipeCredits } from "@/components/recipe-credits";
 import Link from "next/link";
 import { fetchCocktailRecords } from "@/lib/cocktails";
+import { collectionProgress } from "@/lib/collections";
+import { fetchCollections } from "@/lib/collections-data";
 import { computeDashboardStats, type DashboardStats, type TasterStats } from "@/lib/stats";
 
 // Same always-fresh reasoning as the home page (src/app/page.tsx).
@@ -232,8 +235,11 @@ function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
 
 export default async function StatsPage() {
   let stats: DashboardStats | null = null;
+  let byCollection: ReturnType<typeof collectionProgress> = [];
   try {
-    stats = computeDashboardStats(await fetchCocktailRecords());
+    const records = await fetchCocktailRecords();
+    stats = computeDashboardStats(records);
+    byCollection = collectionProgress((await fetchCollections()).collections, records);
   } catch (err) {
     console.error("stats: failed to load", err);
     stats = null;
@@ -248,12 +254,12 @@ export default async function StatsPage() {
         <span aria-hidden="true">←</span> All cocktails
       </Link>
 
-      <header className="tiki-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
+      <header className="bar-header relative overflow-hidden rounded-3xl px-5 py-6 text-white shadow-lg">
         <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-6 text-8xl opacity-20">
           🌺
         </span>
         <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-          Adventures in Tiki
+          Equal Parts
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">Our stats</h1>
         {stats && (
@@ -282,6 +288,19 @@ export default async function StatsPage() {
                 </div>
                 <Meter value={stats.tried} total={stats.total} label={`Tasted, all ${stats.total}`} />
               </div>
+              {byCollection.map((b) => (
+                <div key={b.slug} className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-sm">
+                    <Link href={`/?c=${encodeURIComponent(b.slug)}`} className="font-semibold text-teal-deep underline-offset-2 hover:underline">
+                      {b.name}
+                    </Link>
+                    <span className="tabular-nums text-ink-soft">
+                      {b.tried} / {b.total}
+                    </span>
+                  </div>
+                  <Meter value={b.tried} total={b.total} label={`Tasted, ${b.name}`} />
+                </div>
+              ))}
               {stats.bands.map((b) => (
                 <div key={b.label} className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-sm">
@@ -364,18 +383,7 @@ export default async function StatsPage() {
           )}
         </>
       )}
-      <p className="pt-2 text-center text-xs text-ink-faint">
-        Recipes adapted from{" "}
-        <a
-          href="https://www.diffordsguide.com/cocktails/directory/styles/tiki-tropical"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-teal underline underline-offset-2"
-        >
-          Difford&apos;s Guide<span className="sr-only"> (opens in a new tab)</span>
-        </a>
-        .
-      </p>
+      <RecipeCredits />
     </main>
   );
 }

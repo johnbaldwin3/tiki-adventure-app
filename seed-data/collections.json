@@ -1,0 +1,444 @@
+{
+ "note": "Built-in collections and their starting members. The Prohibition list is drinks created or first recorded during US Prohibition (16 Jan 1920 - 5 Dec 1933), plus the Daiquiri (popularised then), each with a source; Bloody Mary and Mimosa are left out because neither is documented until after repeal.",
+ "collections": [
+  {
+   "slug": "tiki",
+   "name": "Tiki",
+   "title": "Adventures in Tiki",
+   "description": "Difford's Guide Top 100 Tiki & Tropical Cocktails, plus our own tiki finds.",
+   "sortOrder": 1,
+   "members": "all-diffords+ours",
+   "extra": [
+    {
+     "name": "IBA Tiki"
+    },
+    {
+     "name": "Pina Colada"
+    },
+    {
+     "name": "Planters Punch"
+    }
+   ]
+  },
+  {
+   "slug": "classics",
+   "name": "Classics",
+   "title": "Classics",
+   "description": "The IBA's official cocktails: the Unforgettables, Contemporary Classics and New Era drinks.",
+   "sortOrder": 2,
+   "members": [
+    {
+     "name": "Alexander"
+    },
+    {
+     "name": "Americano"
+    },
+    {
+     "name": "Angel Face"
+    },
+    {
+     "name": "Aviation"
+    },
+    {
+     "name": "Bee's Knees"
+    },
+    {
+     "name": "Bellini"
+    },
+    {
+     "name": "Between the Sheets"
+    },
+    {
+     "name": "Black Russian"
+    },
+    {
+     "name": "Bloody Mary"
+    },
+    {
+     "name": "Boulevardier"
+    },
+    {
+     "name": "Bramble"
+    },
+    {
+     "name": "Brandy Crusta"
+    },
+    {
+     "name": "Caipirinha"
+    },
+    {
+     "name": "Canchanchara"
+    },
+    {
+     "name": "Cardinale"
+    },
+    {
+     "name": "Casino"
+    },
+    {
+     "name": "Champagne Cocktail"
+    },
+    {
+     "name": "Chartreuse Swizzle"
+    },
+    {
+     "name": "Clover Club"
+    },
+    {
+     "name": "Corpse Reviver #2"
+    },
+    {
+     "name": "Cosmopolitan"
+    },
+    {
+     "name": "Cuba Libre"
+    },
+    {
+     "name": "Daiquiri"
+    },
+    {
+     "name": "Dark 'N' Stormy"
+    },
+    {
+     "name": "Don's Special Daiquiri"
+    },
+    {
+     "name": "Dry Martini"
+    },
+    {
+     "name": "Espresso Martini"
+    },
+    {
+     "name": "Fernandito"
+    },
+    {
+     "name": "French 75"
+    },
+    {
+     "name": "French Connection"
+    },
+    {
+     "name": "French Martini"
+    },
+    {
+     "name": "Garibaldi"
+    },
+    {
+     "name": "Gin Basil Smash"
+    },
+    {
+     "name": "Gin Fizz"
+    },
+    {
+     "name": "Grand Margarita"
+    },
+    {
+     "name": "Grasshopper"
+    },
+    {
+     "name": "Hanky Panky"
+    },
+    {
+     "name": "Hemingway Special"
+    },
+    {
+     "name": "Horse's Neck"
+    },
+    {
+     "name": "IBA Tiki"
+    },
+    {
+     "name": "Illegal"
+    },
+    {
+     "name": "Irish Coffee"
+    },
+    {
+     "name": "John Collins"
+    },
+    {
+     "name": "Kir"
+    },
+    {
+     "name": "Last Word"
+    },
+    {
+     "name": "Lemon Drop Martini"
+    },
+    {
+     "name": "Long Island Iced Tea"
+    },
+    {
+     "name": "Manhattan"
+    },
+    {
+     "name": "Margarita"
+    },
+    {
+     "name": "Martinez"
+    },
+    {
+     "name": "Mary Pickford"
+    },
+    {
+     "name": "Mimosa"
+    },
+    {
+     "name": "Mint Julep"
+    },
+    {
+     "name": "Mojito"
+    },
+    {
+     "name": "Monkey Gland"
+    },
+    {
+     "name": "Moscow Mule"
+    },
+    {
+     "name": "Naked and Famous"
+    },
+    {
+     "name": "Negroni"
+    },
+    {
+     "name": "New York Sour"
+    },
+    {
+     "name": "Old Cuban"
+    },
+    {
+     "name": "Old Fashioned"
+    },
+    {
+     "name": "Paloma"
+    },
+    {
+     "name": "Paper Plane"
+    },
+    {
+     "name": "Paradise"
+    },
+    {
+     "name": "Penicillin"
+    },
+    {
+     "name": "Pina Colada"
+    },
+    {
+     "name": "Pisco Punch"
+    },
+    {
+     "name": "Pisco Sour"
+    },
+    {
+     "name": "Planters Punch"
+    },
+    {
+     "name": "Porn Star Martini"
+    },
+    {
+     "name": "Porto Flip"
+    },
+    {
+     "name": "Rabo de Galo"
+    },
+    {
+     "name": "Ramos Fizz"
+    },
+    {
+     "name": "Remember the Maine"
+    },
+    {
+     "name": "Russian Spring Punch"
+    },
+    {
+     "name": "Rusty Nail"
+    },
+    {
+     "name": "Sazerac"
+    },
+    {
+     "name": "Sea Breeze"
+    },
+    {
+     "name": "Sex on the Beach"
+    },
+    {
+     "name": "Sherry Cobbler"
+    },
+    {
+     "name": "Sidecar"
+    },
+    {
+     "name": "Singapore Sling"
+    },
+    {
+     "name": "South Side"
+    },
+    {
+     "name": "Spicy Fifty"
+    },
+    {
+     "name": "Spritz"
+    },
+    {
+     "name": "Stinger"
+    },
+    {
+     "name": "Tequila Sunrise"
+    },
+    {
+     "name": "Tipperary"
+    },
+    {
+     "name": "Tommy's Margarita"
+    },
+    {
+     "name": "Trinidad Sour"
+    },
+    {
+     "name": "Tuxedo"
+    },
+    {
+     "name": "Ve.N.To"
+    },
+    {
+     "name": "Vesper"
+    },
+    {
+     "name": "Vieux Carré"
+    },
+    {
+     "name": "Whiskey Sour"
+    },
+    {
+     "name": "White Lady"
+    },
+    {
+     "name": "Mai Tai (Trader Vic's)",
+     "note": "On the IBA list as “Mai-Tai”; this is Difford's recipe, and IBA's version differs."
+    },
+    {
+     "name": "Zombie",
+     "note": "On the IBA list as “Zombie”; this is Difford's recipe, and IBA's version differs."
+    },
+    {
+     "name": "Jungle Bird",
+     "note": "On the IBA list as “Jungle Bird”; this is Difford's recipe, and IBA's version differs."
+    },
+    {
+     "name": "Missionary's Downfall",
+     "note": "On the IBA list as “Missionary's Downfall”; this is Difford's recipe, and IBA's version differs."
+    },
+    {
+     "name": "Three Dots and a Dash",
+     "note": "On the IBA list as “Three Dots and a Dash”; this is Difford's recipe, and IBA's version differs."
+    },
+    {
+     "name": "Suffering Bastard",
+     "note": "On the IBA list as “Suffering Bastard”; this is Difford's recipe, and IBA's version differs."
+    }
+   ]
+  },
+  {
+   "slug": "prohibition",
+   "name": "Prohibition",
+   "title": "Prohibition",
+   "description": "Drinks created or first recorded during US Prohibition (1920–1933), each with its story and a source.",
+   "sortOrder": 3,
+   "members": [
+    {
+     "name": "Bee's Knees",
+     "note": "1929: First printed in Paris in 1929 (Cocktails de Paris, credited to Frank Meier of the Ritz); the popular 'honey masked bathtub gin' speakeasy story comes from Embury and is not supported.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/2144/bees-knees"
+    },
+    {
+     "name": "Mary Pickford",
+     "note": "1920s (printed 1928): Created at the Hotel Nacional in Havana for the film star during Prohibition and printed in Basil Woon's 1928 When It's Cocktail Time in Cuba; the bartender credit (Fred Kaufman or Eddie Woelke) is disputed.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/1268/mary-pickford-cocktail"
+    },
+    {
+     "name": "Boulevardier",
+     "note": "1927: Credited to American expat writer Erskine Gwynne at Harry MacElhone's bar in Paris, first printed in Barflies and Cocktails (1927).",
+     "noteUrl": "https://en.wikipedia.org/wiki/Boulevardier_(cocktail)"
+    },
+    {
+     "name": "Monkey Gland",
+     "note": "c. 1922–23: Harry MacElhone's Paris drink named after Voronoff's rejuvenation experiments; in his ABC of Mixing Cocktails from 1922/1923.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/1349/monkey-gland"
+    },
+    {
+     "name": "Sidecar",
+     "note": "first printed 1922: First printed in 1922 (Vermeire and MacElhone), usually credited to Pat MacGarry of Buck's Club, London, which opened in 1919; Embury's claim that it dates to WWI makes the exact creation date disputed.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/4791/sidecar"
+    },
+    {
+     "name": "Paradise",
+     "note": "1922: First appeared in MacElhone's 1922 Harry's ABC of Mixing Cocktails and was refined in Craddock's 1930 Savoy Cocktail Book.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/1466/paradise"
+    },
+    {
+     "name": "Between the Sheets",
+     "note": "1920s (printed 1929): First printed in 1929 (Frank Shay) and linked to a speakeasy in a 1930 newspaper column; one claim credits the Berkeley Hotel, London, in 1921.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/209/between-the-sheets"
+    },
+    {
+     "name": "Corpse Reviver #2",
+     "note": "first recorded 1930: 'Corpse reviver' is an old name for a type of drink, but the No. 2 recipe (gin, Cointreau, Kina Lillet, lemon, absinthe) is first recorded in the 1930 Savoy Cocktail Book.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/593/corpse-reviver-no2-savoy-recipe"
+    },
+    {
+     "name": "Angel Face",
+     "note": "first recorded 1930: First appears in Harry Craddock's 1930 Savoy Cocktail Book.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/521/angel-face"
+    },
+    {
+     "name": "Hanky Panky",
+     "note": "c. 1921: Made by Ada Coleman at the Savoy for actor Charles Hawtrey, probably around 1921, and printed in the 1930 Savoy book; Difford's also says 'early 1900s', so the date is not certain.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/930/hanky-panky"
+    },
+    {
+     "name": "White Lady",
+     "note": "c. 1929 (gin version): MacElhone's 1919 White Lady used crème de menthe; today's gin, Cointreau and lemon version appears around 1929 (credited to MacElhone, Craddock or Victor Cabrin) and was printed in the 1930 Savoy book.",
+     "noteUrl": "https://www.diffordsguide.com/encyclopedia/512/cocktails/white-lady-cocktail"
+    },
+    {
+     "name": "French 75",
+     "note": "1927 (modern gin & Champagne form): The name dates to WWI (a different 1915 recipe with applejack and grenadine); the gin, lemon, sugar and Champagne version first appears in Judge Jr.'s 1927 Here's How, a Prohibition-era US book.",
+     "noteUrl": "https://www.diffordsguide.com/encyclopedia/1267/cocktails/french-75-cocktail-history"
+    },
+    {
+     "name": "Alexander",
+     "note": "first recorded 1930 (brandy version): The original 1916 Alexander used gin; the cognac version that IBA lists first appears in the 1930 Savoy Cocktail Book.",
+     "noteUrl": "https://www.diffordsguide.com/encyclopedia/1072/cocktails/alexander-cocktails"
+    },
+    {
+     "name": "Remember the Maine",
+     "note": "1933 (printed 1939): Charles H. Baker recorded drinking it in Havana during the 1933 Cuban revolution, before repeal, and printed it in The Gentleman's Companion (1939).",
+     "noteUrl": "https://punchdrink.com/recipes/remember-the-maine/"
+    },
+    {
+     "name": "Mojito",
+     "note": "name first recorded 1931: The name 'Mojito' first appears on Sloppy Joe's Havana menu for 1931-32, though earlier forms were printed in 1927 and 1929 and the Draque goes back much further; American visitors during Prohibition are thought to have shaped it.",
+     "noteUrl": "https://www.diffordsguide.com/g/1228/mojito-cocktail/mojito-cocktail-history"
+    },
+    {
+     "name": "Pisco Sour",
+     "note": "first recorded 1920: The earliest mention by name is in the Peruvian magazine Hogar (September 1920), tied to American expat Victor Morris's Lima bar, but a similar unnamed recipe dates to 1903 and there is no link to US drinking.",
+     "noteUrl": "https://en.wikipedia.org/wiki/Pisco_sour"
+    },
+    {
+     "name": "Daiquiri",
+     "note": "1890s: Popularised by American mining engineer Jennings Cox in Cuba in the 1890s, it was refined in Havana bars like El Floridita for American drinkers who went there during Prohibition.",
+     "noteUrl": "https://www.americanprohibitionmuseum.com/cocktails/daiquiri"
+    },
+    {
+     "name": "Honolulu Cocktail No. 1",
+     "note": "first recorded 1930: Gin with pineapple, orange and lemon juice and bitters, adapted from Harry Craddock's 1930 Savoy Cocktail Book; no earlier source was found, but it may predate 1930.",
+     "noteUrl": "https://www.diffordsguide.com/cocktails/recipe/2180/honolulu-cocktail-no-1"
+    }
+   ]
+  }
+ ]
+}

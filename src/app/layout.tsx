@@ -3,9 +3,9 @@ import { AccountBar } from "@/components/account-bar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Adventures in Tiki", template: "%s · Adventures in Tiki" },
+  title: { default: "Equal Parts", template: "%s · Equal Parts" },
   description:
-    "A tasting log and spirits guide for Difford's Guide's Top 100 Tiki & Tropical Cocktails.",
+    "JB & GM's home bar: tasting log, bar inventory and recipes — Difford's Guide's Top 100 Tiki & Tropical Cocktails, the IBA official cocktails, and our own.",
 };
 
 export const viewport: Viewport = {
