@@ -329,3 +329,72 @@ test("bottle levels, 'We made this' counting down (and undo), and running-low al
   await expect(row("Navy rum")).toContainText("about 700 ml");
   await expect(row("Navy rum")).not.toContainText("Running low");
 });
+
+// A 2x2 PNG, enough for the browser to decode and resize.
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==",
+  "base64"
+);
+
+test("scan a bottle (style, size, level) and a receipt into our bar", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "mutates the shared cabinet");
+  const scan = async (kind: "A bottle" | "A receipt") => {
+    await page.goto("/cabinet");
+    await page.getByRole("link", { name: /Scan a bottle or receipt/ }).click();
+    await expect(page).toHaveURL(/\/cabinet\/scan$/);
+    await page.getByText(kind, { exact: true }).click();
+    await page.getByLabel("Photo", { exact: true }).setInputFiles({ name: "p.png", mimeType: "image/png", buffer: PNG });
+    await expect(page.getByRole("img", { name: "The photo you chose" })).toBeVisible();
+    await page.getByRole("button", { name: "Read the photo" }).click();
+  };
+  const axe = async () => {
+    await expect(page).toHaveTitle(/Adventures in Tiki/);
+    const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+    expect(r.violations).toEqual([]);
+  };
+  const row = (name: string) =>
+    page.getByRole("listitem").filter({ has: page.getByRole("heading", { level: 2, name: new RegExp(`^${name}`) }) });
+
+  await signIn(page, JOHN, "/cabinet");
+  await axe();
+
+  // A bottle.
+  await scan("A bottle");
+  await expect(page.getByRole("heading", { name: "Check the bottle, then save" })).toBeFocused();
+  await expect(page.getByLabel("Bottle", { exact: true })).toHaveValue("Pusser's Gunpowder Proof");
+  await expect(page.getByLabel("Style in our catalog")).toHaveValue("navy-rum");
+  await expect(page.getByLabel("Bottle size")).toHaveValue("700");
+  await expect(page.getByLabel(/How full/)).toHaveValue("60");
+  await expect(page.getByText("Dark glass, so the level is a rough guess.")).toBeVisible();
+  await axe();
+  await page.getByRole("button", { name: "Save to our bar" }).click();
+  await expect(page).toHaveURL(/\/cabinet\/levels\?levels=saved&id=navy-rum#level-navy-rum$/);
+  await expect(row("Navy rum")).toContainText("Pusser's Gunpowder Proof");
+  await expect(row("Navy rum")).toContainText("about 420 ml");
+
+  // A receipt.
+  await scan("A receipt");
+  await expect(page.getByRole("heading", { name: "Check the receipt, then add" })).toBeFocused();
+  const add = (label: RegExp) => page.getByRole("checkbox", { name: label });
+  await expect(add(/Pusser's/)).toBeChecked();
+  await expect(add(/Falernum/)).toBeChecked();
+  await expect(add(/Coco López/)).toBeChecked();
+  await expect(add(/Limes/)).not.toBeChecked(); // a staple, not a bar bottle
+  await expect(add(/Bag fee/)).not.toBeChecked();
+  // It says what a save would replace.
+  await expect(page.getByText(/Replaces what's in our bar for this style: Pusser's Gunpowder Proof \(about 420 ml/)).toBeVisible();
+  await expect(page.getByText("Bought 2: we track one bottle per style, so the others aren't counted.")).toBeVisible();
+  await axe();
+  // Coco López has no size on the receipt: it must be fixed or unticked.
+  await page.getByRole("button", { name: "Add ticked items to our bar" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Each ticked item needs what it is and its size." })).toBeFocused();
+  await expect(page.getByText("Pick a size, or untick it.")).toBeVisible();
+  await expect(page.getByLabel("Size").nth(2)).toHaveAttribute("aria-invalid", "true");
+  await add(/Coco López/).uncheck();
+  await page.getByRole("button", { name: "Add ticked items to our bar" }).click();
+  await expect(page).toHaveURL(/\/cabinet\?scanned=2$/);
+  await expect(page.getByRole("status").filter({ hasText: "Added 2 bottles from the receipt." })).toBeVisible();
+  await page.goto("/cabinet/levels");
+  await expect(row("Navy rum")).toContainText("about 700 ml"); // a new, full bottle
+  await expect(row("Falernum liqueur")).toContainText("about 750 ml");
+});

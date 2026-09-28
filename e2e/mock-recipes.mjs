@@ -87,7 +87,30 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
       const text = parts.filter((p) => p.type === "text").map((p) => p.text).join("\n");
       const hasImage = parts.some((p) => p.type === "image_url" && /^data:image\/jpeg;base64,/.test(p.image_url?.url ?? ""));
       let answer;
-      if (/NO RECIPE HERE/.test(text)) {
+      const task = body.response_format?.json_schema?.name;
+      if (task === "bottle") {
+        answer = {
+          found: true,
+          product: "Pusser's Gunpowder Proof",
+          catalogId: "navy-rum",
+          sizeMl: 700,
+          fillPercent: 62,
+          warnings: ["Dark glass, so the level is a rough guess."],
+        };
+      } else if (task === "receipt") {
+        answer = {
+          found: true,
+          store: "WineXpress",
+          items: [
+            { line: "PUSSERS GUNPWDR 700ML", product: "Pusser's Gunpowder Proof", catalogId: "navy-rum", sizeMl: 700, quantity: 1 },
+            { line: "FALERNUM JDT 750", product: "John D. Taylor's Velvet Falernum", catalogId: "falernum", sizeMl: 750, quantity: 1 },
+            { line: "COCO LOPEZ 15OZ", product: "Coco López", catalogId: "cream-of-coconut", sizeMl: 0, quantity: 2 },
+            { line: "LIMES 6CT", product: "Limes", catalogId: "lime", sizeMl: 0, quantity: 1 },
+            { line: "BAG FEE", product: "Bag fee", catalogId: "", sizeMl: 0, quantity: 1 },
+          ],
+          warnings: [],
+        };
+      } else if (/NO RECIPE HERE/.test(text)) {
         answer = { found: false, name: "", primarySpirits: [], glass: "", garnish: "", method: "", ingredients: [], sourceNote: "", warnings: [] };
       } else {
         const name = hasImage ? "Photo Punch" : /Link Swizzle/.test(text) ? "Link Swizzle" : "Test Swizzle";

@@ -12,6 +12,7 @@ import {
 } from "@/lib/cabinet-data";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { LevelMeter } from "@/components/level-meter";
+import { FocusMessage } from "@/components/focus-message";
 import { describeLeft, isLow } from "@/lib/inventory";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
@@ -161,6 +162,17 @@ export default async function CabinetPage({
           <span aria-hidden="true">🛒 </span>Shopping list ({toBuy}){" "}
           <span aria-hidden="true">→</span>
         </Link>
+      )}
+      <Link href="/cabinet/scan" className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline">
+        <span aria-hidden="true">📷 </span>Scan a bottle or receipt <span aria-hidden="true">→</span>
+      </Link>
+      {typeof sp.scanned === "string" && /^\d{1,2}$/.test(sp.scanned) && (
+        <FocusMessage role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
+          Added {sp.scanned} {sp.scanned === "1" ? "bottle" : "bottles"} from the receipt.{" "}
+          <Link href="/cabinet/levels" className="font-semibold underline underline-offset-2">
+            Bottle levels
+          </Link>
+        </FocusMessage>
       )}
       <ShoppingStatus status={sp.shopping} />
 

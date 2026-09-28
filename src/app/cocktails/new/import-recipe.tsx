@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { fieldClass } from "@/components/form-field";
+import { resizePhoto } from "@/lib/client/resize-photo";
 import { emptyDraft } from "@/lib/recipe-form";
 import type { ImportKind } from "@/lib/recipe-import";
 import { RecipeForm, type CatalogGroup } from "../recipe-form";
@@ -18,20 +19,6 @@ const KINDS: { value: ImportKind; label: string }[] = [
   { value: "link", label: "Link" },
   { value: "text", label: "Paste text" },
 ];
-
-const MAX_SIDE = 1600;
-
-/** Shrinks a photo in the browser (≤1600px, JPEG) so it uploads fast and fits the action's size limit. */
-async function resizePhoto(file: File): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL("image/jpeg", 0.85);
-}
 
 /**
  * Step 1: give the recipe helper a photo, a link or some text; it drafts

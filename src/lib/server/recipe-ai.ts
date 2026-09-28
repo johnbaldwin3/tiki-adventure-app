@@ -26,7 +26,7 @@ import { makeSafeLookup } from "./net-guard";
 export const DEFAULT_MODEL = "google/gemini-3.8-flash";
 const MAX_PAGE_BYTES = 2_000_000;
 /** The whole import (page fetch + model) must finish inside the route's 60s maxDuration. */
-const DEADLINE_MS = 50_000;
+export const DEADLINE_MS = 50_000;
 /** Only the first part of a page is read (keeps parsing fast on huge pages). */
 const MAX_HTML_CHARS = 300_000;
 
@@ -40,11 +40,28 @@ export class ImportError extends Error {
   }
 }
 
-type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
+export type ContentPart = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
 
-async function callModel(parts: ContentPart[], signal: AbortSignal): Promise<unknown> {
+export interface ModelTask {
+  system: string;
+  schemaName: string;
+  schema: object;
+  /** Named in error messages, e.g. "The recipe helper". */
+  label: string;
+  maxTokens?: number;
+}
+
+const RECIPE_TASK: ModelTask = {
+  system: SYSTEM_PROMPT,
+  schemaName: "cocktail_recipe",
+  schema: RECIPE_JSON_SCHEMA,
+  label: "The recipe helper",
+};
+
+/** One structured-output call to the model (text and/or an image). Also used by the bottle/receipt scanner. */
+export async function callModel(parts: ContentPart[], signal: AbortSignal, task: ModelTask = RECIPE_TASK): Promise<unknown> {
   const key = process.env.TIKI_OPEN_ROUTER_API_KEY;
-  if (!key) throw new ImportError("TIKI_OPEN_ROUTER_API_KEY is not set", "The recipe helper isn't set up yet.");
+  if (!key) throw new ImportError("TIKI_OPEN_ROUTER_API_KEY is not set", `${task.label} isn't set up yet.`);
   // Tests point this at the mock; never overridable in production (the key goes wherever it points).
   const base = (TEST_OVERRIDES && process.env.OPENROUTER_BASE_URL) || "https://openrouter.ai/api/v1";
   const res = await fetch(`${base}/chat/completions`, {
@@ -59,37 +76,37 @@ async function callModel(parts: ContentPart[], signal: AbortSignal): Promise<unk
     body: JSON.stringify({
       model: process.env.TIKI_OPENROUTER_MODEL || DEFAULT_MODEL,
       temperature: 0,
-      max_tokens: 2000,
+      max_tokens: task.maxTokens ?? 2000,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: task.system },
         { role: "user", content: parts },
       ],
       response_format: {
         type: "json_schema",
-        json_schema: { name: "cocktail_recipe", strict: true, schema: RECIPE_JSON_SCHEMA },
+        json_schema: { name: task.schemaName, strict: true, schema: task.schema },
       },
     }),
   }).catch((err) => {
     if (err?.name === "AbortError" || err?.name === "TimeoutError") {
-      throw new ImportError("OpenRouter timeout", "The recipe helper took too long. Please try again.");
+      throw new ImportError("OpenRouter timeout", `${task.label} took too long. Please try again.`);
     }
-    throw new ImportError(`OpenRouter request failed: ${err}`, "Couldn't reach the recipe helper. Please try again.");
+    throw new ImportError(`OpenRouter request failed: ${err}`, `Couldn't reach ${task.label.toLowerCase()}. Please try again.`);
   });
   if (!res.ok) {
     const detail = (await res.text().catch(() => "")).slice(0, 300);
     throw new ImportError(
       `OpenRouter ${res.status}: ${detail}`,
-      res.status === 429 ? "The recipe helper is busy. Try again in a minute." : "The recipe helper had a problem. Please try again."
+      res.status === 429 ? `${task.label} is busy. Try again in a minute.` : `${task.label} had a problem. Please try again.`
     );
   }
   const body = (await res.json().catch(() => null)) as { choices?: { message?: { content?: unknown } }[] } | null;
   const content = body?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") throw new ImportError("OpenRouter: no content", "The recipe helper didn't answer. Please try again.");
+  if (typeof content !== "string") throw new ImportError("OpenRouter: no content", `${task.label} didn't answer. Please try again.`);
   try {
     // Some models wrap JSON in a code fence despite structured output.
     return JSON.parse(content.replace(/^```(?:json)?\s*|\s*```$/g, ""));
   } catch {
-    throw new ImportError("OpenRouter: invalid JSON", "The recipe helper's answer didn't make sense. Please try again.");
+    throw new ImportError("OpenRouter: invalid JSON", `${task.label}'s answer didn't make sense. Please try again.`);
   }
 }
 

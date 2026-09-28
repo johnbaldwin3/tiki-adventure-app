@@ -94,6 +94,13 @@ in; see below.
   them. The bookkeeping is in the database (`record_pour`/`undo_pour`,
   migration 0009): validated, locked in a fixed order, and idempotent per
   submit so a double tap counts once.
+- **Bar scanner (`/cabinet/scan`)** -- snap **a bottle**: an AI model
+  (the same OpenRouter setup as the recipe helper) reads the product, its
+  style from our catalog, the size on the label and estimates how full it
+  is; or snap **a receipt** (grocery store, WineXpress, a liquor store) to
+  list what was bought. Either way you check a form first (it says what a
+  save would replace in our bar, flags odd sizes, and adds receipt bottles
+  as full); then it goes into our bar with sizes and levels.
 - **Shopping list (`/shopping`)** -- one shared list (signed-in tasters
   only). Add from a recipe card ("Add all 3 to shopping list"), an
   ingredient page, "Buy next" in our bar, or the ideas on the list itself.
@@ -229,19 +236,12 @@ review pass:
 14. ✅ Our own recipes + AI recipe helper — add from a photo, link or text (reviewed before saving), mixed into the list; edit/delete
 15. ✅ Servings & units — 1×–8× and as written / fl oz / ml on every recipe card
 16. ✅ Living bar inventory — bottle levels, "We made this" pours (with undo), running-low alerts and restocking
+17. ✅ Bar scanner — add bottles from a photo (style, size, estimated level) or from a receipt
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Bottle snapshot** -- take a photo of a bottle and the app adds it to
-  our bar: AI identifies the product and style (matched to our catalog),
-  its size (e.g. 750 ml), and estimates how much is left from the fill
-  line; you confirm before it's saved (a quick way to set or correct
-  bottle levels)
-- **Receipt capture** -- photograph a receipt from the grocery store,
-  WineXpress or a liquor store; AI reads the products and sizes, you check
-  them, and they're added to our bar (with bottle and amount)
 - **Distant future: recipe from a menu** -- give the AI a menu listing
   (ingredients but no amounts) and have it propose a recipe using the ratios
   in our saved recipes and common drink structures, plus some outside
