@@ -328,6 +328,19 @@ export function RecipeForm({ initial, catalog, editSlug, warnings = [], cancelHr
         </div>
       </div>
 
+      <label className="flex items-start gap-2 text-sm text-ink">
+        <input
+          type="checkbox"
+          name="isGuess"
+          defaultChecked={d.isGuess}
+          className="mt-0.5 size-5 shrink-0 accent-teal-deep"
+        />
+        <span>
+          <span className="font-semibold">This is a best guess</span>{" "}
+          <span className="text-ink-soft">(amounts not tested yet — shows a &ldquo;Best guess&rdquo; badge)</span>
+        </span>
+      </label>
+
       <div className="flex gap-3">
         <Link
           href={cancelHref}

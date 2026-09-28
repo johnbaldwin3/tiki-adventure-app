@@ -95,3 +95,18 @@ describe("uniqueSlug", () => {
     expect(uniqueSlug("Piña Colada!", new Set())).toBe("pina-colada");
   });
 });
+
+describe("best guess flag", () => {
+  const fd2 = (o: Record<string, string>) => {
+    const f = new FormData();
+    for (const [k, v] of Object.entries(o)) f.set(k, v);
+    return f;
+  };
+  it("is read from the checkbox and written as is_guess", () => {
+    expect(readRecipeForm(fd2({ name: "X", isGuess: "on" })).isGuess).toBe(true);
+    expect(readRecipeForm(fd2({ name: "X" })).isGuess).toBe(false);
+    expect(emptyDraft().isGuess).toBe(false);
+    expect(toCocktailRow({ ...emptyDraft(), name: "X", isGuess: true }).is_guess).toBe(true);
+    expect(toCocktailRow({ ...emptyDraft(), name: "X" }).is_guess).toBe(false);
+  });
+});

@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { hasErrors, readRecipeForm, toCocktailRow, uniqueSlug, validateRecipe, type RecipeDraft, type RecipeErrors } from "@/lib/recipe-form";
-import type { ImportKind } from "@/lib/recipe-import";
-import { importRecipe, ImportError } from "@/lib/server/recipe-ai";
+import { parseIngredients } from "@/lib/cocktails";
+import type { GuessInfo, ImportKind } from "@/lib/recipe-import";
+import { guessFromMenu, importRecipe, ImportError } from "@/lib/server/recipe-ai";
+import { supabase } from "@/lib/supabase";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 
@@ -29,6 +31,21 @@ export interface ImportState {
   draft: RecipeDraft | null;
   warnings: string[];
   kind: ImportKind;
+  /** For a best guess from a menu: how it was worked out. */
+  guess?: GuessInfo | null;
+}
+
+/** Our tested recipes (not other guesses), as ratio references for a menu guess: "1 1/2 fl oz Navy rum…". */
+async function recipeLibrary(): Promise<{ name: string; slug: string; lines: string[] }[]> {
+  const { data, error } = await supabase.from("cocktails").select("name, slug, ingredients, is_guess").order("name");
+  if (error) throw new Error(`Failed to load recipes: ${error.message}`);
+  return ((data ?? []) as { name: string; slug: string; ingredients: unknown; is_guess?: boolean | null }[])
+    .filter((r) => r.is_guess !== true)
+    .map((r) => ({
+      name: r.name,
+      slug: r.slug,
+      lines: parseIngredients(r.ingredients).map((l) => [l.amount, l.unit, l.ingredient].filter(Boolean).join(" ")),
+    }));
 }
 
 async function requireTaster() {
@@ -41,7 +58,7 @@ async function requireTaster() {
 export async function extractRecipe(prev: ImportState, formData: FormData): Promise<ImportState> {
   const submission = (prev?.submission ?? 0) + 1;
   const k = formData.get("kind");
-  const kind: ImportKind = k === "photo" || k === "link" ? k : "text";
+  const kind: ImportKind = k === "photo" || k === "link" || k === "menu" ? k : "text";
   const fail = (message: string): ImportState => ({ submission, status: "error", message, draft: null, warnings: [], kind });
 
   if (!(await requireTaster())) return fail("Only JB & GM can add recipes.");
@@ -56,6 +73,35 @@ export async function extractRecipe(prev: ImportState, formData: FormData): Prom
     return fail("Choose a photo first.");
   }
   if (kind === "photo" && image.length > MAX_IMAGE_CHARS) return fail("That photo is too large. Try a smaller one.");
+
+  if (kind === "menu") {
+    const menu = String(formData.get("menu") ?? "").trim().slice(0, 2000);
+    const name = String(formData.get("menuName") ?? "").trim().slice(0, 80);
+    const place = String(formData.get("place") ?? "").trim().slice(0, 120);
+    const menuImage = String(formData.get("menuImage") ?? "");
+    const hasImage = menuImage !== "";
+    if (!menu && !hasImage) return fail("Type what the menu says, or add a photo of it.");
+    if (hasImage && (menuImage.length > MAX_IMAGE_CHARS || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(menuImage))) {
+      return fail("That photo couldn't be used. Try a smaller JPEG or PNG.");
+    }
+    try {
+      const result = await guessFromMenu({
+        menu,
+        name,
+        place,
+        imageDataUrl: hasImage ? menuImage : undefined,
+        webSearch: formData.get("web") === "on",
+        library: await recipeLibrary(),
+      });
+      if (!result) {
+        return { submission, status: "none", message: "Couldn't make out a drink there.", draft: null, warnings: [], kind };
+      }
+      return { submission, status: "draft", message: null, draft: result.draft, warnings: result.warnings, kind, guess: result.guess ?? null };
+    } catch (err) {
+      console.error("extractRecipe (menu) failed", err);
+      return fail(err instanceof ImportError ? err.userMessage : "Something went wrong. Please try again.");
+    }
+  }
 
   try {
     const result = await importRecipe(kind, { text, url, imageDataUrl: image });

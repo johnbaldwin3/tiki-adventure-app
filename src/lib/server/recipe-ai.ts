@@ -2,8 +2,15 @@ import "server-only";
 import http from "node:http";
 import https from "node:https";
 import {
+  draftFromMenu,
   draftFromModel,
+  libraryForPrompt,
+  MENU_JSON_SCHEMA,
+  MENU_SYSTEM,
+  menuUserPrompt,
   pageText,
+  parseCitations,
+  type Citation,
   RECIPE_JSON_SCHEMA,
   recipeJsonLd,
   SYSTEM_PROMPT,
@@ -49,7 +56,10 @@ export interface ModelTask {
   /** Named in error messages, e.g. "The recipe helper". */
   label: string;
   maxTokens?: number;
+  /** Let the model search the web (OpenRouter's web plugin; a few cents a call). */
+  webSearch?: boolean;
 }
+
 
 const RECIPE_TASK: ModelTask = {
   system: SYSTEM_PROMPT,
@@ -60,6 +70,15 @@ const RECIPE_TASK: ModelTask = {
 
 /** One structured-output call to the model (text and/or an image). Also used by the bottle/receipt scanner. */
 export async function callModel(parts: ContentPart[], signal: AbortSignal, task: ModelTask = RECIPE_TASK): Promise<unknown> {
+  return (await callModelWithCitations(parts, signal, task)).json;
+}
+
+/** Like callModel, plus the web pages the model cited (when web search is on). */
+export async function callModelWithCitations(
+  parts: ContentPart[],
+  signal: AbortSignal,
+  task: ModelTask
+): Promise<{ json: unknown; citations: Citation[] }> {
   const key = process.env.TIKI_OPEN_ROUTER_API_KEY;
   if (!key) throw new ImportError("TIKI_OPEN_ROUTER_API_KEY is not set", `${task.label} isn't set up yet.`);
   // Tests point this at the mock; never overridable in production (the key goes wherever it points).
@@ -85,6 +104,7 @@ export async function callModel(parts: ContentPart[], signal: AbortSignal, task:
         type: "json_schema",
         json_schema: { name: task.schemaName, strict: true, schema: task.schema },
       },
+      ...(task.webSearch ? { plugins: [{ id: "web", max_results: 3 }] } : {}),
     }),
   }).catch((err) => {
     if (err?.name === "AbortError" || err?.name === "TimeoutError") {
@@ -99,12 +119,15 @@ export async function callModel(parts: ContentPart[], signal: AbortSignal, task:
       res.status === 429 ? `${task.label} is busy. Try again in a minute.` : `${task.label} had a problem. Please try again.`
     );
   }
-  const body = (await res.json().catch(() => null)) as { choices?: { message?: { content?: unknown } }[] } | null;
+  const body = (await res.json().catch(() => null)) as {
+    choices?: { message?: { content?: unknown; annotations?: unknown } }[];
+  } | null;
   const content = body?.choices?.[0]?.message?.content;
+  const citations = parseCitations(body?.choices?.[0]?.message?.annotations);
   if (typeof content !== "string") throw new ImportError("OpenRouter: no content", `${task.label} didn't answer. Please try again.`);
   try {
     // Some models wrap JSON in a code fence despite structured output.
-    return JSON.parse(content.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+    return { json: JSON.parse(content.replace(/^```(?:json)?\s*|\s*```$/g, "")), citations };
   } catch {
     throw new ImportError("OpenRouter: invalid JSON", `${task.label}'s answer didn't make sense. Please try again.`);
   }
@@ -224,4 +247,31 @@ export async function importRecipe(
   }
   const raw = await callModel([{ type: "text", text: userPrompt("text", { text: input.text }) }], signal);
   return draftFromModel(raw);
+}
+
+/**
+ * A best-guess recipe from a menu listing (text and/or a photo of the
+ * menu), with our own recipes as the ratio library and optional web search.
+ */
+export async function guessFromMenu(input: {
+  menu: string;
+  name?: string;
+  place?: string;
+  imageDataUrl?: string;
+  webSearch: boolean;
+  library: { name: string; slug: string; lines: string[] }[];
+}): Promise<ImportResult | null> {
+  const parts: ContentPart[] = [
+    { type: "text", text: menuUserPrompt({ menu: input.menu, name: input.name, place: input.place }, libraryForPrompt(input.library)) },
+  ];
+  if (input.imageDataUrl) parts.push({ type: "image_url", image_url: { url: input.imageDataUrl } });
+  const { json, citations } = await callModelWithCitations(parts, AbortSignal.timeout(DEADLINE_MS), {
+    system: MENU_SYSTEM,
+    schemaName: "menu_recipe",
+    schema: MENU_JSON_SCHEMA,
+    label: "The recipe helper",
+    maxTokens: 2500,
+    webSearch: input.webSearch,
+  });
+  return draftFromMenu(json, { place: input.place, knownNames: new Map(input.library.map((r) => [r.name, r.slug])), citations });
 }

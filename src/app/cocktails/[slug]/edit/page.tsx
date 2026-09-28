@@ -66,6 +66,7 @@ export default async function EditRecipePage({
     })),
     sourceUrl: cocktail.sourceUrl ?? "",
     sourceNote: cocktail.sourceNote ?? "",
+    isGuess: cocktail.isGuess,
   };
   const catalog = ingredientsByFamily().map((g) => ({
     family: g.family,

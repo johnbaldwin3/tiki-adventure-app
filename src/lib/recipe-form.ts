@@ -41,6 +41,8 @@ export interface RecipeDraft {
   ingredients: RecipeLine[];
   sourceUrl: string;
   sourceNote: string;
+  /** A best guess (e.g. worked out from a menu description), not a tested recipe. */
+  isGuess: boolean;
 }
 
 export const EMPTY_LINE: RecipeLine = { amount: "", unit: "", ingredient: "", catalogId: "" };
@@ -55,6 +57,7 @@ export function emptyDraft(): RecipeDraft {
     ingredients: [],
     sourceUrl: "",
     sourceNote: "",
+    isGuess: false,
   };
 }
 
@@ -115,6 +118,7 @@ export function readRecipeForm(form: FormLike): RecipeDraft {
     ingredients,
     sourceUrl: clean(form.get("sourceUrl"), LIMITS.sourceUrl),
     sourceNote: clean(form.get("sourceNote"), LIMITS.sourceNote),
+    isGuess: form.get("isGuess") === "on",
   };
 }
 
@@ -176,6 +180,7 @@ export function toCocktailRow(d: RecipeDraft) {
     })),
     source_url: safeHttpUrl(d.sourceUrl),
     source_note: d.sourceNote || null,
+    is_guess: d.isGuess,
   };
 }
 

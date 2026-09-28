@@ -126,6 +126,18 @@ in; see below.
   Either taster can edit one of our recipes; only the taster who added it
   can delete it (which also removes both tasters' ratings for it). The
   verified Top 100 stay read-only (migration 0008: RLS + column grants).
+- **Recipe from a menu (`/cocktails/new` → "From a menu")** -- type what a
+  bar menu says (ingredients, no amounts), optionally the drink name, the
+  bar, and/or a photo of the menu. The recipe helper works out plausible
+  amounts from the ratios in our own tested recipes (sent as a compact
+  library; other guesses are left out) and classic drink structures, with
+  an optional web search (OpenRouter's web plugin, a few cents). The review
+  shows how it got there: its reasoning, links to the recipes of ours it
+  leaned on (names checked against our list), and the web pages it read
+  (from the API's citations only; never saved as the recipe's link). Saved
+  guesses carry a **Best guess** badge on the card and in the list
+  (`cocktails.is_guess`, migration 0010: only our recipes can be guesses);
+  untick it in the editor once you've tasted and adjusted it.
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -170,7 +182,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0009` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0010` in order (Supabase SQL editor
    or `supabase db push`).
 2. Run `supabase/seed.sql` -- the two tasters, the 100 verified cocktails
    (with slugs) and the launch tasting log. It's generated from
@@ -237,14 +249,11 @@ review pass:
 15. ✅ Servings & units — 1×–8× and as written / fl oz / ml on every recipe card
 16. ✅ Living bar inventory — bottle levels, "We made this" pours (with undo), running-low alerts and restocking
 17. ✅ Bar scanner — add bottles from a photo (style, size, estimated level) or from a receipt
+18. ✅ Recipe from a menu — a best-guess recipe from a menu listing, using our recipes' ratios (+ optional web search), badged until tested
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost:
 
-- **Distant future: recipe from a menu** -- give the AI a menu listing
-  (ingredients but no amounts) and have it propose a recipe using the ratios
-  in our saved recipes and common drink structures, plus some outside
-  research; always clearly marked as a best guess to test
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time

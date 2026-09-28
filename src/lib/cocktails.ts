@@ -15,6 +15,8 @@ export interface CocktailRecord extends TastingRecord {
   primarySpirits: string[];
   diffordsGuideUrl: string | null;
   source: CocktailSource;
+  /** One of our recipes that's a best guess (e.g. from a menu), not tested yet. */
+  isGuess?: boolean;
 }
 
 interface RawCocktailRow {
@@ -26,6 +28,7 @@ interface RawCocktailRow {
   primary_spirits: string[] | null;
   ingredients?: unknown;
   source?: string | null;
+  is_guess?: boolean | null;
 }
 
 function toSource(value: unknown, diffordsRank: number | null): CocktailSource {
@@ -100,6 +103,7 @@ export function mapRowsToCocktailRecords(
         ingredientTexts: lines.map((i) => i.ingredient),
         ingredientIds: lines.map((i) => i.catalogId),
         source: toSource(c.source, c.diffords_rank),
+        isGuess: c.is_guess === true,
         tried: t?.tried ?? false,
         jbRating: t?.jbRating ?? null,
         gmRating: t?.gmRating ?? null,
@@ -119,7 +123,7 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
   ] = await Promise.all([
     supabase
       .from("cocktails")
-      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source")
+      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source, is_guess")
       .order("diffords_rank", { ascending: true, nullsFirst: false }),
     supabase.from("tastings").select("cocktail_id, rating, tried, tasters(initials)"),
   ]);
@@ -170,6 +174,8 @@ export interface CocktailDetail {
   sourceNote: string | null;
   /** Initials of the taster who added it (our recipes). */
   addedBy: string | null;
+  /** A best guess (e.g. from a menu), not a tested recipe. */
+  isGuess: boolean;
   primarySpirits: string[];
   glass: string | null;
   garnish: string | null;
@@ -183,6 +189,7 @@ export interface RawCocktailDetailRow extends RawCocktailRow {
   source_url?: string | null;
   source_note?: string | null;
   added_by?: string | null;
+  is_guess?: boolean | null;
   glass: string | null;
   garnish: string | null;
   method_summary: string | null;
@@ -278,6 +285,7 @@ export function mapRowsToCocktailDetail(
     sourceUrl: cocktailRow.source_url ?? null,
     sourceNote: cocktailRow.source_note ?? null,
     addedBy: tasterRows.find((t) => t.id === cocktailRow.added_by)?.initials ?? null,
+    isGuess: cocktailRow.is_guess === true,
     primarySpirits: cocktailRow.primary_spirits ?? [],
     glass: cocktailRow.glass,
     garnish: cocktailRow.garnish,
@@ -297,7 +305,7 @@ export async function fetchCocktailBySlug(slug: string): Promise<CocktailDetail 
       supabase
         .from("cocktails")
         .select(
-          "id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, glass, garnish, method_summary, ingredients, source, source_url, source_note, added_by"
+          "id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, glass, garnish, method_summary, ingredients, source, source_url, source_note, added_by, is_guess"
         )
         .eq("slug", slug)
         .maybeSingle(),

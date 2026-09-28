@@ -103,6 +103,12 @@ function OurRecipeFooter({ cocktail, canEdit }: { cocktail: CocktailDetail; canE
         )}
         .
       </p>
+      {cocktail.isGuess && (
+        <p className="max-w-prose">
+          This is our best guess at the amounts (worked out from a menu), not a tested recipe — adjust it after tasting, then
+          untick &ldquo;best guess&rdquo; in the editor.
+        </p>
+      )}
       {canEdit && (
         <Link
           href={`/cocktails/${cocktail.slug}/edit`}
@@ -289,6 +295,13 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
             : `Difford's Top 100 · #${cocktail.diffordsRank}`}
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{cocktail.name}</h1>
+        {cocktail.isGuess && (
+          <p className="relative mt-2">
+            <span className="inline-block rounded-full bg-sand-deep px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-ink">
+              Best guess
+            </span>
+          </p>
+        )}
         {cocktail.primarySpirits.length > 0 && (
           <p className="relative mt-2 text-sm text-white/90">
             {cocktail.primarySpirits.join(" · ")}

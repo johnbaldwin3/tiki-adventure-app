@@ -253,6 +253,12 @@ describe("mapRowsToCocktailDetail", () => {
     expect(detail.tasters).toHaveLength(2);
     expect(detail.tasters.every((t) => !t.tried && t.rating === null && t.notes === null)).toBe(true);
   });
+
+  it("flags a best guess only when is_guess is true", () => {
+    expect(mapRowsToCocktailDetail(cocktailRow, tasterRows, []).isGuess).toBe(false);
+    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: null }, tasterRows, []).isGuess).toBe(false);
+    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: true }, tasterRows, []).isGuess).toBe(true);
+  });
 });
 
 describe("our own recipes", () => {

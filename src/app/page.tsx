@@ -429,7 +429,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
                     <span className="sr-only">{circleLabel}</span>
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="text-sm font-semibold text-ink">{c.name}</span>
+                    <span className="text-sm font-semibold text-ink">
+                      {c.name}
+                      {c.isGuess && (
+                        <span className="ml-1.5 inline-block rounded-full bg-sand-deep px-1.5 py-px align-middle text-[0.65rem] font-bold uppercase tracking-wide text-ink">
+                          Best guess
+                        </span>
+                      )}
+                    </span>
                     <span className="truncate text-xs text-ink-faint">
                       {c.primarySpirits.join(", ")}
                     </span>

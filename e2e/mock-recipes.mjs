@@ -43,6 +43,7 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
           ingredients: [],
           source_url: null,
           source_note: null,
+          is_guess: false,
           ...row,
         });
         res.writeHead(201);
@@ -57,7 +58,7 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
         if (patch.name && cocktails.some((c) => c.name === patch.name && !matches.includes(c))) {
           return uniqueViolation(res, "name");
         }
-        const allowed = ["name", "primary_spirits", "glass", "garnish", "method_summary", "ingredients", "source_url", "source_note"];
+        const allowed = ["name", "primary_spirits", "glass", "garnish", "method_summary", "ingredients", "source_url", "source_note", "is_guess"];
         for (const c of matches) for (const k of allowed) if (k in patch) c[k] = patch[k];
         sendJson(res, 200, matches.map((c) => project(c, select)));
       });
@@ -88,7 +89,36 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
       const hasImage = parts.some((p) => p.type === "image_url" && /^data:image\/jpeg;base64,/.test(p.image_url?.url ?? ""));
       let answer;
       const task = body.response_format?.json_schema?.name;
-      if (task === "bottle") {
+      let annotations;
+      if (task === "menu_recipe") {
+        if (/NOT A DRINK/.test(text)) {
+          answer = { found: false, name: "", primarySpirits: [], glass: "", garnish: "", method: "", ingredients: [], sourceNote: "", warnings: [], reasoning: "", basedOn: [] };
+        } else {
+          answer = {
+            found: true,
+            name: "Menu Mystery",
+            primarySpirits: ["Jamaican rum"],
+            glass: "Double old fashioned",
+            garnish: "Lime wheel",
+            method: "Shake with ice and strain over crushed ice.",
+            ingredients: [
+              { amount: "1 1/2", unit: "fl oz", ingredient: "Aged Jamaican rum", catalogId: "aged-jamaican-rum" },
+              { amount: "3/4", unit: "fl oz", ingredient: "Fresh lime juice", catalogId: "lime" },
+              { amount: "1/2", unit: "fl oz", ingredient: "Honey syrup", catalogId: "" },
+            ],
+            sourceNote: "should be replaced",
+            warnings: ["Honey syrup wasn't on the menu as a syrup; 1:1 assumed."],
+            reasoning: "A classic sour structure, like our Daiquiri-style drinks.",
+            basedOn: ["Painkiller", "Not One Of Ours"],
+          };
+        }
+        if (Array.isArray(body.plugins) && body.plugins.some((p) => p.id === "web")) {
+          annotations = [
+            { type: "url_citation", url_citation: { url: "https://example.com/menu-mystery", title: "Menu Mystery at the bar" } },
+            { type: "url_citation", url_citation: { url: "javascript:alert(1)", title: "bad" } },
+          ];
+        }
+      } else if (task === "bottle") {
         answer = {
           found: true,
           product: "Pusser's Gunpowder Proof",
@@ -131,7 +161,7 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
           warnings: hasImage ? ["The garnish was hard to read."] : [],
         };
       }
-      sendJson(res, 200, { choices: [{ message: { role: "assistant", content: JSON.stringify(answer) } }] });
+      sendJson(res, 200, { choices: [{ message: { role: "assistant", content: JSON.stringify(answer), ...(annotations ? { annotations } : {}) } }] });
     });
   }
 

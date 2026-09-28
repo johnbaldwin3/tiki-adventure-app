@@ -152,6 +152,97 @@ test("photo: resized in the browser, read, with warnings; duplicate names are ca
   await expect(page.getByText(/from Test book, p\. 12/)).toBeVisible();
 });
 
+test("from a menu: a best guess from our ratios (+ web), saved with a badge, untick after tasting", async ({ page, request }) => {
+  await signIn(page, JOHN, "/cocktails/new");
+  await page.getByText("From a menu", { exact: true }).click();
+  const go = page.getByRole("button", { name: "Work out a recipe" });
+  await expect(go).toBeDisabled();
+  await expect(page.getByText("Type what the menu says, or add a photo of it.")).toBeVisible();
+  await expectAccessible(page);
+
+  // Not a drink -> a clear message, and what was typed stays put.
+  await page.getByLabel("What the menu says").fill("NOT A DRINK: soup of the day");
+  await go.click();
+  const none = page.getByRole("alert").filter({ hasText: "Couldn't make out a drink there." });
+  await expect(none).toBeFocused();
+  await expect(page.getByLabel("What the menu says")).toHaveValue("NOT A DRINK: soup of the day");
+
+  await page.getByLabel("Drink name").fill("Menu Mystery");
+  await page.getByLabel("Bar or restaurant").fill("The Test Tiki Bar");
+  await page.getByRole("checkbox", { name: /Also search the web/ }).uncheck();
+  await go.click();
+  await expect(none).toBeFocused();
+  // Everything typed or ticked survives a failed attempt.
+  await expect(page.getByLabel("Drink name")).toHaveValue("Menu Mystery");
+  await expect(page.getByLabel("Bar or restaurant")).toHaveValue("The Test Tiki Bar");
+  await expect(page.getByRole("checkbox", { name: /Also search the web/ })).not.toBeChecked();
+  await page.getByRole("checkbox", { name: /Also search the web/ }).check();
+  await page.getByLabel("What the menu says").fill("aged Jamaican rum, lime, honey");
+  await go.click();
+
+  await expect(page.getByRole("heading", { name: "Check the recipe, then save" })).toBeFocused();
+  await expect(page.getByText(/these are the recipe helper's best guess/)).toBeVisible();
+  const how = page.getByRole("region", { name: "How the helper worked it out" });
+  await expect(how).toContainText("A classic sour structure");
+  // Only real recipes of ours are linked; a name the model made up is dropped.
+  await expect(how.getByRole("link", { name: /Painkiller/ })).toHaveAttribute("href", "/cocktails/painkiller");
+  await expect(how).not.toContainText("Not One Of Ours");
+  // Web sources come from the API's citations; a non-http one is dropped.
+  await expect(how.getByRole("link", { name: /Menu Mystery at the bar/ })).toHaveAttribute("href", "https://example.com/menu-mystery");
+  await expect(how.getByRole("link")).toHaveCount(2);
+  await expect(page.getByText("Honey syrup wasn't on the menu as a syrup; 1:1 assumed.")).toBeVisible();
+  await expect(page.getByLabel("Name")).toHaveValue("Menu Mystery");
+  await expect(page.getByLabel(/Where it's from/)).toHaveValue("the menu at The Test Tiki Bar");
+  // A search result isn't the recipe: it's shown above, never saved as the link.
+  await expect(page.getByLabel(/^Link/)).toHaveValue("");
+  await expect(page.getByRole("checkbox", { name: /This is a best guess/ })).toBeChecked();
+  await expectAccessible(page);
+
+  // The helper got our recipes as its ratio library, the menu as data, and web search.
+  const sent = await (await request.get(`${MOCK_URL}/__mock/last-openrouter`)).json();
+  const prompt = JSON.stringify(sent.messages);
+  expect(prompt).toContain("Recipe library (our recipes)");
+  expect(prompt).toMatch(/Painkiller: [^\\]*fl oz/);
+  expect(prompt).toContain("<menu>\\naged Jamaican rum, lime, honey\\n</menu>");
+  expect(prompt).toContain("The Test Tiki Bar");
+  expect(sent.response_format.json_schema.name).toBe("menu_recipe");
+  expect(sent.plugins).toEqual([{ id: "web", max_results: 3 }]);
+
+  await page.getByRole("button", { name: "Save recipe" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/menu-mystery\?recipe=added$/);
+  await expect(page.getByText("Best guess", { exact: true })).toBeVisible();
+  await expect(page.getByText(/from the menu at The Test Tiki Bar/)).toBeVisible();
+  await expect(page.getByText(/our best guess at the amounts/)).toBeVisible();
+  await expectAccessible(page);
+
+  // The list marks it too, so a guess never looks like a tested recipe.
+  await page.goto("/?q=menu%20mystery");
+  await expect(page.getByRole("list", { name: "Cocktails" }).getByRole("link", { name: /Menu Mystery/ })).toContainText("Best guess");
+
+  // After tasting: untick it, and the badge goes.
+  await page.goto("/cocktails/menu-mystery");
+  await page.getByRole("link", { name: "Edit or delete this recipe" }).click();
+  await page.getByRole("checkbox", { name: /This is a best guess/ }).uncheck();
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/menu-mystery\?recipe=saved$/);
+  await expect(page.getByText("Best guess", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/our best guess at the amounts/)).toHaveCount(0);
+  await page.goto("/?q=menu%20mystery");
+  await expect(page.getByRole("list", { name: "Cocktails" }).getByRole("link", { name: /Menu Mystery/ })).not.toContainText("Best guess");
+
+  // Without web search, no plugin is requested (and no sources shown).
+  await page.goto("/cocktails/new");
+  await page.getByText("From a menu", { exact: true }).click();
+  await page.getByLabel("What the menu says").fill("rum, lime, honey");
+  await page.getByRole("checkbox", { name: /Also search the web/ }).uncheck();
+  await page.getByRole("button", { name: "Work out a recipe" }).click();
+  await expect(page.getByRole("heading", { name: "Check the recipe, then save" })).toBeFocused();
+  const noWeb = await (await request.get(`${MOCK_URL}/__mock/last-openrouter`)).json();
+  expect(noWeb.plugins).toBeUndefined();
+  await expect(page.getByRole("region", { name: "How the helper worked it out" }).getByText("Web pages it read")).toHaveCount(0);
+  await expect(page.getByLabel(/Where it's from/)).toHaveValue("a menu description");
+});
+
 test("edit and delete our recipe; Difford's recipes can't be edited", async ({ page }) => {
   await signIn(page, JOHN, "/cocktails/test-swizzle");
   await page.getByRole("link", { name: "Edit or delete this recipe" }).click();
