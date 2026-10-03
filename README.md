@@ -66,6 +66,17 @@ in; see below.
   collection checkboxes (pre-ticked when "Add a recipe" is used from a
   collection). Stats show progress per collection. Logic in
   `src/lib/collections.ts`.
+- **Style tags** -- every drink gets one build (Sour, Spirit-forward,
+  Highball, Juice-led, Creamy & rich, Sparkling, Aperitif), its base
+  spirits (or Lower-alcohol / Liqueur-led) and flavor words (Bitter, Smoky,
+  Herbal, Spiced, Fruity, Nutty, Coffee & chocolate). They're worked out
+  from each recipe's verified ingredients and amounts by the rules in
+  `src/lib/styles.ts` (shown on the home page under "How tags are worked
+  out"; dashes and rinses don't count as a flavor), never guessed. Filter the
+  list with `?style=spirit-forward,gin` (all of them); tap a tag on a recipe
+  card for every drink with it. Tasters can fix a drink's tags on its card;
+  only the differences are stored (`cocktail_style_overrides`, migration
+  0013), so rule improvements still reach everything else.
 - **Home (`/`)** -- progress tiles and every drink, filterable by
   All / Tasted / Not yet and by ingredient (pick one or more; drinks using
   all of them, or any of them). Every filter state is a shareable URL, e.g.
@@ -210,7 +221,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0012` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0013` in order (Supabase SQL editor
    or `supabase db push`). 0012 (the IBA drinks and collections) is
    generated from `seed-data/iba-cocktails.json` and
    `seed-data/collections.json` by `node scripts/generate-collections-sql.mjs`
@@ -283,15 +294,14 @@ review pass:
 16. ✅ Living bar inventory — bottle levels, "We made this" pours (with undo), running-low alerts and restocking
 17. ✅ Bar scanner — add bottles from a photo (style, size, estimated level) or from a receipt
 18. ✅ Recipe from a menu — a best-guess recipe from a menu listing, using our recipes' ratios (+ optional web search), badged until tested
-19. ✅ Equal Parts: collections — renamed from Adventures in Tiki; Tiki, Classics (the 102 IBA official cocktails) and Prohibition collections, add/rename your own, per-collection stats; 42 new catalog styles for the classics (vermouths, whiskeys, liqueurs…)
+19. ✅ Equal Parts: collections — renamed from Adventures in Tiki; Tiki, Classics (the 102 IBA official cocktails) and Prohibition collections, add/rename your own, per-collection stats; 44 new catalog styles for the classics (vermouths, whiskeys, liqueurs…)
+20. ✅ Style tags — build, base spirit and flavor tags from the recipes (rules shown in the app), filter by style, fix any drink's tags
 
 ## Future ideas (not yet scheduled)
 
 Captured from John so they don't get lost, in the order he picked (Sep 2026):
 
-1. Style tags -- structure (sour, stirred, highball…), base spirit and a few
-   flavor words, suggested by the recipe helper and reviewed; filters like
-   "stirred + whiskey".
+1. ~~Style tags~~ (done, phase 20).
 2. Suggestions from our ratings -- "what next" leans toward the styles each
    of us rates highly, and says why; a "surprise me" stretch pick.
 3. Broader bar -- open-bottle freshness (vermouth), homemade syrups with a

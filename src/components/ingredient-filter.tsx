@@ -9,6 +9,8 @@ interface Props {
   q?: string;
   /** Current collection slug (?c=), kept across ingredient changes. */
   c?: string | null;
+  /** Current style tags (?style=), kept across ingredient changes. */
+  style?: string[];
   /** Show the results count here (off when the page shows one combined count). */
   showCount?: boolean;
   show: ListFilter;
@@ -26,7 +28,7 @@ interface Props {
  * (great on phones) and an Add button, plus link chips to remove each
  * choice. Every state is a shareable URL.
  */
-export function IngredientFilter({ q = "", c = null, showCount = true, show, selected, match, usageCounts, resultCount }: Props) {
+export function IngredientFilter({ q = "", c = null, style = [], showCount = true, show, selected, match, usageCounts, resultCount }: Props) {
   const chosen = selected.map((id) => getIngredient(id)).filter((i) => !!i);
   const groups = ingredientsByFamily()
     .map((g) => ({ ...g, items: g.items.filter((i) => !selected.includes(i.id) && (usageCounts[i.id] ?? 0) > 0) }))
@@ -50,7 +52,7 @@ export function IngredientFilter({ q = "", c = null, showCount = true, show, sel
             {chosen.map((i) => (
               <li key={i.id}>
                 <Link
-                  href={listHref({ c, show, ing: selected.filter((id) => id !== i.id), match, q })}
+                  href={listHref({ c, style, show, ing: selected.filter((id) => id !== i.id), match, q })}
                   scroll={false}
                   aria-label={`Remove ${i.name}`}
                   className="inline-flex items-center gap-1.5 rounded-full bg-teal-deep px-3 py-1.5 text-xs font-semibold text-white"
@@ -69,7 +71,7 @@ export function IngredientFilter({ q = "", c = null, showCount = true, show, sel
             {(["all", "any"] as const).map((m) => (
               <Link
                 key={m}
-                href={listHref({ c, show, ing: selected, match: m, q })}
+                href={listHref({ c, style, show, ing: selected, match: m, q })}
                 scroll={false}
                 aria-current={match === m ? "true" : undefined}
                 className={`rounded-full px-2.5 py-1.5 font-semibold ${
@@ -88,6 +90,7 @@ export function IngredientFilter({ q = "", c = null, showCount = true, show, sel
           {show !== "all" && <input type="hidden" name="show" value={show} />}
           {selected.length > 0 && <input type="hidden" name="ing" value={selected.join(",")} />}
           {match === "any" && <input type="hidden" name="match" value="any" />}
+          {style.length > 0 && <input type="hidden" name="style" value={style.join(",")} />}
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <label htmlFor="add-ingredient" className="text-xs font-semibold text-ink-soft">
               {selected.length > 0 ? "Add another ingredient" : "Pick an ingredient"}
@@ -131,7 +134,7 @@ export function IngredientFilter({ q = "", c = null, showCount = true, show, sel
             <span />
           )}
           {selected.length > 0 && (
-            <Link href={listHref({ c, show, q })} scroll={false} className="font-semibold text-teal underline-offset-2 hover:underline">
+            <Link href={listHref({ c, style, show, q })} scroll={false} className="font-semibold text-teal underline-offset-2 hover:underline">
               Clear ingredients
             </Link>
           )}

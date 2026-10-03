@@ -16,6 +16,9 @@ import { drinkAvailability } from "@/lib/cabinet";
 import { fetchBar, fetchCabinet, fetchPour, fetchShoppingList } from "@/lib/cabinet-data";
 import { MadeThis } from "@/components/made-this";
 import { CollectionsPanel } from "@/components/collections-panel";
+import { StylePanel } from "@/components/style-panel";
+import { applyStyleOverrides, computeStyles } from "@/lib/styles";
+import { fetchStyleOverrides } from "@/lib/styles-data";
 import { TIKI_SLUG } from "@/lib/collections";
 import { fetchCocktailCollections } from "@/lib/collections-data";
 import { pourLines } from "@/lib/inventory";
@@ -247,7 +250,13 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     console.error("recipe card: failed to load collections", err);
     return null;
   });
-  const [records, user, cabinet, list, bar, pour, cols] = await Promise.all([
+  const overridesPromise = fetchStyleOverrides()
+    .then((m) => m.get(cocktail.id) ?? [])
+    .catch((err) => {
+      console.error("recipe card: failed to load style fixes", err);
+      return [];
+    });
+  const [records, user, cabinet, list, bar, pour, cols, styleFixes] = await Promise.all([
     recordsPromise,
     userPromise,
     cabinetPromise,
@@ -255,7 +264,10 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     barPromise,
     pourPromise,
     collectionsPromise,
+    overridesPromise,
   ]);
+  const computedStyles = computeStyles(cocktail.ingredients);
+  const styles = applyStyleOverrides(computedStyles, styleFixes);
   // The tiki look for tiki drinks (and when collections couldn't load, for Difford's tiki list).
   const tikiLook = cols ? cols.mine.some((c) => c.slug === TIKI_SLUG) : cocktail.source === "diffords";
   // Only for signed-in tasters (RLS); null otherwise.
@@ -512,6 +524,15 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           </p>
         )}
       </section>
+
+      <StylePanel
+        slug={cocktail.slug}
+        name={cocktail.name}
+        tags={styles}
+        computed={computedStyles}
+        canEdit={!!user?.taster}
+        status={sp.styles}
+      />
 
       {cols && (
         <CollectionsPanel

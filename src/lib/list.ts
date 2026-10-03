@@ -85,6 +85,7 @@ export function listHref({
   match = "all",
   q = "",
   c = null,
+  style = [],
 }: {
   show?: ListFilter;
   ing?: string[];
@@ -92,6 +93,8 @@ export function listHref({
   q?: string;
   /** Collection slug (null = all drinks). */
   c?: string | null;
+  /** Style tag ids (all of them). */
+  style?: string[];
 }): string {
   const params = new URLSearchParams();
   if (c) params.set("c", c);
@@ -99,6 +102,7 @@ export function listHref({
   if (show !== "all") params.set("show", show);
   if (ing.length > 0) params.set("ing", ing.join(","));
   if (ing.length > 1 && match === "any") params.set("match", "any");
+  if (style.length > 0) params.set("style", style.join(","));
   const qs = params.toString().replace(/%2C/g, ",");
   return qs ? `/?${qs}` : "/";
 }

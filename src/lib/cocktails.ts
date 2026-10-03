@@ -1,5 +1,7 @@
 import { collectionSlugsByCocktail } from "./collections";
 import { fetchCollections } from "./collections-data";
+import { applyStyleOverrides, computeStyles, type StyleOverride } from "./styles";
+import { fetchStyleOverrides } from "./styles-data";
 import { byListOrder } from "./order";
 import { supabase } from "./supabase";
 import type { TastingRecord } from "./tasting";
@@ -24,6 +26,8 @@ export interface CocktailRecord extends TastingRecord {
   id?: string;
   /** Slugs of the collections it's in, in collection order. */
   collections?: string[];
+  /** Style tag ids (computed from the ingredients, with any taster fixes). */
+  styles?: string[];
 }
 
 interface RawCocktailRow {
@@ -65,7 +69,8 @@ interface RawTastingRow {
 export function mapRowsToCocktailRecords(
   cocktailRows: RawCocktailRow[],
   tastingRows: RawTastingRow[],
-  collectionsByCocktail: Map<string, string[]> = new Map()
+  collectionsByCocktail: Map<string, string[]> = new Map(),
+  styleOverrides: Map<string, StyleOverride[]> = new Map()
 ): CocktailRecord[] {
   const tastingsByCocktail = new Map<
     string,
@@ -107,6 +112,7 @@ export function mapRowsToCocktailRecords(
         name: c.name,
         slug: c.slug,
         collections: collectionsByCocktail.get(c.id) ?? [],
+        styles: applyStyleOverrides(computeStyles(lines), styleOverrides.get(c.id) ?? []),
         diffordsRank: c.diffords_rank,
         diffordsGuideUrl: c.diffords_guide_url,
         primarySpirits: c.primary_spirits ?? [],
@@ -131,6 +137,7 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
     { data: cocktailRows, error: cocktailsError },
     { data: tastingRows, error: tastingsError },
     { collections, memberships },
+    styleOverrides,
   ] = await Promise.all([
     supabase
       .from("cocktails")
@@ -141,6 +148,11 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
     fetchCollections().catch((err) => {
       console.error("cocktails: failed to load collections", err);
       return { collections: [], memberships: [] };
+    }),
+    // Likewise style fixes: without them the computed tags still show.
+    fetchStyleOverrides().catch((err) => {
+      console.error("cocktails: failed to load style fixes", err);
+      return new Map<string, StyleOverride[]>();
     }),
   ]);
 
@@ -154,7 +166,8 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
   return mapRowsToCocktailRecords(
     (cocktailRows ?? []) as RawCocktailRow[],
     (tastingRows ?? []) as unknown as RawTastingRow[],
-    collectionSlugsByCocktail(collections, memberships)
+    collectionSlugsByCocktail(collections, memberships),
+    styleOverrides
   );
 }
 

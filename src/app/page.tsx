@@ -4,6 +4,8 @@ import Link from "next/link";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { IngredientFilter } from "@/components/ingredient-filter";
 import { SearchBox } from "@/components/search-box";
+import { StyleFilter } from "@/components/style-filter";
+import { matchesStyles, parseStyleFilter } from "@/lib/styles";
 import { SuggestionCard } from "@/components/suggestion-card";
 import { fetchBar, fetchCabinet } from "@/lib/cabinet-data";
 import { isLow } from "@/lib/inventory";
@@ -43,6 +45,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
   const match = parseIngredientMatch(sp.match);
   const q = parseSearch(sp.q);
+  const style = parseStyleFilter(sp.style);
   const collections: Collection[] = await fetchCollections()
     .then((r) => r.collections)
     .catch((err) => {
@@ -56,8 +59,9 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   // Tidy the search too: an empty box submits ?q=, and stray spaces or an
   // over-long query shouldn't make a second URL for the same view.
   const badCollection = sp.c !== undefined && sp.c !== cSlug && collections.length > 0;
-  if (sp.add !== undefined || (sp.q !== undefined && sp.q !== q) || badCollection) {
-    redirect(listHref({ c: cSlug, show: filter, ing: ingredientIds, match, q }));
+  const badStyle = sp.style !== undefined && (Array.isArray(sp.style) || style.length === 0 || sp.style !== style.join(","));
+  if (sp.add !== undefined || (sp.q !== undefined && sp.q !== q) || badCollection || badStyle) {
+    redirect(listHref({ c: cSlug, show: filter, ing: ingredientIds, match, q, style }));
   }
   // Only for signed-in tasters (RLS); null otherwise. Started now, used below.
   const cabinetPromise = fetchCabinet().catch((err) => {
@@ -97,7 +101,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       new Set(lineIds(r.ingredientTexts, r.ingredientIds).filter((id): id is string => !!id)),
     ])
   );
-  const ingredientMatched = listed.filter(
+  const beforeStyle = listed.filter(
     (c) =>
       matchesIngredients(idsBySlug.get(c.slug) ?? new Set(), ingredientIds, match) &&
       (q === "" ||
@@ -113,7 +117,11 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         q
       ))
   );
+  // Style tags: counts are within the other filters, so each chip says what adding it would leave.
+  const ingredientMatched = beforeStyle.filter((c) => matchesStyles(c.styles, style));
   const visible = filterCocktails(ingredientMatched, filter);
+  const styleCounts: Record<string, number> = {};
+  for (const c of visible) for (const t of c.styles ?? []) styleCounts[t] = (styleCounts[t] ?? 0) + 1;
   const matchedTried = ingredientMatched.filter((c) => c.tried).length;
   const counts: Record<ListFilter, number> = {
     all: ingredientMatched.length,
@@ -200,7 +208,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             return (
               <Link
                 key={col?.slug ?? "all"}
-                href={listHref({ c: col?.slug ?? null, show: filter, ing: ingredientIds, match, q })}
+                href={listHref({ c: col?.slug ?? null, show: filter, ing: ingredientIds, match, q, style })}
                 scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold shadow-sm ${
@@ -365,6 +373,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           {filter !== "all" && <input type="hidden" name="show" value={filter} />}
           {ingredientIds.length > 0 && <input type="hidden" name="ing" value={ingredientIds.join(",")} />}
           {match === "any" && <input type="hidden" name="match" value="any" />}
+          {style.length > 0 && <input type="hidden" name="style" value={style.join(",")} />}
           <button
             type="submit"
             className="shrink-0 rounded-full bg-teal-deep px-4 py-2.5 text-sm font-bold text-white shadow-sm"
@@ -375,15 +384,15 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         <div className="-mt-1 flex min-h-4 items-center justify-between text-xs">
           {/* The one results count (search and ingredients), always rendered so screen readers announce changes. */}
           <p role="status" className="text-ink-soft">
-            {q !== "" || ingredientIds.length > 0
+            {q !== "" || ingredientIds.length > 0 || style.length > 0
               ? `${visible.length} ${visible.length === 1 ? "drink matches" : "drinks match"}${q !== "" ? ` “${q}”` : ""}${
                   ingredientIds.length > 0 ? (q !== "" ? " with those ingredients" : "") : ""
-                }${filter === "tasted" ? " (tasted)" : filter === "untasted" ? " (not tried yet)" : ""}`
+                }${style.length > 0 && (q !== "" || ingredientIds.length > 0) ? " and styles" : ""}${filter === "tasted" ? " (tasted)" : filter === "untasted" ? " (not tried yet)" : ""}`
               : ""}
           </p>
           {q !== "" && (
             <Link
-              href={listHref({ c: cSlug, show: filter, ing: ingredientIds, match })}
+              href={listHref({ c: cSlug, show: filter, ing: ingredientIds, match, style })}
               scroll={false}
               className="font-semibold text-teal underline-offset-2 hover:underline"
             >
@@ -398,7 +407,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             return (
               <Link
                 key={f.value}
-                href={listHref({ c: cSlug, show: f.value, ing: ingredientIds, match, q })}
+                href={listHref({ c: cSlug, show: f.value, ing: ingredientIds, match, q, style })}
                 scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={`flex-1 rounded-full px-3 py-2 text-center text-sm font-semibold shadow-sm transition-colors ${
@@ -413,9 +422,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           })}
         </nav>
 
+        <StyleFilter c={cSlug} q={q} show={filter} ing={ingredientIds} match={match} selected={style} counts={styleCounts} />
+
         <IngredientFilter
           q={q}
           c={cSlug}
+          style={style}
           showCount={false}
           show={filter}
           selected={ingredientIds}
@@ -432,7 +444,11 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
         {visible.length === 0 && !loadError && (
           <p className="rounded-xl bg-card p-4 text-center text-sm text-ink-soft shadow-sm">
-            {q !== "" && ingredientIds.length > 0
+            {style.length > 0
+              ? `No drinks here match all of those styles${q !== "" ? ` and “${q}”` : ""}${
+                  ingredientIds.length > 0 ? " with those ingredients" : ""
+                }${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}. Try removing one.`
+              : q !== "" && ingredientIds.length > 0
               ? `No drinks match “${q}” with those ingredients${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}.`
               : q !== ""
               ? `No drinks match “${q}”${filter === "tasted" ? " among the tasted ones" : filter === "untasted" ? " among the ones not tried yet" : ""}.`

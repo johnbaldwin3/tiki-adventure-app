@@ -35,10 +35,13 @@ export function createCollectionMocks({ here, cocktails, accounts, bearerEmail, 
   const seed = JSON.parse(fs.readFileSync(path.join(here, "..", "seed-data", "collections.json"), "utf8"));
   const collections = [];
   const members = [];
+  // Style tag fixes (migration 0013): tasters only; updated_by must be them.
+  const styleFixes = [];
 
   function reset() {
     collections.length = 0;
     members.length = 0;
+    styleFixes.length = 0;
     for (const c of seed.collections) {
       const col = {
         id: `col-${c.slug}`,
@@ -144,12 +147,60 @@ export function createCollectionMocks({ here, cocktails, accounts, bearerEmail, 
     sendJson(res, 405, { message: "mock-supabase: unsupported cocktail_collections method" });
   }
 
+  function handleStyleFixes(req, res, url) {
+    for (let j = styleFixes.length - 1; j >= 0; j--) {
+      if (!cocktails.some((c) => c.id === styleFixes[j].cocktail_id)) styleFixes.splice(j, 1);
+    }
+    if (req.method === "GET") {
+      sendJson(res, 200, styleFixes.map((r) => project(r, url.searchParams.get("select"))));
+      return;
+    }
+    const email = bearerEmail(req);
+    const taster = email ? accounts.get(email) : null;
+    if (req.method === "DELETE") {
+      const id = eq(url, "cocktail_id");
+      const keep = ((url.searchParams.get("tag") ?? "").match(/^not\.in\.\((.*)\)$/)?.[1] ?? "")
+        .split(",")
+        .filter(Boolean);
+      if (taster) {
+        for (let j = styleFixes.length - 1; j >= 0; j--) {
+          if (styleFixes[j].cocktail_id === id && !keep.includes(styleFixes[j].tag)) styleFixes.splice(j, 1);
+        }
+      }
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+    if (req.method === "POST") {
+      if (url.searchParams.get("on_conflict") !== "cocktail_id,tag") {
+        return sendJson(res, 400, { message: "mock-supabase: expected on_conflict=cocktail_id,tag" });
+      }
+      readBody(req).then((body) => {
+        const rows = [body].flat();
+        if (!taster || rows.some((r) => r.updated_by !== taster)) return refuse(res, "cocktail_style_overrides");
+        for (const r of rows) {
+          const existing = styleFixes.find((f) => f.cocktail_id === r.cocktail_id && f.tag === r.tag);
+          if (existing) Object.assign(existing, { include: r.include, updated_by: r.updated_by });
+          else styleFixes.push({ cocktail_id: r.cocktail_id, tag: r.tag, include: r.include, updated_by: r.updated_by });
+        }
+        res.writeHead(201);
+        res.end();
+      });
+      return;
+    }
+    sendJson(res, 405, { message: "mock-supabase: unsupported cocktail_style_overrides method" });
+  }
+
   /** Returns true if it handled the request. */
   return function handle(req, res, url, tableName) {
     if (req.method === "POST" && url.pathname === "/__mock/reset-collections") {
       reset();
       res.writeHead(204);
       res.end();
+      return true;
+    }
+    if (tableName === "cocktail_style_overrides") {
+      handleStyleFixes(req, res, url);
       return true;
     }
     if (tableName !== "collections" && tableName !== "cocktail_collections") return false;
