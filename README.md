@@ -205,6 +205,13 @@ in; see below.
   guesses carry a **Best guess** badge on the card and in the list
   (`cocktails.is_guess`, migration 0010: only our recipes can be guesses);
   untick it in the editor once you've tasted and adjusted it.
+- **How it works (`/guide`)** -- a short, friendly guide to every feature
+  for people who didn't help build the app, linked as **Help** in the top
+  bar on every page. Signed-in people also get a "New here?" card on the
+  home page until they tap **Hide this** (remembered per browser in the
+  `ep_welcome` cookie; the guide's last section brings it back). The
+  content is one array in `src/app/guide/sections.tsx`: add an entry (or a
+  tip) when a feature ships.
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -354,6 +361,7 @@ review pass:
 24. ✅ We tried it — either taster can enter or edit the other's rating (the card says who entered it), "Genny tried it too" marks both as tried, and the home page asks each of us for the ratings we still owe (migration 0016)
 25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
 26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
+27. ✅ How it works — a quick guide to every feature (`/guide`), Help link in the top bar, and a hideable "New here?" card on the home page
 
 ## Future ideas (not yet scheduled)
 

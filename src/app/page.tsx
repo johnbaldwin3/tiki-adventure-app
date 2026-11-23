@@ -31,6 +31,9 @@ import {
 import { suggestNext } from "@/lib/suggest";
 import { rankCocktails, summarizeProgress, toRate } from "@/lib/tasting";
 import { getSignedInUser } from "@/lib/auth/current-taster";
+import { cookies } from "next/headers";
+import { WelcomeCard } from "@/components/welcome-card";
+import { isWelcomeHidden, WELCOME_COOKIE } from "@/lib/welcome";
 
 // This page reads live from Supabase on every request rather than being
 // statically generated or ISR-cached. The tasting log is small (100 rows)
@@ -153,14 +156,15 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         .map(([id]) => id)
         .sort((a, b) => (getIngredient(a)?.name ?? a).localeCompare(getIngredient(b)?.name ?? b))
     : [];
+  const signedIn = await getSignedInUser().catch((err) => {
+    unstable_rethrow(err);
+    return null;
+  });
   // Signed-in tasters: drinks you've tried (or were marked as tried) but not rated yet.
-  const me = (
-    await getSignedInUser().catch((err) => {
-      unstable_rethrow(err);
-      return null;
-    })
-  )?.taster;
+  const me = signedIn?.taster;
   const unrated = me ? toRate(allRecords, me.initials) : [];
+  // Signed in and hasn't hidden it: the "New here?" card pointing at the guide.
+  const showWelcomeCard = !!signedIn && !isWelcomeHidden((await cookies()).get(WELCOME_COOKIE)?.value);
   const tryNext = loadError
     ? []
     : suggestNext(listed, { have: cabinet ? new Set(cabinet.keys()) : null, limit: 3 });
@@ -247,6 +251,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           Your password has been updated.
         </p>
       )}
+
+      {showWelcomeCard && <WelcomeCard name={signedIn?.taster?.displayName} />}
 
       {loadError && (
         <p
