@@ -21,6 +21,15 @@ export interface RankedTastingRecord extends TastingRecord {
   rank: number | null;
 }
 
+/**
+ * Drinks a taster has tried but not rated (e.g. the other taster ticked
+ * "we both tried it"), in list order -- the home page asks for those ratings.
+ */
+export function toRate<T extends TastingRecord & { triedBy?: string[] }>(records: T[], initials: string): T[] {
+  const mine = (r: T) => (initials === "JB" ? r.jbRating : initials === "GM" ? r.gmRating : undefined);
+  return records.filter((r) => r.triedBy?.includes(initials) && mine(r) === null);
+}
+
 /** Average of JB and GM ratings. Returns null if neither rating is present. */
 export function averageRating(jbRating: Rating, gmRating: Rating): number | null {
   const values = [jbRating, gmRating].filter(

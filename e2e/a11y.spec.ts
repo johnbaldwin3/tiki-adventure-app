@@ -61,7 +61,7 @@ test("a11y: signed-in card, edit form, and form errors", async ({ page }) => {
   await expect(page.getByText(/rating from 0 to 10/)).toBeVisible();
   await expectNoViolations(page);
 
-  await page.goto("/cocktails/zombie/tasting/jb"); // "Not your tasting"
+  await page.goto("/cocktails/zombie/tasting/jb"); // entering the other taster's tasting
   await expectNoViolations(page);
 });
 

@@ -62,26 +62,18 @@ export default async function EditTastingPage({
   if (!cocktail || !entry) notFound();
 
   const mine = user.taster?.initials.toLowerCase();
-  if (mine !== taster) {
+  if (!mine) {
     return (
       <Shell slug={slug} name={cocktail.name}>
-        <h1 className="text-2xl font-extrabold text-teal-deep">Not your tasting</h1>
+        <h1 className="text-2xl font-extrabold text-teal-deep">Not a taster</h1>
         <p className="text-sm text-ink-soft">
-          {mine
-            ? `You can only edit your own rating & notes for ${cocktail.name}.`
-            : `You're signed in as ${user.email}, which isn't linked to a taster, so there's nothing to edit.`}
+          You&apos;re signed in as {user.email}, which isn&apos;t linked to a taster, so there&apos;s nothing to edit.
         </p>
-        {mine && (
-          <Link
-            href={`/cocktails/${slug}/tasting/${mine}`}
-            className="w-fit rounded-full bg-teal-deep px-4 py-2 text-sm font-semibold text-white shadow-sm"
-          >
-            Edit yours
-          </Link>
-        )}
       </Shell>
     );
   }
+  const forOther = mine !== taster;
+  const others = cocktail.tasters.filter((t) => t.initials.toLowerCase() !== taster);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -101,10 +93,18 @@ export default async function EditTastingPage({
         </h1>
       </header>
 
+      {forOther && (
+        <p className="rounded-2xl border border-teal/30 bg-sand-deep p-3 text-sm text-teal-deep">
+          You&apos;re entering <strong>{entry.displayName}&apos;s</strong> rating &amp; notes. Their card will say you entered it.
+        </p>
+      )}
+
       <TastingForm
         slug={slug}
         taster={taster}
         today={todayInEastern()}
+        whose={forOther ? entry.displayName : null}
+        others={others.filter((t) => !t.tried).map((t) => t.displayName)}
         initialValues={{
           tried: entry.tried,
           rating: entry.rating === null ? "" : String(entry.rating),

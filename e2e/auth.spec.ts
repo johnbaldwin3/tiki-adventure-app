@@ -40,11 +40,10 @@ test("sign-in lasts at least 14 days (session cookie expiry)", async ({ page, co
   for (const c of authCookies) expect(c.expires).toBeGreaterThan(fourteenDays);
 });
 
-test("you can't open someone else's tasting form", async ({ page }) => {
+test("either taster can open the other's tasting form (household rule)", async ({ page }) => {
   await signIn(page, JOHN, "/cocktails/zombie/tasting/gm");
-  await expect(page.getByRole("heading", { name: "Not your tasting" })).toBeVisible();
-  await page.getByRole("link", { name: "Edit yours" }).click();
-  await expect(page).toHaveURL(/\/cocktails\/zombie\/tasting\/jb$/);
+  await expect(page.getByText("You're entering Genny's rating & notes.")).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: /Genny has tried this/ })).toBeVisible();
 });
 
 test("sign out", async ({ page }) => {

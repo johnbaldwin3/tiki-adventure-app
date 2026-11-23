@@ -29,7 +29,8 @@ import {
   type ListFilter,
 } from "@/lib/list";
 import { suggestNext } from "@/lib/suggest";
-import { rankCocktails, summarizeProgress } from "@/lib/tasting";
+import { rankCocktails, summarizeProgress, toRate } from "@/lib/tasting";
+import { getSignedInUser } from "@/lib/auth/current-taster";
 
 // This page reads live from Supabase on every request rather than being
 // statically generated or ISR-cached. The tasting log is small (100 rows)
@@ -152,6 +153,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         .map(([id]) => id)
         .sort((a, b) => (getIngredient(a)?.name ?? a).localeCompare(getIngredient(b)?.name ?? b))
     : [];
+  // Signed-in tasters: drinks you've tried (or were marked as tried) but not rated yet.
+  const me = (
+    await getSignedInUser().catch((err) => {
+      unstable_rethrow(err);
+      return null;
+    })
+  )?.taster;
+  const unrated = me ? toRate(allRecords, me.initials) : [];
   const tryNext = loadError
     ? []
     : suggestNext(listed, { have: cabinet ? new Set(cabinet.keys()) : null, limit: 3 });
@@ -319,6 +328,44 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             See our bar
           </Link>
         </p>
+      )}
+
+      {me && unrated.length > 0 && (
+        <section aria-labelledby="to-rate-heading" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm shadow-sm">
+          <h2 id="to-rate-heading" className="font-semibold text-teal-deep">
+            {unrated.length === 1 ? "1 drink you've tried needs" : `${unrated.length} drinks you've tried need`} your rating
+          </h2>
+          {(() => {
+            const chips = (rows: typeof unrated) => (
+              <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                {rows.map((r) => (
+                  <li key={r.slug}>
+                    <Link
+                      href={`/cocktails/${r.slug}/tasting/${me.initials.toLowerCase()}`}
+                      className="inline-block rounded-full border border-teal/30 px-3 py-1.5 text-xs font-semibold text-teal-deep hover:bg-sand-deep"
+                    >
+                      {r.name}
+                      <span className="sr-only">: add your rating</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            );
+            return (
+              <>
+                {chips(unrated.slice(0, 6))}
+                {unrated.length > 6 && (
+                  <details className="mt-1.5">
+                    <summary className="cursor-pointer text-xs font-semibold text-teal underline-offset-2 hover:underline">
+                      Show {unrated.length - 6} more
+                    </summary>
+                    {chips(unrated.slice(6))}
+                  </details>
+                )}
+              </>
+            );
+          })()}
+        </section>
       )}
 
       {tryNext.length > 0 && (
