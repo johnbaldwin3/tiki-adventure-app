@@ -89,7 +89,7 @@ export async function callModelWithCitations(
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": "https://tiki-adventure-app-beige.vercel.app",
+      "HTTP-Referer": "https://equalparts.online",
       "X-Title": "Equal Parts",
     },
     body: JSON.stringify({
