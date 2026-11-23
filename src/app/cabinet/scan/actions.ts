@@ -80,7 +80,7 @@ async function saveBottles(saves: BottleSave[], tasterId: string): Promise<boole
       remaining_ml: s.remainingMl,
       updated_by: tasterId,
     })),
-    { onConflict: "ingredient_id" }
+    { onConflict: "household_id,ingredient_id" }
   );
   if (error) {
     console.error("scan save failed", error);

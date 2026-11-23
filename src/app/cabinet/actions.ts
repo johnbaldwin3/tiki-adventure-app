@@ -53,7 +53,7 @@ export async function saveCabinet(prev: CabinetFormState, formData: FormData): P
         bottle,
         updated_by: user.taster!.id,
       })),
-      { onConflict: "ingredient_id" }
+      { onConflict: "household_id,ingredient_id" }
     );
     if (error) {
       console.error("saveCabinet: upsert failed", error);
