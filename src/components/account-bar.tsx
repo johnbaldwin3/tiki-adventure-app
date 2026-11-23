@@ -2,8 +2,9 @@ import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 import { getSignedInUser } from "@/lib/auth/current-taster";
+import { Logo } from "@/components/logo";
 
-/** Slim bar above every page: who's signed in, with sign-in / sign-out. */
+/** Slim bar above every page: the logo (home link), and who's signed in, with sign-in / sign-out. */
 export async function AccountBar() {
   let user: Awaited<ReturnType<typeof getSignedInUser>> = null;
   try {
@@ -16,23 +17,31 @@ export async function AccountBar() {
     user = null; // auth hiccup: show the signed-out bar rather than breaking the page
   }
   return (
-    <nav aria-label="Account" className="mx-auto flex w-full max-w-md items-center justify-end gap-3 px-4 pt-3 text-sm sm:max-w-lg">
-      {user ? (
-        <>
-          <span className="min-w-0 truncate text-ink-soft">
-            Signed in as <strong className="text-ink">{user.taster?.displayName ?? user.email}</strong>
-          </span>
-          <form action={signOut}>
-            <button type="submit" className="font-semibold text-teal underline-offset-2 hover:underline">
-              Sign out
-            </button>
-          </form>
-        </>
-      ) : (
-        <Link href="/login" className="font-semibold text-teal underline-offset-2 hover:underline">
-          Sign in
-        </Link>
-      )}
-    </nav>
+    <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 px-4 pt-3 text-sm sm:max-w-lg">
+      <Link href="/" className="flex shrink-0 items-center gap-2 rounded-xl font-extrabold tracking-tight text-teal-deep">
+        <Logo size={36} className="drop-shadow-sm" />
+        <span className="text-base">Equal Parts</span>
+      </Link>
+      <nav aria-label="Account" className="flex min-w-0 items-center justify-end gap-3">
+        {user ? (
+          <>
+            <span className="min-w-0 truncate text-ink-soft">
+              {/* The prefix stays for screen readers; phones show just the name, next to the logo. */}
+              <span className="sr-only sm:not-sr-only">Signed in as </span>
+              <strong className="text-ink">{user.taster?.displayName ?? user.email}</strong>
+            </span>
+            <form action={signOut}>
+              <button type="submit" className="whitespace-nowrap font-semibold text-teal underline-offset-2 hover:underline">
+                Sign out
+              </button>
+            </form>
+          </>
+        ) : (
+          <Link href="/login" className="font-semibold text-teal underline-offset-2 hover:underline">
+            Sign in
+          </Link>
+        )}
+      </nav>
+    </div>
   );
 }
