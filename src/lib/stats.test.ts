@@ -5,8 +5,8 @@ import { computeDashboardStats, takeWithTies } from "./stats";
 function rec(
   diffordsRank: number,
   tried: boolean,
-  jbRating: number | null = null,
-  gmRating: number | null = null
+  aRating: number | null = null,
+  bRating: number | null = null
 ): CocktailRecord {
   const name = `Drink ${diffordsRank}`;
   return {
@@ -19,8 +19,8 @@ function rec(
     primarySpirits: [],
     ingredientTexts: [],
     tried,
-    jbRating,
-    gmRating,
+    aRating,
+    bRating,
   };
 }
 
@@ -48,28 +48,28 @@ describe("computeDashboardStats", () => {
   });
 
   it("summarizes each taster, ignoring unrated tastings", () => {
-    expect(s.jb).toEqual({
+    expect(s.a).toEqual({
       ratedCount: 5,
       average: 8,
       highest: { name: "Drink 60", slug: "drink-60", rating: 10 },
       lowest: { name: "Drink 100", slug: "drink-100", rating: 5.5 },
     });
-    expect(s.gm.ratedCount).toBe(4);
-    expect(s.gm.average).toBe(7.25);
-    expect(s.gm.highest?.rating).toBe(9);
-    expect(s.gm.lowest?.name).toBe("Drink 5");
+    expect(s.b.ratedCount).toBe(4);
+    expect(s.b.average).toBe(7.25);
+    expect(s.b.highest?.rating).toBe(9);
+    expect(s.b.lowest?.name).toBe("Drink 5");
   });
 
   it("bins ratings with half-open ranges and 10 in the top bin", () => {
-    expect(s.histogram.map((b) => [b.label, b.jb, b.gm])).toEqual([
+    expect(s.histogram.map((b) => [b.label, b.a, b.b])).toEqual([
       ["Under 6", 1, 0],
       ["6–7", 0, 2],
       ["7–8", 1, 1],
       ["8–9", 1, 0],
       ["9–10", 2, 1],
     ]);
-    const totalJb = s.histogram.reduce((n, b) => n + b.jb, 0);
-    expect(totalJb).toBe(s.jb.ratedCount);
+    const totalJb = s.histogram.reduce((n, b) => n + b.a, 0);
+    expect(totalJb).toBe(s.a.ratedCount);
   });
 
   it("lists disagreements biggest gap first, excluding exact agreement", () => {
@@ -95,7 +95,7 @@ describe("computeDashboardStats", () => {
   it("handles no data at all", () => {
     const empty = computeDashboardStats([]);
     expect(empty.tried).toBe(0);
-    expect(empty.jb).toEqual({ ratedCount: 0, average: null, highest: null, lowest: null });
+    expect(empty.a).toEqual({ ratedCount: 0, average: null, highest: null, lowest: null });
     expect(empty.averageGap).toBeNull();
     expect(empty.disagreements).toEqual([]);
     expect(empty.topRated).toEqual([]);
@@ -110,8 +110,8 @@ describe("computeDashboardStats edge cases", () => {
     const rs = base();
     rs[2] = rec(3, true, 7.5, null);
     const s = computeDashboardStats(rs);
-    expect(s.jb.highest).toEqual(s.jb.lowest);
-    expect(s.jb.average).toBe(7.5);
+    expect(s.a.highest).toEqual(s.a.lowest);
+    expect(s.a.average).toBe(7.5);
   });
 
   it("breaks favorite/lowest ties by Difford's rank", () => {
@@ -119,8 +119,8 @@ describe("computeDashboardStats edge cases", () => {
     rs[6] = rec(7, true, 9, 5);
     rs[1] = rec(2, true, 9, 5);
     const s = computeDashboardStats(rs);
-    expect(s.jb.highest?.name).toBe("Drink 2");
-    expect(s.gm.lowest?.name).toBe("Drink 2");
+    expect(s.a.highest?.name).toBe("Drink 2");
+    expect(s.b.lowest?.name).toBe("Drink 2");
   });
 
   it("bins exact boundaries into the higher bin", () => {
@@ -129,7 +129,7 @@ describe("computeDashboardStats edge cases", () => {
     rs[1] = rec(2, true, 8.99, 9);
     rs[2] = rec(3, true, 0, 10);
     const s = computeDashboardStats(rs);
-    const bins = Object.fromEntries(s.histogram.map((b) => [b.label, [b.jb, b.gm]]));
+    const bins = Object.fromEntries(s.histogram.map((b) => [b.label, [b.a, b.b]]));
     expect(bins["Under 6"]).toEqual([2, 0]);
     expect(bins["6–7"]).toEqual([0, 1]);
     expect(bins["8–9"]).toEqual([1, 0]);
@@ -140,7 +140,7 @@ describe("computeDashboardStats edge cases", () => {
     const rs = base();
     rs[0] = rec(1, true, 11, -1);
     const s = computeDashboardStats(rs);
-    expect(s.histogram.reduce((n, b) => n + b.jb + b.gm, 0)).toBe(0);
+    expect(s.histogram.reduce((n, b) => n + b.a + b.b, 0)).toBe(0);
   });
 
   it("keeps ties at the top-N cutoff instead of splitting them", () => {

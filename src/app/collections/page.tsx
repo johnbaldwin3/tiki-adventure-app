@@ -30,7 +30,7 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
   const problemFor = typeof sp.for === "string" ? sp.for : null;
   // Only the new-collection form gets its typed name back (to fix it).
   const retryName = problem && problemFor === "new" && typeof sp.name === "string" ? sp.name.slice(0, COLLECTION_LIMITS.name) : "";
-  const shell = { eyebrow: "JB & GM's home bar", title: "Collections", icon: "🗂️" };
+  const shell = { eyebrow: "Our home bar", title: "Collections", icon: "🗂️" };
 
   let data: { collections: Collection[]; memberships: Membership[] } | null = null;
   try {

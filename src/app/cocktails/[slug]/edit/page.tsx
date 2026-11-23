@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/page-shell";
 import { getSignedInUser } from "@/lib/auth/current-taster";
-import { fetchCocktailBySlug } from "@/lib/cocktails";
+import { fetchCocktailBySlug } from "@/lib/cocktails-data";
 import { fetchCocktailCollections } from "@/lib/collections-data";
 import { ingredientsByFamily } from "@/lib/ingredients";
 import type { RecipeDraft } from "@/lib/recipe-form";

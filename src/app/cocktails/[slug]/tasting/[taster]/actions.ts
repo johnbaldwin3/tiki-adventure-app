@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { SLUG_PATTERN } from "@/lib/slug";
-import { supabase } from "@/lib/supabase";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
   parseTastingForm,
@@ -53,18 +52,21 @@ export async function saveTasting(
 
   const user = await getSignedInUser();
   if (!user) return fail("Your sign-in has expired. Please sign in again, then save.");
-  if (!user.taster) return fail("Only JB & GM can save tastings.");
+  if (!user.taster) return fail("This account isn't set up for tastings yet.");
 
+  const db = await createSupabaseServerClient();
   const [{ data: cocktail, error: cocktailError }, { data: tasters, error: tastersError }] = await Promise.all([
-    supabase.from("cocktails").select("id").eq("slug", slug).maybeSingle(),
-    supabase.from("tasters").select("id, initials"),
+    db.from("cocktails").select("id").eq("slug", slug).maybeSingle(),
+    db.from("tasters").select("id, initials, household_id"),
   ]);
   if (cocktailError || !cocktail) return fail("Couldn't find that cocktail. Nothing was saved.");
-  const everyone = (tastersError ? [] : (tasters ?? [])) as { id: string; initials: string }[];
+  const visible = (tastersError ? [] : (tasters ?? [])) as { id: string; initials: string; household_id: string | null }[];
+  // Your household only: friends' tastings are theirs to enter (RLS agrees).
+  const myHousehold = visible.find((t) => t.id === user.taster!.id)?.household_id ?? null;
+  const everyone = visible.filter((t) => myHousehold !== null && t.household_id === myHousehold);
   const target = everyone.find((t) => t.initials === initials);
   if (!target) return fail("That cocktail or taster wasn't recognized.");
 
-  const db = await createSupabaseServerClient();
   const { error } = await db.from("tastings").upsert(
     {
       cocktail_id: cocktail.id,

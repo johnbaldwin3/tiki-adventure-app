@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
-import { fetchCocktailBySlug } from "@/lib/cocktails";
+import { fetchCocktailBySlug } from "@/lib/cocktails-data";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { todayInEastern } from "@/lib/tasting-form";
 import { TastingForm } from "./tasting-form";
@@ -58,7 +58,8 @@ export default async function EditTastingPage({
       </Shell>
     );
   }
-  const entry = cocktail?.tasters.find((t) => t.initials.toLowerCase() === taster);
+  // Only your household's tastings can be entered here (friends' are read-only).
+  const entry = cocktail?.tasters.find((t) => t.household && t.initials.toLowerCase() === taster);
   if (!cocktail || !entry) notFound();
 
   const mine = user.taster?.initials.toLowerCase();
@@ -73,7 +74,7 @@ export default async function EditTastingPage({
     );
   }
   const forOther = mine !== taster;
-  const others = cocktail.tasters.filter((t) => t.initials.toLowerCase() !== taster);
+  const others = cocktail.tasters.filter((t) => t.household && t.initials.toLowerCase() !== taster);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">

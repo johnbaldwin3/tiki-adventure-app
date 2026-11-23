@@ -11,7 +11,8 @@ import {
   fetchShoppingList,
   type Cabinet,
 } from "@/lib/cabinet-data";
-import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { type CocktailRecord } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { getIngredient } from "@/lib/ingredients";
 import { summarizeShopping } from "@/lib/shopping";
 import { describeLeft, isLow } from "@/lib/inventory";
@@ -52,7 +53,7 @@ export default async function ShoppingPage({
 }: PageProps<"/shopping">) {
   const sp = await searchParams;
   const user = await getSignedInUser();
-  const shell = { eyebrow: "JB & GM only", title: "Shopping list", icon: "🛒" };
+  const shell = { eyebrow: "Members only", title: "Shopping list", icon: "🛒" };
 
   if (!user) {
     return (
@@ -131,7 +132,7 @@ export default async function ShoppingPage({
   return (
     <PageShell
       {...shell}
-      eyebrow="JB & GM's home bar"
+      eyebrow="Our home bar"
       back={{ href: "/cabinet", label: "Our bar" }}
       intro={
         n === 0

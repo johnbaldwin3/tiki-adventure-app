@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { fetchCocktailRecords } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { cocktailsByIngredient, ingredientsByFamily } from "@/lib/ingredients";
 
 export const dynamic = "force-dynamic";

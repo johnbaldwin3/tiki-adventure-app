@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { mapRowsToCocktailDetail, mapRowsToCocktailRecords, parseIngredients } from "./cocktails";
 
+// John & Genny's household: the a/b rating columns.
+const HOUSE = ["JB", "GM"];
+
 describe("mapRowsToCocktailRecords", () => {
   it("joins tastings onto their cocktail by taster initials, sorted by diffords_rank", () => {
     const cocktailRows = [
@@ -27,22 +30,22 @@ describe("mapRowsToCocktailRecords", () => {
       { cocktail_id: "c2", rating: 8.59, tried: true, tasters: { initials: "JB" } },
     ];
 
-    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows);
+    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: HOUSE });
 
     // Sorted by diffords_rank ascending (Painkiller #7 before Tiki Max #13).
     expect(records.map((r) => r.name)).toEqual(["Painkiller", "Tiki Max"]);
 
     const tikiMax = records.find((r) => r.name === "Tiki Max")!;
-    expect(tikiMax.jbRating).toBeNull();
-    expect(tikiMax.gmRating).toBe(9.41);
+    expect(tikiMax.aRating).toBeNull();
+    expect(tikiMax.bRating).toBe(9.41);
     expect(tikiMax.tried).toBe(true);
     expect(tikiMax.primarySpirits).toEqual(["Rum", "Amaro"]);
     expect(tikiMax.diffordsGuideUrl).toBe("https://example.com/tiki-max");
     expect(tikiMax.slug).toBe("tiki-max");
 
     const painkiller = records.find((r) => r.name === "Painkiller")!;
-    expect(painkiller.jbRating).toBe(8.59);
-    expect(painkiller.gmRating).toBeNull();
+    expect(painkiller.aRating).toBe(8.59);
+    expect(painkiller.bRating).toBeNull();
   });
 
   it("marks a cocktail untried and unrated when it has no tastings row", () => {
@@ -61,8 +64,8 @@ describe("mapRowsToCocktailRecords", () => {
 
     expect(records).toHaveLength(1);
     expect(records[0].tried).toBe(false);
-    expect(records[0].jbRating).toBeNull();
-    expect(records[0].gmRating).toBeNull();
+    expect(records[0].aRating).toBeNull();
+    expect(records[0].bRating).toBeNull();
   });
 
   it("defaults primary_spirits to an empty array when null", () => {
@@ -98,11 +101,11 @@ describe("mapRowsToCocktailRecords", () => {
       { cocktail_id: "c1", rating: "9.41", tried: true, tasters: { initials: "GM" } },
     ];
 
-    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows);
+    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: HOUSE });
 
-    expect(records[0].jbRating).toBe(8.59);
-    expect(records[0].gmRating).toBe(9.41);
-    expect(typeof records[0].jbRating).toBe("number");
+    expect(records[0].aRating).toBe(8.59);
+    expect(records[0].bRating).toBe(9.41);
+    expect(typeof records[0].aRating).toBe("number");
   });
 
   it("handles the tasters relation coming back as an array instead of an object", () => {
@@ -120,9 +123,9 @@ describe("mapRowsToCocktailRecords", () => {
       { cocktail_id: "c1", rating: 7.5, tried: true, tasters: [{ initials: "JB" }] },
     ];
 
-    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows);
+    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: HOUSE });
 
-    expect(records[0].jbRating).toBe(7.5);
+    expect(records[0].aRating).toBe(7.5);
   });
 
   it("ignores a tastings row with no resolvable taster", () => {
@@ -138,13 +141,42 @@ describe("mapRowsToCocktailRecords", () => {
     ];
     const tastingRows = [{ cocktail_id: "c1", rating: 5, tried: true, tasters: null }];
 
-    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows);
+    const records = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: HOUSE });
 
-    expect(records[0].jbRating).toBeNull();
-    expect(records[0].gmRating).toBeNull();
+    expect(records[0].aRating).toBeNull();
+    expect(records[0].bRating).toBeNull();
     // tried stays false: the only tastings row for this cocktail had no
     // resolvable taster, so it was skipped entirely rather than counted.
     expect(records[0].tried).toBe(false);
+  });
+
+  it("counts only the household toward the columns and tried; friends are in ratings and triedBy", () => {
+    const cocktailRows = [
+      { id: "c1", name: "Zombie", slug: "zombie", diffords_rank: 1, diffords_guide_url: null, primary_spirits: [] },
+    ];
+    const tastingRows = [{ cocktail_id: "c1", rating: 7, tried: true, tasters: { initials: "FR" } }];
+
+    const [mine] = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: HOUSE });
+    expect(mine.aRating).toBeNull();
+    expect(mine.bRating).toBeNull();
+    expect(mine.tried).toBe(false);
+    expect(mine.triedBy).toEqual(["FR"]);
+    expect(mine.ratings).toEqual({ FR: 7 });
+
+    // FR's own (one-person) household: one column, no second.
+    const [theirs] = mapRowsToCocktailRecords(cocktailRows, tastingRows, { slots: ["FR"] });
+    expect(theirs.aRating).toBe(7);
+    expect(theirs.bRating).toBeNull();
+    expect(theirs.tried).toBe(true);
+  });
+
+  it("has no columns when signed out (no slots)", () => {
+    const cocktailRows = [
+      { id: "c1", name: "Zombie", slug: "zombie", diffords_rank: 1, diffords_guide_url: null, primary_spirits: [] },
+    ];
+    const [r] = mapRowsToCocktailRecords(cocktailRows, [{ cocktail_id: "c1", rating: 9, tried: true, tasters: { initials: "JB" } }]);
+    expect(r.aRating).toBeNull();
+    expect(r.tried).toBe(false);
   });
 });
 
@@ -218,15 +250,16 @@ describe("mapRowsToCocktailDetail", () => {
     ingredients: [{ amount: "1", unit: "fl oz", ingredient: "Navy rum" }],
   };
   const tasterRows = [
-    { id: "t-gm", initials: "GM", display_name: "Genny" },
-    { id: "t-jb", initials: "JB", display_name: "John" },
+    { id: "t-gm", initials: "GM", display_name: "Genny", household_id: "h1" },
+    { id: "t-jb", initials: "JB", display_name: "John", household_id: "h1" },
+    { id: "t-fr", initials: "FR", display_name: "Fran", household_id: "h2" },
   ];
 
-  it("maps recipe fields and orders tasters JB then GM", () => {
+  it("maps recipe fields and orders the household JB then GM", () => {
     const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, [
       { taster_id: "t-gm", rating: "9.41", notes: "  Loved it  ", tried: true, tasted_at: "2026-06-01", entered_by: "t-jb" },
       { taster_id: "t-jb", rating: null, notes: "", tried: true, tasted_at: null, entered_by: "t-jb" },
-    ]);
+    ], "h1");
 
     expect(detail.slug).toBe("tiki-max");
     expect(detail.glass).toBe("Tiki mug");
@@ -237,6 +270,7 @@ describe("mapRowsToCocktailDetail", () => {
     const [jb, gm] = detail.tasters;
     expect(jb).toEqual({
       initials: "JB",
+      household: true,
       displayName: "John",
       enteredBy: null, // entered it himself
       tried: true,
@@ -250,16 +284,32 @@ describe("mapRowsToCocktailDetail", () => {
     expect(gm.enteredBy).toBe("JB"); // John entered Genny's tasting
   });
 
-  it("includes a taster with no tastings row as untried and unrated", () => {
-    const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, []);
+  it("includes a household member with no tastings row as untried and unrated", () => {
+    const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, [], "h1");
     expect(detail.tasters).toHaveLength(2);
-    expect(detail.tasters.every((t) => !t.tried && t.rating === null && t.notes === null)).toBe(true);
+    expect(detail.tasters.every((t) => t.household && !t.tried && t.rating === null && t.notes === null)).toBe(true);
+  });
+
+  it("lists a friend after the household, only once they've tasted it", () => {
+    const fr = { taster_id: "t-fr", rating: 6, notes: null, tried: true, tasted_at: null, entered_by: "t-fr" };
+    const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, [fr], "h1");
+    expect(detail.tasters.map((t) => [t.initials, t.household])).toEqual([
+      ["JB", true],
+      ["GM", true],
+      ["FR", false],
+    ]);
+    // From the friend's side: they come first, John & Genny only if they've tasted it.
+    expect(mapRowsToCocktailDetail(cocktailRow, tasterRows, [fr], "h2").tasters.map((t) => t.initials)).toEqual(["FR"]);
+  });
+
+  it("lists no one when signed out", () => {
+    expect(mapRowsToCocktailDetail(cocktailRow, tasterRows, [], null).tasters).toEqual([]);
   });
 
   it("flags a best guess only when is_guess is true", () => {
-    expect(mapRowsToCocktailDetail(cocktailRow, tasterRows, []).isGuess).toBe(false);
-    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: null }, tasterRows, []).isGuess).toBe(false);
-    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: true }, tasterRows, []).isGuess).toBe(true);
+    expect(mapRowsToCocktailDetail(cocktailRow, tasterRows, [], "h1").isGuess).toBe(false);
+    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: null }, tasterRows, [], "h1").isGuess).toBe(false);
+    expect(mapRowsToCocktailDetail({ ...cocktailRow, is_guess: true }, tasterRows, [], "h1").isGuess).toBe(true);
   });
 });
 

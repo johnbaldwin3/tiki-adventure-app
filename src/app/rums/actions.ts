@@ -30,7 +30,7 @@ export async function checkRum(prev: RumCheckState, formData: FormData): Promise
   const submission = (prev?.submission ?? 0) + 1;
   const fail = (message: string, status: "error" | "none" = "error"): RumCheckState => ({ submission, status, message, answer: null });
   const user = await getSignedInUser();
-  if (!user?.taster) return fail("Only JB & GM can use the rum checker.");
+  if (!user?.taster) return fail("Only members can use the rum checker.");
   const name = String(formData.get("name") ?? "").replace(/\s+/g, " ").trim().slice(0, RUM_CHECK_LIMITS.name);
   const image = String(formData.get("image") ?? "");
   const hasImage = image !== "";

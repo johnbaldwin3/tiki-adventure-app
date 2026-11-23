@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Equal Parts", template: "%s · Equal Parts" },
   description:
-    "JB & GM's home bar: tasting log, bar inventory and recipes — Difford's Guide's Top 100 Tiki & Tropical Cocktails, the IBA official cocktails, and our own.",
+    "A home bar for friends & family: tasting log, bar inventory and recipes — Difford's Guide's Top 100 Tiki & Tropical Cocktails, the IBA official cocktails, and our own.",
 };
 
 export const viewport: Viewport = {

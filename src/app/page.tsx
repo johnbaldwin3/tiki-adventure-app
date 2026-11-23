@@ -10,7 +10,8 @@ import { matchesStyles, parseStyleFilter } from "@/lib/styles";
 import { SuggestionCard } from "@/components/suggestion-card";
 import { fetchBar, fetchCabinet } from "@/lib/cabinet-data";
 import { isLow } from "@/lib/inventory";
-import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { type CocktailRecord } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { APP_NAME, collectionCounts, inCollection, parseCollection, TIKI_SLUG, type Collection } from "@/lib/collections";
 import { fetchCollections } from "@/lib/collections-data";
 import { getIngredient, lineIds } from "@/lib/ingredients";
@@ -30,11 +31,12 @@ import {
 } from "@/lib/list";
 import { suggestNext } from "@/lib/suggest";
 import { rankCocktails, summarizeProgress, toRate } from "@/lib/tasting";
-import { getSignedInUser } from "@/lib/auth/current-taster";
+import { NOBODY } from "@/lib/people";
+import { getPeople } from "@/lib/people-data";
 
 // This page reads live from Supabase on every request rather than being
 // statically generated or ISR-cached. The tasting log is small (100 rows)
-// and cheap to query, and JB/GM edit tastings from the recipe cards --
+// and cheap to query, and tasters edit tastings from the recipe cards --
 // always-fresh reads avoid a stale cache showing an old rating right after
 // someone saved a new one. Revisit if traffic or DB load ever makes that
 // trade-off worth reconsidering.
@@ -153,13 +155,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         .map(([id]) => id)
         .sort((a, b) => (getIngredient(a)?.name ?? a).localeCompare(getIngredient(b)?.name ?? b))
     : [];
+  // Who's looking: their household's ratings make the averages (none signed out).
+  const people = await getPeople().catch((err) => {
+    unstable_rethrow(err);
+    console.error("home: failed to load people", err);
+    return NOBODY;
+  });
   // Signed-in tasters: drinks you've tried (or were marked as tried) but not rated yet.
-  const me = (
-    await getSignedInUser().catch((err) => {
-      unstable_rethrow(err);
-      return null;
-    })
-  )?.taster;
+  const me = people.me;
   const unrated = me ? toRate(allRecords, me.initials) : [];
   const tryNext = loadError
     ? []
@@ -176,9 +179,14 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       label: "Progress",
       value: `${Math.round(summary.fraction * 100)}%`,
     },
-    { icon: "🥃", label: "John's average", value: summary.jbAverage ?? "—" },
-    { icon: "🍸", label: "Genny's average", value: summary.gmAverage ?? "—" },
+    ...people.household.slice(0, 2).map((p, i) => ({
+      icon: i === 0 ? "🥃" : "🍸",
+      label: `${p.displayName}'s average`,
+      value: (i === 0 ? summary.aAverage : summary.bAverage) ?? "—",
+    })),
   ];
+  // "JB & GM's home bar"; signed out, just the app's tagline.
+  const owners = people.household.map((p) => p.initials).join(" & ");
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -195,7 +203,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           </p>
           <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">🍹 Adventures in Tiki</h1>
           <p className="relative mt-2 max-w-xs text-sm text-white/90">
-            JB &amp; GM&apos;s tasting log for the tiki &amp; tropical cocktail canon.
+            {owners ? `${owners}'s tasting log` : "A tasting log"} for the tiki &amp; tropical cocktail canon.
           </p>
         </header>
       ) : (
@@ -204,7 +212,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             🍸
           </span>
           <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-            JB &amp; GM&apos;s home bar
+            {owners ? `${owners}'s home bar` : "A home bar tasting log"}
           </p>
           <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">{APP_NAME}</h1>
           <p className="relative mt-2 max-w-xs text-sm text-white/90">
@@ -261,6 +269,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       {!loadError && (
         <>
       <div className="flex flex-col gap-2">
+        {me ? (
         <section
           aria-label="Progress summary"
           className="grid grid-cols-2 gap-3"
@@ -280,6 +289,15 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             </div>
           ))}
         </section>
+        ) : (
+          <p className="rounded-2xl border border-teal/15 bg-sand-deep p-3 text-sm text-ink shadow-sm">
+            Ratings are private to each household and their friends.{" "}
+            <Link href="/login" className="font-semibold text-teal underline underline-offset-2">
+              Sign in
+            </Link>{" "}
+            to see yours and track what you&apos;ve tasted.
+          </p>
+        )}
         <div className="flex flex-wrap justify-end gap-x-2">
           <Link
             href="/cabinet"
@@ -495,7 +513,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
         {filter === "tasted" && (
           <p className="text-xs text-ink-faint">
-            Ranked by JB &amp; GM&apos;s average rating.
+            Ranked by your household&apos;s average rating.
           </p>
         )}
 

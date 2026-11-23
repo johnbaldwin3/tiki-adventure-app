@@ -14,7 +14,7 @@ export default async function SignUpPage() {
   if (await getSignedInUser()) redirect("/");
   return (
     <AuthPage
-      eyebrow="JB & GM only"
+      eyebrow="Members only"
       title="Create your account"
       intro="Only emails on the tasters list can sign up. You'll get an email to confirm it's you."
     >

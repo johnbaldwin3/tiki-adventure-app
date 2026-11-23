@@ -46,7 +46,7 @@ describe("our version in the list", () => {
     const [plain] = mapRowsToCocktailRecords(cocktails, []);
     expect(plain.ingredientTexts).toEqual(["Bitter Campari"]);
     const ours = new Map([["c1", [{ amount: "1", unit: "dash", ingredient: "Orange bitters", catalogId: "orange-bitters" }]]]);
-    const [tweaked] = mapRowsToCocktailRecords(cocktails, [], new Map(), new Map(), ours);
+    const [tweaked] = mapRowsToCocktailRecords(cocktails, [], { activeLines: ours });
     expect(tweaked.ingredientTexts).toEqual(["Orange bitters"]);
     expect(tweaked.ingredientIds).toEqual(["orange-bitters"]);
   });

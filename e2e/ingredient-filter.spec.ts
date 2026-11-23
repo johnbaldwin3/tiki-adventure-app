@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { JOHN, signIn } from "./auth";
 
 // Fixture facts (seed-data/cocktails.json + iba-cocktails.json, 196 drinks):
 // Aged Jamaican rum is in 17 drinks (6 tasted); Falernum in 19; both
@@ -14,7 +15,7 @@ async function addIngredient(page: Page, label: RegExp) {
 }
 
 test("filter the list by one ingredient, then combine with Tasted", async ({ page }) => {
-  await page.goto("/");
+  await signIn(page, JOHN, "/");
   await page.getByText("Filter by ingredient").click();
   await addIngredient(page, /^Aged Jamaican rum \(funky\) — in 17$/);
 

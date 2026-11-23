@@ -73,7 +73,7 @@ export async function critiqueRecipe(prev: CritiqueState, formData: FormData): P
   const slug = String(formData.get("slug") ?? "");
   if (!SLUG_PATTERN.test(slug)) return fail("That drink couldn't be found.");
   const user = await getSignedInUser();
-  if (!user?.taster) return fail("Only JB & GM can critique recipes.");
+  if (!user?.taster) return fail("Only members can critique recipes.");
   const critique = readCritiqueForm(formData);
   if (!critique) return fail("Pick what was off, or say it in a few words.");
 

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { JOHN, signIn } from "./auth";
 
 // Fixtures: seed-data/cocktails.json via e2e/mock-supabase.mjs. The tasting
 // e2e test edits Nui Nui / Hawaiian Eye in parallel, so assertions here stick
@@ -13,8 +14,14 @@ test("home links to the stats dashboard", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Our stats" })).toBeVisible();
 });
 
-test("stats dashboard shows progress, tasters, spread, disagreements and top 5", async ({ page }) => {
+test("signed out, stats ask you to sign in", async ({ page }) => {
   await page.goto("/stats");
+  await expect(page.getByText("Ratings are private.")).toBeVisible();
+  await expect(page.getByText(/tasted$/)).toHaveCount(0);
+});
+
+test("stats dashboard shows progress, tasters, spread, disagreements and top 5", async ({ page }) => {
+  await signIn(page, JOHN, "/stats");
   await expect(page.getByText("of 196 tasted")).toBeVisible();
 
   // All, the three collections, and Difford's four bands.

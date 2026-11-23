@@ -6,7 +6,10 @@ test("signed out: cards are read-only with a sign-in prompt", async ({ page }) =
   await expect(page.getByRole("link", { name: "Sign in", exact: true }).first()).toBeVisible();
   const tasting = page.getByRole("region", { name: "Our tasting" });
   await expect(tasting.getByRole("link", { name: /Edit|Add rating/ })).toHaveCount(0);
-  await expect(page.getByText("to add your rating & notes.")).toBeVisible();
+  await expect(page.getByText("to see our ratings and add yours.")).toBeVisible();
+  // Ratings are private: no one's tasting shows signed out.
+  await expect(tasting.getByText("John", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/9\.41/)).toHaveCount(0);
 
   // The edit page itself sends you to sign in, then back.
   await page.goto("/cocktails/tiki-max/tasting/jb");
@@ -50,7 +53,7 @@ test("sign out", async ({ page }) => {
   await signIn(page, GENNY);
   await expect(page.getByText("Signed in as Genny")).toBeVisible();
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByRole("link", { name: "Sign in", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sign in", exact: true }).first()).toBeVisible();
   await expect(page.getByText(/^Signed in as/)).toHaveCount(0);
 });
 

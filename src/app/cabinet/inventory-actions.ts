@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { safeNextPath } from "@/lib/auth/validate";
-import { fetchCocktailBySlug } from "@/lib/cocktails";
+import { fetchCocktailBySlug } from "@/lib/cocktails-data";
 import { getIngredient } from "@/lib/ingredients";
 import type { DrinkVersions } from "@/lib/versions";
 import { fetchCocktailVersions } from "@/lib/versions-data";
