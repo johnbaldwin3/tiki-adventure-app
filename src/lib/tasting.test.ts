@@ -74,3 +74,18 @@ describe("summarizeProgress", () => {
     expect(summary.gmAverage).toBeNull();
   });
 });
+
+describe("toRate", async () => {
+  const { toRate } = await import("./tasting");
+  it("lists what a taster tried but hasn't rated", () => {
+    const rows = [
+      { name: "A", tried: true, jbRating: null, gmRating: 8, triedBy: ["JB", "GM"] },
+      { name: "B", tried: true, jbRating: 7, gmRating: null, triedBy: ["JB"] },
+      { name: "C", tried: false, jbRating: null, gmRating: null, triedBy: [] },
+      { name: "D", tried: true, jbRating: null, gmRating: null },
+    ];
+    expect(toRate(rows, "JB").map((r) => r.name)).toEqual(["A"]);
+    expect(toRate(rows, "GM").map((r) => r.name)).toEqual([]);
+    expect(toRate(rows, "ZZ")).toEqual([]);
+  });
+});

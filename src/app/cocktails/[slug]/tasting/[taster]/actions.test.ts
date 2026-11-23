@@ -1,19 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // The action must re-check everything itself (Server Actions can be POSTed
-// to directly): valid input, a signed-in user, and that it's their own
-// tasting -- and only then write, as that user (so RLS applies too).
+// to directly): valid input, a signed-in taster, a real cocktail and taster
+// -- and only then write, as that user (so RLS applies too). Either taster
+// may save either tasting (household rule, migration 0016).
 type User = { email: string; taster: { id: string; initials: string; displayName: string } | null } | null;
 let signedIn: User = null;
 vi.mock("@/lib/auth/current-taster", () => ({ getSignedInUser: async () => signedIn }));
 
 const upsert = vi.fn<(row: unknown, opts: unknown) => Promise<{ error: unknown }>>(async () => ({ error: null }));
-const createSupabaseServerClient = vi.fn(async () => ({ from: () => ({ upsert }) }));
+let existing: { data: unknown; error: unknown } = { data: [], error: null };
+const createSupabaseServerClient = vi.fn(async () => ({
+  from: () => ({ upsert, select: () => ({ eq: async () => existing }) }),
+}));
 vi.mock("@/lib/supabase-server", () => ({ createSupabaseServerClient }));
 
 let cocktailLookup: { data: unknown; error: unknown } = { data: { id: "c1" }, error: null };
+const TASTERS = [
+  { id: "t-jb", initials: "JB" },
+  { id: "t-gm", initials: "GM" },
+];
 vi.mock("@/lib/supabase", () => ({
-  supabase: { from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => cocktailLookup }) }) }) },
+  supabase: {
+    from: (table: string) =>
+      table === "tasters"
+        ? { select: async () => ({ data: TASTERS, error: null }) }
+        : { select: () => ({ eq: () => ({ maybeSingle: async () => cocktailLookup }) }) },
+  },
 }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const redirect = vi.fn((url: string) => {
@@ -41,6 +54,7 @@ const john = { email: "john@example.test", taster: { id: "t-jb", initials: "JB",
 beforeEach(() => {
   signedIn = john;
   cocktailLookup = { data: { id: "c1" }, error: null };
+  existing = { data: [], error: null };
   upsert.mockClear();
   upsert.mockResolvedValue({ error: null });
   createSupabaseServerClient.mockClear();
@@ -65,11 +79,41 @@ describe("saveTasting", () => {
     expect(upsert).not.toHaveBeenCalled();
   });
 
-  it("refuses to save someone else's tasting", async () => {
-    const s = await saveTasting(prev, form({ ...valid, taster: "gm" }));
+  it("saves the other taster's tasting too (entered by the signed-in taster)", async () => {
+    await expect(saveTasting(prev, form({ ...valid, taster: "gm" }))).rejects.toThrow("REDIRECT:/cocktails/tiki-max#tasting");
+    expect(upsert).toHaveBeenCalledTimes(1);
+    expect(upsert.mock.calls[0][0]).toMatchObject({ taster_id: "t-gm", rating: 8.5 });
+  });
+
+  it("refuses an unknown taster", async () => {
+    const s = await saveTasting(prev, form({ ...valid, taster: "zz" }));
     expect(s.status).toBe("error");
-    expect(s.message).toMatch(/only save your own/);
     expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it("'we both tried it' marks the other taster as tried, keeping their rating and date", async () => {
+    await expect(saveTasting(prev, form({ ...valid, tastedAt: "2026-11-01", bothTried: "on" }))).rejects.toThrow("REDIRECT:");
+    expect(upsert).toHaveBeenCalledTimes(2);
+    expect(upsert.mock.calls[1][0]).toEqual({ cocktail_id: "c1", taster_id: "t-gm", tried: true, tasted_at: "2026-11-01" });
+
+    upsert.mockClear();
+    existing = { data: [{ taster_id: "t-gm", tried: false, tasted_at: "2026-10-01" }], error: null };
+    await expect(saveTasting(prev, form({ ...valid, bothTried: "on" }))).rejects.toThrow("REDIRECT:");
+    expect(upsert.mock.calls[1][0]).toEqual({ cocktail_id: "c1", taster_id: "t-gm", tried: true });
+
+    // Already tried: nothing to do. Not tried yourself: no "both".
+    upsert.mockClear();
+    existing = { data: [{ taster_id: "t-gm", tried: true, tasted_at: null }], error: null };
+    await expect(saveTasting(prev, form({ ...valid, bothTried: "on" }))).rejects.toThrow("REDIRECT:");
+    expect(upsert).toHaveBeenCalledTimes(1);
+    upsert.mockClear();
+    await expect(saveTasting(prev, form({ slug: "tiki-max", taster: "jb", bothTried: "on" }))).rejects.toThrow("REDIRECT:");
+    expect(upsert).toHaveBeenCalledTimes(1);
+  });
+
+  it("says so if the other taster's mark couldn't be saved", async () => {
+    upsert.mockResolvedValueOnce({ error: null }).mockResolvedValueOnce({ error: { message: "nope" } });
+    await expect(saveTasting(prev, form({ ...valid, bothTried: "on" }))).rejects.toThrow("REDIRECT:/cocktails/tiki-max?tasting=partial#tasting");
   });
 
   it("refuses a signed-in account that isn't linked to a taster", async () => {

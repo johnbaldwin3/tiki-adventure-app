@@ -11,6 +11,10 @@ interface Props {
   taster: string; // lowercase initials, e.g. "jb"
   initialValues: TastingFormValues;
   today: string;
+  /** Display name when entering the other taster's tasting (else null: your own). */
+  whose: string | null;
+  /** The other tasters who haven't tried it yet ("we both tried it"). */
+  others: string[];
 }
 
 function FieldError({ id, message }: { id: string; message?: string }) {
@@ -22,7 +26,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function TastingForm({ slug, taster, initialValues, today }: Props) {
+export function TastingForm({ slug, taster, initialValues, today, whose, others }: Props) {
   const [state, formAction, pending] = useActionState<TastingFormState, FormData>(saveTasting, {
     status: "idle",
     submission: 0,
@@ -80,9 +84,22 @@ export function TastingForm({ slug, taster, initialValues, today }: Props) {
             aria-describedby={e.tried ? "tried-error" : undefined}
             className="h-5 w-5 accent-teal-deep"
           />
-          <span className="text-base font-semibold text-ink">I&apos;ve tried this</span>
+          <span className="text-base font-semibold text-ink">{whose ? `${whose} has tried this` : "I've tried this"}</span>
         </label>
         <FieldError id="tried-error" message={e.tried} />
+        {others.length > 0 && (
+          <label className="mt-2 flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm">
+            <input type="checkbox" name="bothTried" aria-describedby="bothTried-hint" className="h-5 w-5 accent-teal-deep" />
+            <span className="flex flex-col">
+              <span className="text-base font-semibold text-ink">
+                {others.join(" & ")} tried it too
+              </span>
+              <span id="bothTried-hint" className="text-xs text-ink-soft">
+                Marks it as tried for {others.join(" & ")} (same date) so they&apos;re asked to score it.
+              </span>
+            </span>
+          </label>
+        )}
       </div>
 
       <div>

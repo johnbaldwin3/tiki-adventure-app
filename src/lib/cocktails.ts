@@ -30,6 +30,8 @@ export interface CocktailRecord extends TastingRecord {
   collections?: string[];
   /** Style tag ids (computed from the ingredients, with any taster fixes). */
   styles?: string[];
+  /** Initials of the tasters who've tried it (rated or not). */
+  triedBy?: string[];
 }
 
 interface RawCocktailRow {
@@ -78,7 +80,7 @@ export function mapRowsToCocktailRecords(
 ): CocktailRecord[] {
   const tastingsByCocktail = new Map<
     string,
-    { jbRating: number | null; gmRating: number | null; tried: boolean }
+    { jbRating: number | null; gmRating: number | null; tried: boolean; triedBy: string[] }
   >();
 
   for (const row of tastingRows) {
@@ -91,6 +93,7 @@ export function mapRowsToCocktailRecords(
         jbRating: null,
         gmRating: null,
         tried: false,
+        triedBy: [],
       };
 
     const numericRating =
@@ -101,6 +104,7 @@ export function mapRowsToCocktailRecords(
     if (initials === "JB") existing.jbRating = safeRating;
     if (initials === "GM") existing.gmRating = safeRating;
     existing.tried = existing.tried || row.tried;
+    if (row.tried && !existing.triedBy.includes(initials)) existing.triedBy.push(initials);
 
     tastingsByCocktail.set(row.cocktail_id, existing);
   }
@@ -125,6 +129,7 @@ export function mapRowsToCocktailRecords(
         source: toSource(c.source, c.diffords_rank),
         isGuess: c.is_guess === true,
         tried: t?.tried ?? false,
+        triedBy: t?.triedBy ?? [],
         jbRating: t?.jbRating ?? null,
         gmRating: t?.gmRating ?? null,
       };
@@ -197,6 +202,8 @@ export interface Ingredient {
 export interface TasterEntry {
   initials: string;
   displayName: string;
+  /** Initials of whoever last saved this tasting, when it wasn't this taster. */
+  enteredBy: string | null;
   tried: boolean;
   rating: number | null;
   notes: string | null;
@@ -245,6 +252,7 @@ export interface RawTasterRow {
 
 export interface RawDetailTastingRow {
   taster_id: string;
+  entered_by?: string | null;
   rating: number | string | null;
   notes: string | null;
   tried: boolean;
@@ -309,6 +317,10 @@ export function mapRowsToCocktailDetail(
       return {
         initials: taster.initials,
         displayName: taster.display_name,
+        enteredBy:
+          t?.entered_by && t.entered_by !== taster.id
+            ? (tasterRows.find((x) => x.id === t.entered_by)?.initials ?? null)
+            : null,
         tried: t?.tried ?? false,
         rating: toRating(t?.rating),
         notes: t?.notes?.trim() ? t.notes.trim() : null,
@@ -363,7 +375,7 @@ export async function fetchCocktailBySlug(slug: string): Promise<CocktailDetail 
 
   const { data: tastingRows, error: tastingsError } = await supabase
     .from("tastings")
-    .select("taster_id, rating, notes, tried, tasted_at")
+    .select("taster_id, rating, notes, tried, tasted_at, entered_by")
     .eq("cocktail_id", (cocktailRow as RawCocktailDetailRow).id);
 
   if (tastingsError) {

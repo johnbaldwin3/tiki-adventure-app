@@ -24,11 +24,13 @@ export interface TastingFormState {
 }
 
 /**
- * Saves the signed-in taster's own tasting for one cocktail.
+ * Saves one taster's tasting for one cocktail -- your own, or (household
+ * rule, migration 0016) the other taster's, e.g. when you tried it together.
+ * "We both tried it" also marks the other taster as having tried it, without
+ * touching their rating or notes, so they're prompted to rate it.
  * Server Actions can be POSTed to directly, so everything is re-checked
- * here: the form, who's signed in, and that they're editing their own
- * tasting. The write itself runs as the signed-in user, so the database's
- * RLS policies (migration 0003) enforce the same rule a second time.
+ * here; writes run as the signed-in user (RLS: tasters only, and the
+ * database records who entered it).
  */
 export async function saveTasting(
   prev: TastingFormState,
@@ -51,22 +53,22 @@ export async function saveTasting(
 
   const user = await getSignedInUser();
   if (!user) return fail("Your sign-in has expired. Please sign in again, then save.");
-  if (!user.taster || user.taster.initials !== initials) {
-    return fail("You can only save your own tasting.");
-  }
+  if (!user.taster) return fail("Only JB & GM can save tastings.");
 
-  const { data: cocktail, error: cocktailError } = await supabase
-    .from("cocktails")
-    .select("id")
-    .eq("slug", slug)
-    .maybeSingle();
+  const [{ data: cocktail, error: cocktailError }, { data: tasters, error: tastersError }] = await Promise.all([
+    supabase.from("cocktails").select("id").eq("slug", slug).maybeSingle(),
+    supabase.from("tasters").select("id, initials"),
+  ]);
   if (cocktailError || !cocktail) return fail("Couldn't find that cocktail. Nothing was saved.");
+  const everyone = (tastersError ? [] : (tasters ?? [])) as { id: string; initials: string }[];
+  const target = everyone.find((t) => t.initials === initials);
+  if (!target) return fail("That cocktail or taster wasn't recognized.");
 
   const db = await createSupabaseServerClient();
   const { error } = await db.from("tastings").upsert(
     {
       cocktail_id: cocktail.id,
-      taster_id: user.taster.id,
+      taster_id: target.id,
       tried: parsed.value.tried,
       rating: parsed.value.rating,
       tasted_at: parsed.value.tastedAt,
@@ -76,8 +78,34 @@ export async function saveTasting(
   );
   if (error) return fail("Saving failed. Please try again.");
 
+  // "We both tried it": mark the other taster(s) as having tried it too, so
+  // they're asked for their rating. Their rating, notes and date are kept.
+  let partial = false;
+  if (formData.get("bothTried") === "on" && parsed.value.tried) {
+    const others = everyone.filter((t) => t.id !== target.id);
+    const { data: theirs, error: readError } = others.length
+      ? await db.from("tastings").select("taster_id, tried, tasted_at").eq("cocktail_id", cocktail.id)
+      : { data: [], error: null };
+    const rows = (readError ? null : (theirs ?? [])) as { taster_id: string; tried: boolean; tasted_at: string | null }[] | null;
+    if (!rows) partial = true;
+    for (const other of rows ? others : []) {
+      const row = rows!.find((r) => r.taster_id === other.id);
+      if (row?.tried) continue;
+      const { error: otherError } = await db.from("tastings").upsert(
+        {
+          cocktail_id: cocktail.id,
+          taster_id: other.id,
+          tried: true,
+          ...(row?.tasted_at ? {} : { tasted_at: parsed.value.tastedAt }),
+        },
+        { onConflict: "cocktail_id,taster_id" }
+      );
+      if (otherError) partial = true;
+    }
+  }
+
   revalidatePath("/");
   revalidatePath("/stats");
   revalidatePath(`/cocktails/${slug}`);
-  redirect(`/cocktails/${slug}#tasting`);
+  redirect(`/cocktails/${slug}${partial ? "?tasting=partial" : ""}#tasting`);
 }

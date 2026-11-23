@@ -224,8 +224,8 @@ describe("mapRowsToCocktailDetail", () => {
 
   it("maps recipe fields and orders tasters JB then GM", () => {
     const detail = mapRowsToCocktailDetail(cocktailRow, tasterRows, [
-      { taster_id: "t-gm", rating: "9.41", notes: "  Loved it  ", tried: true, tasted_at: "2026-06-01" },
-      { taster_id: "t-jb", rating: null, notes: "", tried: true, tasted_at: null },
+      { taster_id: "t-gm", rating: "9.41", notes: "  Loved it  ", tried: true, tasted_at: "2026-06-01", entered_by: "t-jb" },
+      { taster_id: "t-jb", rating: null, notes: "", tried: true, tasted_at: null, entered_by: "t-jb" },
     ]);
 
     expect(detail.slug).toBe("tiki-max");
@@ -238,6 +238,7 @@ describe("mapRowsToCocktailDetail", () => {
     expect(jb).toEqual({
       initials: "JB",
       displayName: "John",
+      enteredBy: null, // entered it himself
       tried: true,
       rating: null,
       notes: null, // blank notes normalize to null
@@ -246,6 +247,7 @@ describe("mapRowsToCocktailDetail", () => {
     expect(gm.rating).toBe(9.41); // numeric string coerced
     expect(gm.notes).toBe("Loved it");
     expect(gm.tastedAt).toBe("2026-06-01");
+    expect(gm.enteredBy).toBe("JB"); // John entered Genny's tasting
   });
 
   it("includes a taster with no tastings row as untried and unrated", () => {

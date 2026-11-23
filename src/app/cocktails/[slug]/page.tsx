@@ -140,7 +140,18 @@ function BackLink() {
   );
 }
 
-function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: string; canEdit: boolean }) {
+function TasterCard({
+  taster,
+  slug,
+  canEdit,
+  isMe,
+}: {
+  taster: TasterEntry;
+  slug: string;
+  canEdit: boolean;
+  /** Your own tasting (else you'd be entering the other taster's). */
+  isMe: boolean;
+}) {
   const status = taster.rating !== null
     ? null
     : taster.tried
@@ -160,6 +171,7 @@ function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: stri
           {taster.tastedAt && (
             <span className="text-xs text-ink-faint">Tasted {formatDate(taster.tastedAt)}</span>
           )}
+          {taster.enteredBy && <span className="text-xs text-ink-faint">Entered by {taster.enteredBy}</span>}
         </div>
         {taster.rating !== null ? (
           <span className="rounded-full bg-coral-deep px-3 py-1 text-sm font-bold text-white">
@@ -181,8 +193,14 @@ function TasterCard({ taster, slug, canEdit }: { taster: TasterEntry; slug: stri
           href={`/cocktails/${slug}/tasting/${taster.initials.toLowerCase()}`}
           className="mt-3 inline-flex items-center gap-1 rounded-full border border-teal/30 px-3 py-1.5 text-sm font-semibold text-teal-deep hover:bg-sand-deep"
         >
-          {taster.rating !== null || taster.notes ? "Edit" : "Add rating & notes"}
-          <span className="sr-only"> for {taster.displayName}</span>
+          {isMe
+            ? taster.rating !== null || taster.notes
+              ? "Edit"
+              : "Add rating & notes"
+            : taster.rating !== null || taster.notes
+              ? `Edit ${taster.displayName}'s`
+              : `Add ${taster.displayName}'s rating`}
+          {isMe && <span className="sr-only"> for {taster.displayName}</span>}
         </Link>
       )}
     </li>
@@ -553,6 +571,12 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         </section>
       )}
 
+      {sp.tasting === "partial" && (
+        <FocusMessage role="alert" className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm">
+          Your tasting was saved, but marking the other taster as having tried it didn&apos;t. Please try that again.
+        </FocusMessage>
+      )}
+
       <section
         id="tasting"
         aria-labelledby="tasting-heading"
@@ -566,7 +590,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         </div>
         <ul className="flex flex-col gap-2">
           {cocktail.tasters.map((t) => (
-            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={t.initials === myInitials} />
+            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={!!myInitials} isMe={t.initials === myInitials} />
           ))}
         </ul>
         {user && !user.taster && (

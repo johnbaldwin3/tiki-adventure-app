@@ -80,6 +80,9 @@ seed.forEach((c, i) => {
   }
 });
 
+// For POST /__mock/reset-tastings (tests that change tastings put them back).
+const tastingsAtStart = JSON.stringify(tastings);
+
 // ---------------------------------------------------------------------------
 // Auth stand-in
 // ---------------------------------------------------------------------------
@@ -432,6 +435,12 @@ const server = http.createServer((req, res) => {
   }
   // Empties the shared household tables (cabinet, shopping list), so a
   // retried or re-run test starts clean.
+  if (req.method === "POST" && url.pathname === "/__mock/reset-tastings") {
+    tastings.splice(0, tastings.length, ...JSON.parse(tastingsAtStart));
+    res.writeHead(204);
+    res.end();
+    return;
+  }
   if (req.method === "POST" && url.pathname === "/__mock/reset-shared") {
     for (const t of Object.values(shared)) t.rows.clear();
     pours.clear();
@@ -468,9 +477,10 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.method === "POST" && match?.[1] === "tastings") {
-    // Emulates the RLS policies from migration 0003: only a signed-in taster,
-    // and only rows for their own taster_id. Also insists on the real upsert
-    // key, so e2e fails if the app loses its on_conflict target.
+    // Emulates the RLS policies from migration 0016: any signed-in taster
+    // may write any taster's row, and entered_by is set to the writer (the
+    // trigger). Also insists on the real upsert key, so e2e fails if the app
+    // loses its on_conflict target.
     const email = bearerEmail(req);
     const mine = email ? accounts.get(email) : null;
     if (url.searchParams.get("on_conflict") !== "cocktail_id,taster_id") {
@@ -479,15 +489,19 @@ const server = http.createServer((req, res) => {
     }
     readBody(req).then((body) => {
       const incoming = [body].flat();
-      if (!mine || incoming.some((row) => row.taster_id !== mine)) {
+      if (!mine || incoming.some((row) => !tasters.some((t) => t.id === row.taster_id) || "entered_by" in row)) {
         sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "tastings"' });
         return;
       }
       for (const row of incoming) {
         const existing = tastings.find((t) => t.cocktail_id === row.cocktail_id && t.taster_id === row.taster_id);
-        const normalized = { ...row, rating: row.rating === null || row.rating === undefined ? null : String(row.rating) };
+        const normalized = {
+          ...row,
+          ...("rating" in row ? { rating: row.rating === null || row.rating === undefined ? null : String(row.rating) } : {}),
+          entered_by: mine,
+        };
         if (existing) Object.assign(existing, normalized);
-        else tastings.push({ notes: null, tried: true, tasted_at: null, ...normalized });
+        else tastings.push({ notes: null, tried: true, tasted_at: null, rating: null, ...normalized });
       }
       res.writeHead(201);
       res.end();
