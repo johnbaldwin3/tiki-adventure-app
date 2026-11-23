@@ -31,6 +31,8 @@ import {
 } from "@/lib/list";
 import { suggestNext } from "@/lib/suggest";
 import { rankCocktails, summarizeProgress, toRate } from "@/lib/tasting";
+import { Landing } from "@/components/landing";
+import { getSignedInUser } from "@/lib/auth/current-taster";
 import { NOBODY } from "@/lib/people";
 import { getPeople } from "@/lib/people-data";
 
@@ -43,6 +45,17 @@ import { getPeople } from "@/lib/people-data";
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: PageProps<"/">) {
+  // Signed out: a landing page, no recipes or ratings (members only). The
+  // database refuses those reads anyway (migration 0018).
+  const user = await getSignedInUser().catch((err) => {
+    unstable_rethrow(err);
+    console.error("home: failed to check sign-in", err);
+    return null;
+  });
+  if (!user) return <Landing />;
+  if (!user.taster && !user.lookupFailed) {
+    return <Landing note={`You're signed in as ${user.email}, which isn't set up as a member yet. Ask whoever invited you to check.`} />;
+  }
   const sp = await searchParams;
   const filter = parseListFilter(sp.show);
   const passwordUpdated = sp.password === "updated";
@@ -185,7 +198,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
       value: (i === 0 ? summary.aAverage : summary.bAverage) ?? "—",
     })),
   ];
-  // "JB & GM's home bar"; signed out, just the app's tagline.
+  // "JB & GM's home bar".
   const owners = people.household.map((p) => p.initials).join(" & ");
 
   return (
@@ -289,15 +302,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             </div>
           ))}
         </section>
-        ) : (
-          <p className="rounded-2xl border border-teal/15 bg-sand-deep p-3 text-sm text-ink shadow-sm">
-            Ratings are private to each household and their friends.{" "}
-            <Link href="/login" className="font-semibold text-teal underline underline-offset-2">
-              Sign in
-            </Link>{" "}
-            to see yours and track what you&apos;ve tasted.
-          </p>
-        )}
+        ) : null}
         <div className="flex flex-wrap justify-end gap-x-2">
           <Link
             href="/cabinet"

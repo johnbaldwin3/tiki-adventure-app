@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
-import { GENNY, JOHN, MOCK_URL, signIn } from "./auth";
+import { GENNY, JOHN, MOCK_URL, signIn, SIGNED_OUT } from "./auth";
 
 // Runs in its own Playwright project after the others (it changes the
 // list they count), one test after another. The AI recipe helper talks to
@@ -35,14 +35,12 @@ const PNG = Buffer.from(
   "base64"
 );
 
-test("signed out, adding a recipe asks you to sign in", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("link", { name: "+ Add a recipe" })).toHaveCount(0);
-  await page.goto("/cocktails/new");
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute(
-    "href",
-    "/login?next=%2Fcocktails%2Fnew"
-  );
+test.describe("signed out", () => {
+  test.use({ storageState: SIGNED_OUT });
+  test("adding a recipe sends you to sign in", async ({ page }) => {
+    await page.goto("/cocktails/new");
+    await expect(page).toHaveURL(/\/login\?next=%2Fcocktails%2Fnew$/);
+  });
 });
 
 test("paste text: the helper drafts it, we review and save", async ({ page }) => {

@@ -6,14 +6,6 @@ import { JOHN, signIn } from "./auth";
 // the Tiki collection, which has 103), Tiki Max is our #1 (avg 9.41).
 // Ratings are private (migration 0018), so tests that need them sign in as John.
 
-test("signed out, the list shows no ratings and asks you to sign in", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Equal Parts" })).toBeVisible();
-  await expect(page.getByText("Ratings are private to each household and their friends.")).toBeVisible();
-  await expect(page.getByRole("region", { name: "Progress summary" })).toHaveCount(0);
-  await expect(page.getByRole("region", { name: "All drinks" }).getByText("9.41")).toHaveCount(0);
-});
-
 test("home page loads as Equal Parts and shows the tasting progress summary", async ({ page }) => {
   await signIn(page, JOHN, "/");
   await expect(page.getByText("John's average")).toBeVisible();

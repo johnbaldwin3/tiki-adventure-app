@@ -232,8 +232,10 @@ now. A new taster needs a household (`tasters.household_id`).
 **Ratings are private** (migration 0018): you see the tasters, tastings and
 home-made ("ours") recipes of your household and of the households of
 anyone connected to someone in it (`connections`, one row per friend pair;
-`visible_taster_ids()`). Signed out you see the catalog and recipes but no
-ratings. So page reads go through the viewer's session
+`visible_taster_ids()`). **Signed out you see only a landing page**: the
+recipes are copyrighted, so the catalog, collections and tags are
+members-only too (no anon reads at all), and `src/proxy.ts` sends any other
+page to sign in and back (`src/lib/auth/public-paths.ts`). So page reads go through the viewer's session
 (`src/lib/read-client.ts`), not the anon client. The list, averages, ranks
 and stats use your household's first two members as the a/b columns
 (`householdSlots` in `src/lib/people.ts`); friends' ratings show on the
@@ -364,7 +366,7 @@ review pass:
 24. ✅ We tried it — either taster can enter or edit the other's rating (the card says who entered it), "Genny tried it too" marks both as tried, and the home page asks each of us for the ratings we still owe (migration 0016)
 25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
 26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
-27. ✅ Friends & private ratings — connections between tasters; ratings, tasters and home-made recipes visible only to your household and friends; the list, stats and card follow the signed-in household instead of fixed JB/GM columns (migration 0018)
+27. ✅ Friends & private ratings — connections between tasters; ratings, tasters and home-made recipes visible only to your household and friends; signed out, only a landing page (recipes are members-only); the list, stats and card follow the signed-in household instead of fixed JB/GM columns (migration 0018)
 27. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
 
 ## Future ideas (not yet scheduled)

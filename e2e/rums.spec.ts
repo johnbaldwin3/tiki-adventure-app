@@ -31,7 +31,6 @@ test("the rum guide: 8 numbers, 21 categories, and look up a bottle in the book'
   await expect(page.getByRole("heading", { level: 3, name: "Number 1: Pot still lightly aged" })).toBeVisible();
   await expect(page.locator("#pot-still-lightly-aged")).toContainText("Smith & Cross (overproof)");
   await expect(page.getByRole("main")).toContainText("Martin & Rebecca Cate (2016), pp. 197–199");
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toBeVisible();
   await expectAccessible(page);
 
   await page.getByLabel("Bottle, brand or category").fill("coruba");

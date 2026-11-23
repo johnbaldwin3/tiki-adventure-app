@@ -3,8 +3,10 @@
 -- Who you can see: everyone in your household, plus the households of
 -- anyone connected to someone in your household. Only they show up in tasters, their tastings
 -- are the only ones you can read, and their own recipes ("ours") are the
--- only home-made ones in your list. Signed-out visitors see the catalog
--- and recipes, but no ratings and no one's own recipes.
+-- only home-made ones in your list. Signed-out visitors (and accounts not
+-- linked to a taster) see nothing at all: the recipes are copyrighted, so
+-- the catalog, collections and tags are members-only too; the app shows
+-- them a landing page.
 -- Connections are made by invites / admins in a later step; this adds the
 -- table and the rules.
 
@@ -52,8 +54,11 @@ as $$
 $$;
 
 revoke execute on function public.visible_taster_ids() from public;
--- anon too: the cocktails policy below calls it for everyone (it returns nothing when signed out).
-grant execute on function public.visible_taster_ids() to anon, authenticated, service_role;
+grant execute on function public.visible_taster_ids() to authenticated, service_role;
+
+-- Signed out: no reads at all (older projects granted anon broadly).
+revoke all on public.tasters, public.tastings, public.cocktails, public.cocktail_versions,
+  public.collections, public.cocktail_collections, public.cocktail_style_overrides from anon;
 
 create policy "Households see their own connections" on public.connections for select to authenticated
   using (
@@ -71,13 +76,24 @@ drop policy "Public read access" on public.tastings;
 create policy "See your household's and friends' tastings" on public.tastings for select to authenticated
   using (taster_id in (select public.visible_taster_ids()));
 
--- Cocktails: the catalog is public; a home-made recipe only for its
+-- Cocktails: the catalog for members; a home-made recipe only for its
 -- household and their friends.
 drop policy "Public read access" on public.cocktails;
-create policy "Catalog for everyone, own recipes for household and friends" on public.cocktails for select to anon, authenticated
-  using (source <> 'ours' or added_by in (select public.visible_taster_ids()));
+create policy "Catalog for members, own recipes for household and friends" on public.cocktails for select to authenticated
+  using ((select public.current_taster_id()) is not null and (source <> 'ours' or added_by in (select public.visible_taster_ids())));
 
 -- Versions follow their drink (a stranger's home-made recipe stays hidden).
 drop policy "Anyone can read versions" on public.cocktail_versions;
-create policy "Read versions of drinks you can see" on public.cocktail_versions for select to anon, authenticated
+create policy "Read versions of drinks you can see" on public.cocktail_versions for select to authenticated
+  using (cocktail_id in (select c.id from public.cocktails c));
+
+-- Collections and style tag fixes: members only.
+drop policy "Anyone can read collections" on public.collections;
+create policy "Members read collections" on public.collections for select to authenticated
+  using ((select public.current_taster_id()) is not null);
+drop policy "Anyone can read collection members" on public.cocktail_collections;
+create policy "Members read collection members" on public.cocktail_collections for select to authenticated
+  using (cocktail_id in (select c.id from public.cocktails c));
+drop policy "Anyone can read style fixes" on public.cocktail_style_overrides;
+create policy "Members read style fixes" on public.cocktail_style_overrides for select to authenticated
   using (cocktail_id in (select c.id from public.cocktails c));

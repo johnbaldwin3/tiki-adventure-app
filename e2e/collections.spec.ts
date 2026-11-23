@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
-import { MOCK_URL, signIn, JOHN } from "./auth";
+import { MOCK_URL, signIn, JOHN, SIGNED_OUT } from "./auth";
 
 // Changes collections, so it runs in the serial "recipes" project after the
 // counting specs (see playwright.config.ts), and resets them around itself.
@@ -24,7 +24,7 @@ test("an IBA drink: credited, in ml as IBA writes it, in Classics and Prohibitio
   await expect(page.getByText("IBA official cocktail · The Unforgettables")).toBeVisible();
   const ingredients = page.getByRole("region", { name: "Ingredients" });
   await expect(ingredients.getByText("50 ml")).toBeVisible();
-  await expect(ingredients.getByRole("link", { name: "Cognac", exact: true })).toHaveAttribute("href", "/ingredients/cognac");
+  await expect(ingredients.getByRole("link", { name: "Cognac", exact: true }).first()).toHaveAttribute("href", "/ingredients/cognac");
   await expect(page.getByRole("link", { name: /see IBA's page/ })).toHaveAttribute(
     "href",
     "https://iba-world.com/iba-cocktail/sidecar/"
@@ -40,8 +40,6 @@ test("an IBA drink: credited, in ml as IBA writes it, in Classics and Prohibitio
     "href",
     /diffordsguide\.com/
   );
-  // Signed out: no editing.
-  await expect(panel.getByText("Change collections")).toHaveCount(0);
   await expectAccessible(page);
 
   await panel.getByRole("link", { name: "Prohibition", exact: true }).click();
@@ -156,10 +154,10 @@ test("add, rename and remove a collection; built-in ones can't be removed", asyn
   await expect(page.getByRole("region", { name: "Collections" }).getByText("Not in any collection yet.")).toBeVisible();
 });
 
-test("signed out, the collections page is read-only", async ({ page }) => {
-  await page.goto("/collections");
-  await expect(page.getByRole("link", { name: "Tiki", exact: true })).toBeVisible();
-  await expect(page.getByText(/^Rename or describe/)).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Add collection" })).toHaveCount(0);
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login?next=%2Fcollections");
+test.describe("signed out", () => {
+  test.use({ storageState: SIGNED_OUT });
+  test("the collections page sends you to sign in", async ({ page }) => {
+    await page.goto("/collections");
+    await expect(page).toHaveURL(/\/login\?next=%2Fcollections$/);
+  });
 });

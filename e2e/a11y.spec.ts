@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
-import { GENNY, signIn } from "./auth";
+import { GENNY, signIn, SIGNED_OUT } from "./auth";
 
 // Automated WCAG 2.1 A/AA checks (axe-core) on every page, signed out and
 // signed in, including form-validation errors (database-down states are
@@ -65,20 +65,24 @@ test("a11y: signed-in card, edit form, and form errors", async ({ page }) => {
   await expectNoViolations(page);
 });
 
-test("a11y: sign-in with a code (email step error, then code step)", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
-  await expect(page.getByText("Enter your email address.")).toBeVisible();
-  await expectNoViolations(page);
-  await page.getByLabel("Email").fill("genny@e2e.test");
-  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
-  await expect(page.getByLabel("Sign-in code")).toBeFocused();
-  await expectNoViolations(page);
-});
+test.describe("signed out", () => {
+  test.use({ storageState: SIGNED_OUT });
 
-test("a11y: sign-in error state", async ({ page }) => {
-  await page.goto("/login?with=password");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByText("Enter your email address.")).toBeVisible();
-  await expectNoViolations(page);
+  test("a11y: sign-in with a code (email step error, then code step)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+    await expect(page.getByText("Enter your email address.")).toBeVisible();
+    await expectNoViolations(page);
+    await page.getByLabel("Email").fill("genny@e2e.test");
+    await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+    await expect(page.getByLabel("Sign-in code")).toBeFocused();
+    await expectNoViolations(page);
+  });
+
+  test("a11y: sign-in error state", async ({ page }) => {
+    await page.goto("/login?with=password");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Enter your email address.")).toBeVisible();
+    await expectNoViolations(page);
+  });
 });

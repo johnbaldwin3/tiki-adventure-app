@@ -14,12 +14,6 @@ test("home links to the stats dashboard", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Our stats" })).toBeVisible();
 });
 
-test("signed out, stats ask you to sign in", async ({ page }) => {
-  await page.goto("/stats");
-  await expect(page.getByText("Ratings are private.")).toBeVisible();
-  await expect(page.getByText(/tasted$/)).toHaveCount(0);
-});
-
 test("stats dashboard shows progress, tasters, spread, disagreements and top 5", async ({ page }) => {
   await signIn(page, JOHN, "/stats");
   await expect(page.getByText("of 196 tasted")).toBeVisible();

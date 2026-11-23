@@ -4,9 +4,13 @@ import { expect, type Page } from "@playwright/test";
 export const E2E_PASSWORD = "tiki-e2e-pass-1";
 export const JOHN = "john@e2e.test";
 export const GENNY = "genny@e2e.test";
+/** John's friend: a member in her own household, not an admin. */
+export const FRAN = "fran@e2e.test";
 export const MOCK_URL = "http://127.0.0.1:54329";
 
 export async function signIn(page: Page, email: string, next = "/") {
+  // Specs start signed in as John (e2e/auth.setup.ts); start this one fresh.
+  await page.context().clearCookies();
   await page.goto(`/login?with=password&next=${encodeURIComponent(next)}`);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(E2E_PASSWORD);
@@ -30,3 +34,6 @@ export async function lastEmailCode(page: Page, to: string): Promise<string> {
   expect(withCode.length).toBeGreaterThan(0);
   return withCode[withCode.length - 1].code!;
 }
+
+/** For specs (or describe blocks) about being signed out: no stored session. */
+export const SIGNED_OUT = { cookies: [], origins: [] };

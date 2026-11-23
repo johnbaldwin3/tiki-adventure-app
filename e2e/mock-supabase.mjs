@@ -141,6 +141,7 @@ const users = new Map(); // email -> { id, email, password, confirmed, createdAt
 for (const email of [
   "john@e2e.test",
   "genny@e2e.test",
+  "fran@e2e.test",
   ...PROJECTS.map((p) => `reset-${p}@e2e.test`),
   ...PROJECTS.map((p) => `refresh-${p}@e2e.test`),
 ]) {
