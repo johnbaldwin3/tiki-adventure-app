@@ -9,10 +9,22 @@ import { SubmitButton } from "./submit-button";
 const name = (id: string) => getIngredient(id)?.name ?? id;
 const ml = (n: number) => `${Math.round(n * 10) / 10} ml`;
 
-function MadeForm({ slug, servings, label }: { slug: string; servings: number; label: string }) {
+export function MadeForm({
+  slug,
+  servings,
+  label,
+  recipe,
+}: {
+  slug: string;
+  servings: number;
+  label: string;
+  /** Which recipe was poured: our version (default), the original, or the trial being tasted. */
+  recipe?: "original" | "trial";
+}) {
   return (
     <form action={madeThis} className="mt-3">
       <input type="hidden" name="slug" value={slug} />
+      {recipe && <input type="hidden" name="recipe" value={recipe} />}
       <input type="hidden" name="servings" value={servings} />
       {/* A fresh key per render: a double-submit of this form records once. */}
       <input type="hidden" name="pourKey" value={crypto.randomUUID()} />
@@ -35,6 +47,7 @@ export function MadeThis({
   inventory,
   made,
   pour,
+  original,
 }: {
   slug: string;
   servings: number;
@@ -43,6 +56,8 @@ export function MadeThis({
   /** ?made= : a pour id, "undone", "gone" or "error". */
   made: string | undefined;
   pour: PourRecord | null;
+  /** Viewing the original recipe of a drink that has "our version": pour the original's amounts. */
+  original?: boolean;
 }) {
   const tracked = lines.filter((l) => inventory.get(l.ingredientId)?.remainingMl != null);
   const untracked = lines.filter((l) => !tracked.includes(l));
@@ -112,7 +127,7 @@ export function MadeThis({
           Bottle levels
         </Link>
       </p>
-      <MadeForm slug={slug} servings={servings} label={pour ? `Made another round (${drinks})` : `We made this (${drinks})`} />
+      <MadeForm recipe={original ? "original" : undefined} slug={slug} servings={servings} label={pour ? `Made another round (${drinks})` : `We made this (${drinks})`} />
     </section>
   );
 }

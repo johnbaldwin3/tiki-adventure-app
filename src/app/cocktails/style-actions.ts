@@ -8,6 +8,8 @@ import { withParam } from "@/lib/shopping";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { computeStyles, getStyleTag, overridesFor } from "@/lib/styles";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import type { DrinkVersions } from "@/lib/versions";
+import { fetchCocktailVersions } from "@/lib/versions-data";
 
 /**
  * Saves a taster's fixes to one drink's style tags. The computed tags are
@@ -35,7 +37,9 @@ export async function setDrinkStyles(formData: FormData): Promise<void> {
     const { data: drink, error } = await db.from("cocktails").select("id, ingredients").eq("slug", slug).maybeSingle();
     if (error) throw error;
     if (!drink) redirect("/");
-    const overrides = overridesFor(computeStyles(parseIngredients(drink.ingredients)), chosen);
+    // Tags are worked out from our version of the drink when we have one (as on the card and list).
+    const ours = (await fetchCocktailVersions(drink.id).catch(() => ({}) as DrinkVersions)).active;
+    const overrides = overridesFor(computeStyles(ours?.ingredients ?? parseIngredients(drink.ingredients)), chosen);
     // Write the new fixes first (upsert), then drop any others: a failure
     // part-way never loses the fixes that were there.
     if (overrides.length > 0) {

@@ -77,6 +77,21 @@ in; see below.
   card for every drink with it. Tasters can fix a drink's tags on its card;
   only the differences are stored (`cocktail_style_overrides`, migration
   0013), so rule improvements still reach everything else.
+- **Critique a recipe & "our version"** -- on a recipe card (tasters only),
+  "Critique this recipe": tick what was off (too sweet, too strong / boozy,
+  too bitter, flat…) and/or add a note; the recipe helper (OpenRouter,
+  `src/lib/server/critique-ai.ts`) suggests small changes with reasons,
+  shown as a before/after. Nothing is saved until "Save as a trial"
+  (amounts, wording and method can be edited first). Make the trial, then
+  **Keep it** (it becomes "our version": shown by default and used by our
+  bar, the shopping list, style tags and pours) or **Drop it**. The verified
+  Difford's / IBA / our-own recipe is never overwritten: "See the original"
+  (`?version=original`) is one tap away, and "Go back to the original"
+  sets our version aside. Stored in `cocktail_versions` (migration 0014):
+  one trial and one kept version per drink, changed only through
+  `save_cocktail_trial` / `keep_cocktail_version` / `retire_cocktail_version`,
+  forward-only (a trigger), and a page that's out of date can't replace the
+  other taster's newer trial.
 - **Home (`/`)** -- progress tiles and every drink, filterable by
   All / Tasted / Not yet and by ingredient (pick one or more; drinks using
   all of them, or any of them). Every filter state is a shareable URL, e.g.
@@ -221,7 +236,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0013` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0014` in order (Supabase SQL editor
    or `supabase db push`). 0012 (the IBA drinks and collections) is
    generated from `seed-data/iba-cocktails.json` and
    `seed-data/collections.json` by `node scripts/generate-collections-sql.mjs`
@@ -296,6 +311,7 @@ review pass:
 18. ✅ Recipe from a menu — a best-guess recipe from a menu listing, using our recipes' ratios (+ optional web search), badged until tested
 19. ✅ Equal Parts: collections — renamed from Adventures in Tiki; Tiki, Classics (the 102 IBA official cocktails) and Prohibition collections, add/rename your own, per-collection stats; 44 new catalog styles for the classics (vermouths, whiskeys, liqueurs…)
 20. ✅ Style tags — build, base spirit and flavor tags from the recipes (rules shown in the app), filter by style, fix any drink's tags
+21. ✅ Critique a recipe — AI-suggested tweaks from "too sweet / too strong…", tried as a trial, kept as "our version" (original one tap away)
 
 ## Future ideas (not yet scheduled)
 
@@ -308,5 +324,8 @@ Captured from John so they don't get lost, in the order he picked (Sep 2026):
    made-on date, substitutions ("out of Campari? use Aperol").
 4. Hosting extras -- batching for a pitcher or punch bowl (with dilution),
    party prep lists, cost per drink.
+- Next up (John, Nov 2026): **Smuggler's Cove rum categories** (priority);
+  "we tried" / entering the other taster's rating; broad spirit filters
+  (e.g. all rums); keep the list's scroll position after viewing a card.
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time

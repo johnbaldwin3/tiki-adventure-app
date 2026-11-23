@@ -4,8 +4,9 @@ import { UnitLink } from "./unit-link";
 
 const SERVING_CHOICES = [1, 2, 3, 4, 6, 8];
 
-function href(slug: string, servings: number, units: UnitMode | null) {
+function href(slug: string, servings: number, units: UnitMode | null, original = false) {
   const p = new URLSearchParams();
+  if (original) p.set("version", "original");
   if (servings !== 1) p.set("serves", String(servings));
   if (units) p.set("units", units);
   const qs = p.toString();
@@ -28,11 +29,14 @@ export function AmountControls({
   servings,
   units,
   urlUnits,
+  original = false,
 }: {
   slug: string;
   servings: number;
   units: UnitMode;
   urlUnits: UnitMode | null;
+  /** Viewing the original of a drink that has our version: keep it on the links. */
+  original?: boolean;
 }) {
   const choices = SERVING_CHOICES.includes(servings) ? SERVING_CHOICES : [...SERVING_CHOICES, servings].sort((a, b) => a - b);
   return (
@@ -44,7 +48,7 @@ export function AmountControls({
         {choices.map((n) => (
           <Link
             key={n}
-            href={href(slug, n, urlUnits)}
+            href={href(slug, n, urlUnits, original)}
             scroll={false}
             prefetch={false}
             aria-current={n === servings ? "true" : undefined}
@@ -63,7 +67,7 @@ export function AmountControls({
         {UNIT_MODES.map((m) => (
           <UnitLink
             key={m.value}
-            href={href(slug, servings, m.value)}
+            href={href(slug, servings, m.value, original)}
             mode={m.value}
             current={m.value === units}
             className={pill(m.value === units)}

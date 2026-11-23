@@ -6,6 +6,8 @@ import { getSignedInUser } from "@/lib/auth/current-taster";
 import { safeNextPath } from "@/lib/auth/validate";
 import { fetchCocktailBySlug } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
+import type { DrinkVersions } from "@/lib/versions";
+import { fetchCocktailVersions } from "@/lib/versions-data";
 import { DEFAULT_SIZE, parseLevel, parseSize, pourLines } from "@/lib/inventory";
 import { withParam } from "@/lib/shopping";
 import { SLUG_PATTERN } from "@/lib/slug";
@@ -73,7 +75,12 @@ export async function madeThis(formData: FormData): Promise<void> {
   if (!/^[0-9a-f-]{36}$/i.test(pourId)) redirect(withParam(card, "made", "error"));
   const cocktail = await fetchCocktailBySlug(slug).catch(() => null);
   if (!cocktail) redirect(withParam(card, "made", "error"));
-  const lines = pourLines(cocktail.ingredients, servings);
+  // Our kept version of the drink, unless they made the original or the trial they're tasting.
+  const recipe = formData.get("recipe");
+  const versions = recipe === "original" ? {} : await fetchCocktailVersions(cocktail.id).catch(() => ({}) as DrinkVersions);
+  const made = recipe === "trial" ? versions.trial : recipe === "original" ? undefined : versions.active;
+  if (recipe === "trial" && !made) redirect(withParam(card, "made", "error"));
+  const lines = pourLines(made?.ingredients ?? cocktail.ingredients, servings);
 
   const db = await createSupabaseServerClient();
   const { data: recorded, error } = await db.rpc("record_pour", {

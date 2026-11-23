@@ -118,6 +118,27 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
             { type: "url_citation", url_citation: { url: "javascript:alert(1)", title: "bad" } },
           ];
         }
+      } else if (task === "recipe_critique") {
+        // Negroni: "too bitter" -> less Campari, a dash of orange bitters; a trial of that -> a touch more.
+        const campari = /- 20 ml Bitter Campari/.test(text) ? "25" : "20";
+        const same = /NO CHANGE/.test(text);
+        answer = {
+          assessment: same ? "It sounds about right." : "Equal parts Campari carries a lot of bitterness; pulling it back lets the vermouth's sweetness balance it.",
+          ingredients: [
+            { amount: "30", unit: "ml", ingredient: "Gin", catalogId: "" },
+            { amount: same ? "30" : campari, unit: "ml", ingredient: "Bitter Campari", catalogId: "" },
+            { amount: "30", unit: "ml", ingredient: "Sweet Red Vermouth", catalogId: "" },
+            ...(same ? [] : [{ amount: "1", unit: "dash", ingredient: "Orange bitters", catalogId: "orange-bitters" }]),
+          ],
+          reasons: same
+            ? []
+            : [
+                { ingredient: "Bitter Campari", why: "Less of the bitter element." },
+                { ingredient: "Orange bitters", why: "Keeps it bright with less Campari." },
+              ],
+          methodChange: same ? "" : "Stir a little longer for more dilution.",
+          warnings: [],
+        };
       } else if (task === "bottle") {
         answer = {
           found: true,

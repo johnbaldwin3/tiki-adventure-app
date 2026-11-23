@@ -17,6 +17,10 @@ import { fetchBar, fetchCabinet, fetchPour, fetchShoppingList } from "@/lib/cabi
 import { MadeThis } from "@/components/made-this";
 import { CollectionsPanel } from "@/components/collections-panel";
 import { StylePanel } from "@/components/style-panel";
+import { CritiquePanel } from "@/components/critique-panel";
+import { VersionPanel } from "@/components/version-panel";
+import type { DrinkVersions } from "@/lib/versions";
+import { fetchCocktailVersions } from "@/lib/versions-data";
 import { applyStyleOverrides, computeStyles } from "@/lib/styles";
 import { fetchStyleOverrides } from "@/lib/styles-data";
 import { TIKI_SLUG } from "@/lib/collections";
@@ -256,7 +260,11 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
       console.error("recipe card: failed to load style fixes", err);
       return [];
     });
-  const [records, user, cabinet, list, bar, pour, cols, styleFixes] = await Promise.all([
+  const versionsPromise = fetchCocktailVersions(cocktail.id).catch((err): DrinkVersions => {
+    console.error("recipe card: failed to load our versions", err);
+    return {};
+  });
+  const [records, user, cabinet, list, bar, pour, cols, styleFixes, versions] = await Promise.all([
     recordsPromise,
     userPromise,
     cabinetPromise,
@@ -265,8 +273,18 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     pourPromise,
     collectionsPromise,
     overridesPromise,
+    versionsPromise,
   ]);
-  const computedStyles = computeStyles(cocktail.ingredients);
+  // "Our version" (a kept critique tweak) is what the card shows by default;
+  // ?version=original shows the verified recipe it came from.
+  const active = versions.active;
+  const showingOriginal = !!active && sp.version === "original";
+  const ours = active && !showingOriginal ? active : null;
+  const lines = ours ? ours.ingredients : cocktail.ingredients;
+  const method = ours ? (ours.methodSummary ?? cocktail.methodSummary) : cocktail.methodSummary;
+  const currentMethod = active ? (active.methodSummary ?? cocktail.methodSummary) : cocktail.methodSummary;
+  // Tags follow our version (as in the list), whichever recipe is showing.
+  const computedStyles = computeStyles(active ? active.ingredients : cocktail.ingredients);
   const styles = applyStyleOverrides(computedStyles, styleFixes);
   // The tiki look for tiki drinks (and when collections couldn't load, for Difford's tiki list).
   const tikiLook = cols ? cols.mine.some((c) => c.slug === TIKI_SLUG) : cocktail.source === "diffords";
@@ -276,8 +294,8 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         {
           ...cocktail,
           tried: false,
-          ingredientTexts: cocktail.ingredients.map((i) => i.ingredient),
-          ingredientIds: cocktail.ingredients.map((i) => i.catalogId),
+          ingredientTexts: lines.map((i) => i.ingredient),
+          ingredientIds: lines.map((i) => i.catalogId),
         },
         new Set(cabinet.keys())
       )
@@ -350,6 +368,18 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         </div>
       </header>
 
+      <VersionPanel
+        slug={cocktail.slug}
+        name={cocktail.name}
+        current={active ? active.ingredients : cocktail.ingredients}
+        currentMethod={currentMethod}
+        trial={versions.trial}
+        active={active}
+        showingOriginal={showingOriginal}
+        canEdit={!!user?.taster}
+        status={sp.tweak}
+      />
+
       <section aria-labelledby="ingredients-heading" className="rounded-2xl bg-card p-4 shadow-sm">
         <h2
           id="ingredients-heading"
@@ -358,10 +388,10 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           Ingredients
           {servings > 1 && <span className="font-normal normal-case tracking-normal"> · for {servings} drinks</span>}
         </h2>
-        {cocktail.ingredients.length > 0 && <AmountControls slug={cocktail.slug} servings={servings} units={units} urlUnits={urlUnits} />}
-        {cocktail.ingredients.length > 0 ? (
+        {lines.length > 0 && <AmountControls slug={cocktail.slug} servings={servings} units={units} urlUnits={urlUnits} original={showingOriginal} />}
+        {lines.length > 0 ? (
           <ul className="mt-3 flex flex-col divide-y divide-teal/10">
-            {cocktail.ingredients.map((ing, i) => {
+            {lines.map((ing, i) => {
               const shown = displayAmount(ing.amount, ing.unit, servings, units);
               return (
                 <li key={`${i}-${ing.ingredient}`} className="flex gap-3 py-2 text-sm">
@@ -377,7 +407,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         ) : (
           <p className="mt-2 text-sm italic text-ink-faint">No ingredients listed.</p>
         )}
-        {cocktail.ingredients.some((ing) => displayAmount(ing.amount, ing.unit, servings, units).converted) && (
+        {lines.some((ing) => displayAmount(ing.amount, ing.unit, servings, units).converted) && (
           <p className="mt-2 text-xs text-ink-faint">Converted at the bar standard 1 fl oz = 30 ml (1 cup = 8 fl oz).</p>
         )}
         {missing && (
@@ -457,7 +487,8 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         <MadeThis
           slug={cocktail.slug}
           servings={servings}
-          lines={pourLines(cocktail.ingredients, servings)}
+          lines={pourLines(lines, servings)}
+          original={showingOriginal}
           inventory={bar.inventory}
           made={typeof sp.made === "string" ? sp.made : undefined}
           pour={pour}
@@ -482,12 +513,36 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         ))}
       </section>
 
-      {cocktail.methodSummary && (
+      {method && (
         <section aria-labelledby="method-heading" className="rounded-2xl bg-card p-4 shadow-sm">
           <h2 id="method-heading" className="text-sm font-bold uppercase tracking-wide text-ink-soft">
             Method
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-ink">{cocktail.methodSummary}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink">{method}</p>
+        </section>
+      )}
+
+      {user?.taster && !showingOriginal && (
+        <section id="critique" aria-labelledby="critique-heading" className="scroll-mt-4 rounded-2xl bg-card p-4 shadow-sm">
+          <details>
+            <summary id="critique-heading" className="cursor-pointer text-sm font-bold uppercase tracking-wide text-ink-soft">
+              Critique this recipe
+            </summary>
+            <p className="mt-2 text-xs text-ink-soft">
+              Too sweet? Too boozy? Say what was off and the recipe helper suggests small changes to try.
+              {cocktail.source !== "ours" && " The original recipe is never changed — tweaks we keep become our version."}
+            </p>
+            <div className="mt-3">
+              <CritiquePanel
+                key={`${versions.trial?.id ?? "-"}:${active?.id ?? "-"}`}
+                slug={cocktail.slug}
+                name={cocktail.name}
+                method={currentMethod}
+                base="current"
+                trialId={versions.trial?.id ?? null}
+              />
+            </div>
+          </details>
         </section>
       )}
 

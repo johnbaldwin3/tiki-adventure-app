@@ -37,11 +37,15 @@ export function createCollectionMocks({ here, cocktails, accounts, bearerEmail, 
   const members = [];
   // Style tag fixes (migration 0013): tasters only; updated_by must be them.
   const styleFixes = [];
+  // Our versions of drinks (migration 0014): trials and the kept "active" one.
+  const versions = [];
+  let versionSeq = 0;
 
   function reset() {
     collections.length = 0;
     members.length = 0;
     styleFixes.length = 0;
+    versions.length = 0;
     for (const c of seed.collections) {
       const col = {
         id: `col-${c.slug}`,
@@ -191,8 +195,90 @@ export function createCollectionMocks({ here, cocktails, accounts, bearerEmail, 
     sendJson(res, 405, { message: "mock-supabase: unsupported cocktail_style_overrides method" });
   }
 
+  function handleVersions(req, res, url) {
+    for (let j = versions.length - 1; j >= 0; j--) {
+      if (!cocktails.some((c) => c.id === versions[j].cocktail_id)) versions.splice(j, 1);
+    }
+    if (req.method === "GET") {
+      let rows = versions;
+      const id = url.searchParams.get("cocktail_id");
+      if (id) rows = rows.filter((v) => v.cocktail_id === id.replace(/^eq\./, ""));
+      const statuses = inList(url, "status");
+      if (statuses) rows = rows.filter((v) => statuses.includes(v.status));
+      sendJson(res, 200, rows.map((r) => project(r, url.searchParams.get("select"))));
+      return;
+    }
+    if (req.method === "POST") {
+      // The app saves trials through save_cocktail_trial; a direct insert needs a taster as created_by.
+      return readBody(req).then((body) => {
+        const email = bearerEmail(req);
+        const taster = email ? accounts.get(email) : null;
+        const row = [body].flat()[0];
+        if (!taster || row.created_by !== taster) return refuse(res, "cocktail_versions");
+        sendJson(res, 405, { message: "mock-supabase: use save_cocktail_trial" });
+      });
+    }
+    sendJson(res, 405, { message: "mock-supabase: unsupported cocktail_versions method" });
+  }
+
+  // Mirrors the 0014 functions (SECURITY INVOKER as a taster; forward-only moves).
+  function handleVersionRpc(req, res, fn) {
+    readBody(req).then((body) => {
+      const email = bearerEmail(req);
+      const taster = email ? accounts.get(email) : null;
+      if (!taster) return sendJson(res, 403, { code: "42501", message: "not a taster" });
+      const now = new Date().toISOString();
+      if (fn === "save_cocktail_trial") {
+        const current = versions.find((v) => v.cocktail_id === body.p_cocktail_id && v.status === "trial");
+        if ((current?.id ?? null) !== (body.p_replaces ?? null)) return sendJson(res, 400, { code: "P0001", message: "stale" });
+        if (!cocktails.some((c) => c.id === body.p_cocktail_id)) return sendJson(res, 409, { code: "23503", message: "violates foreign key constraint" });
+        const lines = body.p_ingredients;
+        if (!Array.isArray(lines) || lines.length < 1 || lines.length > 30) return sendJson(res, 400, { code: "23514", message: "violates check constraint" });
+        if (current) Object.assign(current, { status: "retired", decided_by: taster, decided_at: now });
+        const id = `00000000-0000-4000-8000-${String(++versionSeq).padStart(12, "0")}`;
+        versions.push({
+          id,
+          cocktail_id: body.p_cocktail_id,
+          status: "trial",
+          ingredients: lines,
+          method_summary: body.p_method_summary ?? null,
+          critique: body.p_critique ?? null,
+          reasoning: body.p_reasoning ?? null,
+          created_by: taster,
+          created_at: now,
+          decided_by: null,
+          decided_at: null,
+        });
+        return sendJson(res, 200, id);
+      }
+      const v = versions.find((x) => x.id === body.p_version_id);
+      if (fn === "keep_cocktail_version") {
+        if (!v || v.status !== "trial") return sendJson(res, 404, { code: "P0002", message: "no such trial" });
+        for (const o of versions) {
+          if (o.cocktail_id === v.cocktail_id && o.status === "active") Object.assign(o, { status: "retired", decided_by: taster, decided_at: now });
+        }
+        Object.assign(v, { status: "active", decided_by: taster, decided_at: now });
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+      const found = !!v && (v.status === "trial" || v.status === "active");
+      if (found) Object.assign(v, { status: "retired", decided_by: taster, decided_at: now });
+      sendJson(res, 200, found);
+    });
+  }
+
   /** Returns true if it handled the request. */
   return function handle(req, res, url, tableName) {
+    if (tableName === "cocktail_versions") {
+      handleVersions(req, res, url);
+      return true;
+    }
+    const rpc = url.pathname.match(/^\/rest\/v1\/rpc\/(save_cocktail_trial|keep_cocktail_version|retire_cocktail_version)$/);
+    if (req.method === "POST" && rpc) {
+      handleVersionRpc(req, res, rpc[1]);
+      return true;
+    }
     if (req.method === "POST" && url.pathname === "/__mock/reset-collections") {
       reset();
       res.writeHead(204);

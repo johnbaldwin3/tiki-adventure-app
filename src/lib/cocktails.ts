@@ -2,6 +2,8 @@ import { collectionSlugsByCocktail } from "./collections";
 import { fetchCollections } from "./collections-data";
 import { applyStyleOverrides, computeStyles, type StyleOverride } from "./styles";
 import { fetchStyleOverrides } from "./styles-data";
+import { fetchVersions } from "./versions-data";
+import type { DrinkVersions } from "./versions";
 import { byListOrder } from "./order";
 import { supabase } from "./supabase";
 import type { TastingRecord } from "./tasting";
@@ -70,7 +72,9 @@ export function mapRowsToCocktailRecords(
   cocktailRows: RawCocktailRow[],
   tastingRows: RawTastingRow[],
   collectionsByCocktail: Map<string, string[]> = new Map(),
-  styleOverrides: Map<string, StyleOverride[]> = new Map()
+  styleOverrides: Map<string, StyleOverride[]> = new Map(),
+  /** "Our version" lines (a kept critique tweak), which replace the original's for bar/shopping/styles. */
+  activeLines: Map<string, Ingredient[]> = new Map()
 ): CocktailRecord[] {
   const tastingsByCocktail = new Map<
     string,
@@ -106,7 +110,7 @@ export function mapRowsToCocktailRecords(
     .sort((a, b) => byListOrder({ diffordsRank: a.diffords_rank, name: a.name }, { diffordsRank: b.diffords_rank, name: b.name }))
     .map((c) => {
       const t = tastingsByCocktail.get(c.id);
-      const lines = parseIngredients(c.ingredients);
+      const lines = activeLines.get(c.id) ?? parseIngredients(c.ingredients);
       return {
         id: c.id,
         name: c.name,
@@ -138,6 +142,7 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
     { data: tastingRows, error: tastingsError },
     { collections, memberships },
     styleOverrides,
+    versions,
   ] = await Promise.all([
     supabase
       .from("cocktails")
@@ -154,6 +159,11 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
       console.error("cocktails: failed to load style fixes", err);
       return new Map<string, StyleOverride[]>();
     }),
+    // And our versions: without them every drink uses its original recipe.
+    fetchVersions().catch((err) => {
+      console.error("cocktails: failed to load our versions", err);
+      return new Map<string, DrinkVersions>();
+    }),
   ]);
 
   if (cocktailsError) {
@@ -167,7 +177,8 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
     (cocktailRows ?? []) as RawCocktailRow[],
     (tastingRows ?? []) as unknown as RawTastingRow[],
     collectionSlugsByCocktail(collections, memberships),
-    styleOverrides
+    styleOverrides,
+    new Map([...versions].flatMap(([id, v]) => (v.active ? [[id, v.active.ingredients] as const] : [])))
   );
 }
 
