@@ -32,12 +32,12 @@ test("wrong password shows a friendly error; the right one signs in and returns 
   await expect(tasting.getByRole("link", { name: /for Genny/ })).toHaveCount(0);
 });
 
-test("sign-in lasts at least 10 days (session cookie expiry)", async ({ page, context }) => {
+test("sign-in lasts at least 14 days (session cookie expiry)", async ({ page, context }) => {
   await signIn(page, JOHN);
   const authCookies = (await context.cookies()).filter((c) => /^sb-.*-auth-token/.test(c.name));
   expect(authCookies.length).toBeGreaterThan(0);
-  const tenDays = Date.now() / 1000 + 10 * 24 * 60 * 60;
-  for (const c of authCookies) expect(c.expires).toBeGreaterThan(tenDays);
+  const fourteenDays = Date.now() / 1000 + 14 * 24 * 60 * 60;
+  for (const c of authCookies) expect(c.expires).toBeGreaterThan(fourteenDays);
 });
 
 test("you can't open someone else's tasting form", async ({ page }) => {

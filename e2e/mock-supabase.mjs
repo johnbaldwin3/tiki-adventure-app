@@ -264,7 +264,7 @@ const tables = { cocktails, tasters, tastings };
 // tasters, and the owner column must be the signed-in taster -- mirroring
 // RLS. Upserts honour Prefer: resolution=ignore-duplicates like PostgREST.
 const shared = {
-  cabinet_items: { rows: new Map(), owner: "updated_by", columns: ["bottle", "size_ml", "remaining_ml"] },
+  cabinet_items: { rows: new Map(), owner: "updated_by", columns: ["bottle", "size_ml", "remaining_ml", "rum_category", "rum_category_basis"] },
   shopping_items: { rows: new Map(), owner: "added_by", columns: [] },
 };
 

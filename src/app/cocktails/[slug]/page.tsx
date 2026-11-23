@@ -29,6 +29,8 @@ import { pourLines } from "@/lib/inventory";
 import { FocusMessage } from "@/components/focus-message";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { getIngredient, resolveLine } from "@/lib/ingredients";
+import { RumBadge } from "@/components/rum-badge";
+import { findBottle, styleCategory } from "@/lib/rum-numbers";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { averageRating, rankCocktails } from "@/lib/tasting";
 
@@ -399,7 +401,16 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
                     <span className="whitespace-nowrap">{[shown.amount, shown.unit].filter(Boolean).join(" ")}</span>
                     {shown.note && <span className="text-xs font-normal text-ink-soft">{shown.note}</span>}
                   </span>
-                  <IngredientText text={ing.ingredient} catalogId={ing.catalogId} />
+                  <span className="flex flex-wrap items-baseline gap-1.5">
+                    <IngredientText text={ing.ingredient} catalogId={ing.catalogId} />
+                    {(() => {
+                      // A bottle named in the recipe that the book lists; else the line's style.
+                      const listed = findBottle(ing.ingredient);
+                      if (listed) return <RumBadge category={listed.category} compact />;
+                      const rum = styleCategory(resolveLine(ing.ingredient, ing.catalogId)?.ingredient.id);
+                      return rum ? <RumBadge category={rum.category} compact approx={rum.basis === "closest"} /> : null;
+                    })()}
+                  </span>
                 </li>
               );
             })}

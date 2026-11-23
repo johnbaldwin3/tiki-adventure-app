@@ -293,6 +293,12 @@ export default async function Page({ searchParams }: PageProps<"/">) {
             Browse ingredients <span aria-hidden="true">→</span>
           </Link>
           <Link
+            href="/rums"
+            className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
+          >
+            Rum numbers <span aria-hidden="true">→</span>
+          </Link>
+          <Link
             href="/stats"
             className="rounded-full px-2 py-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
           >

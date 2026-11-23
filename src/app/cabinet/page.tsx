@@ -16,6 +16,9 @@ import { FocusMessage } from "@/components/focus-message";
 import { describeLeft, isLow } from "@/lib/inventory";
 import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { getIngredient } from "@/lib/ingredients";
+import { RumBadge } from "@/components/rum-badge";
+import { fetchBarRums } from "@/lib/rum-bar-data";
+import { barRumCategory } from "@/lib/rum-numbers";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -125,6 +128,15 @@ export default async function CabinetPage({
       })
     )?.inventory ?? new Map();
   const name = (id: string) => getIngredient(id)?.name ?? id;
+  // Smuggler's Cove numbers for our rums (a nice-to-have: none if it can't load).
+  const rumLabels = new Map(
+    (
+      (await fetchBarRums().catch((err) => {
+        console.error("cabinet: failed to load rum labels", err);
+        return null;
+      })) ?? []
+    ).map((r) => [r.ingredientId, r] as const)
+  );
   const low = [...inventory.entries()]
     .filter(([id, level]) => cabinet!.has(id) && isLow(level))
     .sort((a, b) => name(a[0]).localeCompare(name(b[0])));
@@ -287,9 +299,14 @@ export default async function CabinetPage({
         >
           <div className="flex items-center justify-between gap-2">
             <SectionHeading id="shelf-heading">On the shelf</SectionHeading>
-            <Link href="/cabinet/levels" className="shrink-0 px-1 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline">
-              Bottle levels <span aria-hidden="true">→</span>
-            </Link>
+            <span className="flex shrink-0 gap-2">
+              <Link href="/rums#our-rums" className="px-1 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline">
+                Rum numbers <span aria-hidden="true">→</span>
+              </Link>
+              <Link href="/cabinet/levels" className="px-1 py-1 text-xs font-semibold text-teal underline-offset-2 hover:underline">
+                Bottle levels <span aria-hidden="true">→</span>
+              </Link>
+            </span>
           </div>
           <ul className={`${card} flex flex-col divide-y divide-teal/10 py-1`}>
             {[...cabinet.entries()]
@@ -299,13 +316,21 @@ export default async function CabinetPage({
                   key={id}
                   className="flex items-baseline justify-between gap-3 py-2 text-sm"
                 >
-                  <Link
-                    href={`/ingredients/${id}`}
-                    prefetch={false}
-                    className="text-ink underline-offset-2 hover:underline"
-                  >
-                    {name(id)}
-                  </Link>
+                  <span className="flex flex-wrap items-baseline gap-1.5">
+                    <Link
+                      href={`/ingredients/${id}`}
+                      prefetch={false}
+                      className="text-ink underline-offset-2 hover:underline"
+                    >
+                      {name(id)}
+                    </Link>
+                    {rumLabels.has(id) &&
+                      (() => {
+                        const r = rumLabels.get(id)!;
+                        const c = barRumCategory(id, bottle, r.rumCategory, r.rumCategoryBasis);
+                        return c ? <RumBadge category={c.category} compact approx={c.approx} /> : null;
+                      })()}
+                  </span>
                   <span className="flex flex-col items-end gap-0.5 text-right text-xs text-ink-soft">
                     {bottle && <span>{bottle}</span>}
                     {inventory.get(id)?.remainingMl != null && (

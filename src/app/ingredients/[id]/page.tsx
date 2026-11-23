@@ -5,6 +5,8 @@ import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { aliasesFor, getIngredient, resolveLine } from "@/lib/ingredients";
+import { RumBadge } from "@/components/rum-badge";
+import { findBottle, styleCategory } from "@/lib/rum-numbers";
 import { listHref } from "@/lib/list";
 import { byListOrder } from "@/lib/order";
 import { totalWineSearchUrl, WINEXPRESS } from "@/lib/stores";
@@ -66,6 +68,7 @@ export default async function IngredientPage({ params, searchParams }: PageProps
   const aliases = aliasesFor(id);
   const [cabinet, list] = await Promise.all([cabinetPromise, listPromise]);
   const owned = cabinet?.has(id) ?? false;
+  const rum = styleCategory(id);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -100,6 +103,24 @@ export default async function IngredientPage({ params, searchParams }: PageProps
         <p className="rounded-2xl bg-card p-4 text-sm leading-relaxed text-ink shadow-sm">{ingredient.description}</p>
       )}
 
+      {rum && (
+        <section aria-labelledby="rum-heading" className="rounded-2xl bg-card p-4 shadow-sm">
+          <h2 id="rum-heading" className="text-sm font-bold uppercase tracking-wide text-ink-soft">
+            Smuggler&apos;s Cove rum number
+          </h2>
+          <p className="mt-2">
+            <RumBadge category={rum.category} approx={rum.basis === "closest"} />
+          </p>
+          <p className="mt-2 text-sm text-ink">{rum.note}</p>
+          <p className="mt-2 text-xs text-ink-faint">
+            {rum.basis === "closest" ? "Our closest match, not from the book. " : ""}
+            <Link href="/rums" className="font-semibold text-teal underline underline-offset-2">
+              All the rum numbers and the bottle checker
+            </Link>
+          </p>
+        </section>
+      )}
+
       <section aria-labelledby="brands-heading" className="rounded-2xl bg-card p-4 shadow-sm">
         <h2 id="brands-heading" className="text-sm font-bold uppercase tracking-wide text-ink-soft">
           Bottles to look for
@@ -109,7 +130,17 @@ export default async function IngredientPage({ params, searchParams }: PageProps
           <ul className="mt-2 flex flex-col divide-y divide-teal/10">
             {ingredient.brands.map((b) => (
               <li key={b} className="flex items-center gap-3 py-2 text-sm text-ink">
-                <span className="min-w-0 flex-1">{b}</span>
+                <span className="min-w-0 flex-1">
+                  {b}
+                  {(() => {
+                    const listed = rum ? findBottle(b) : null;
+                    return listed ? (
+                      <span className="ml-1.5 inline-block align-middle">
+                        <RumBadge category={listed.category} compact />
+                      </span>
+                    ) : null;
+                  })()}
+                </span>
                 <a
                   href={totalWineSearchUrl(b)}
                   target="_blank"

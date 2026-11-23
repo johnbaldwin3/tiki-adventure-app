@@ -118,6 +118,23 @@ export function createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, 
             { type: "url_citation", url_citation: { url: "javascript:alert(1)", title: "bad" } },
           ];
         }
+      } else if (task === "rum_number") {
+        // A label the book doesn't list -> the checker's own classification; a listed one -> the book must win.
+        const listed = /SMITH LABEL/.test(text);
+        answer = {
+          found: !/NOT A RUM/.test(text),
+          product: listed ? "Smith & Cross Traditional Jamaica Rum" : "Mystery Estate 6 Year",
+          origin: listed ? "Jamaica" : "Barbados",
+          rawMaterial: "molasses",
+          still: listed ? "pot" : "blend of pot and column",
+          age: listed ? "" : "6 years",
+          abv: listed ? 57 : 43,
+          flavored: false,
+          category: listed ? "blended-aged" : "blended-aged",
+          confidence: "medium",
+          reasoning: "A blend of pot and column rums aged six years.",
+          warnings: [],
+        };
       } else if (task === "recipe_critique") {
         // Negroni: "too bitter" -> less Campari, a dash of orange bitters; a trial of that -> a touch more.
         const campari = /- 20 ml Bitter Campari/.test(text) ? "25" : "20";

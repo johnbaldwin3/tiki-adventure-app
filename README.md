@@ -92,6 +92,19 @@ in; see below.
   `save_cocktail_trial` / `keep_cocktail_version` / `retire_cocktail_version`,
   forward-only (a trigger), and a page that's out of date can't replace the
   other taster's newer trial.
+- **Rum numbers (`/rums`)** -- the Smuggler's Cove rum classification
+  (Martin & Rebecca Cate, 2016, pp. 197-199, transcribed from John's copy in
+  `src/data/smugglers-cove.ts`): 21 categories by raw material, still and
+  age, 8 of them numbered for the book's recipes. Look a bottle up in the
+  book's list (`?q=`), or -- tasters -- **check a bottle in the shop** from a
+  label photo or its name: names the book lists are answered from the book
+  (no AI); anything else goes to the rum checker (OpenRouter, schema
+  `rum_number`), shown as a best guess using the book's rules -- and if it
+  reads a bottle the book does list, the book wins. Save the answer onto a
+  rum in our bar (`cabinet_items.rum_category` + where it came from,
+  migration 0015). Numbers also show on our bar's shelf, recipe-card rum
+  lines and rum ingredient pages; "≈" marks our closest match rather than
+  the book's listing.
 - **Home (`/`)** -- progress tiles and every drink, filterable by
   All / Tasted / Not yet and by ingredient (pick one or more; drinks using
   all of them, or any of them). Every filter state is a shareable URL, e.g.
@@ -236,7 +249,7 @@ One-time Supabase setup (Dashboard → Authentication):
 
 Everything needed to rebuild the database is in the repo:
 
-1. Apply `supabase/migrations/0001` … `0014` in order (Supabase SQL editor
+1. Apply `supabase/migrations/0001` … `0015` in order (Supabase SQL editor
    or `supabase db push`). 0012 (the IBA drinks and collections) is
    generated from `seed-data/iba-cocktails.json` and
    `seed-data/collections.json` by `node scripts/generate-collections-sql.mjs`
@@ -312,6 +325,7 @@ review pass:
 19. ✅ Equal Parts: collections — renamed from Adventures in Tiki; Tiki, Classics (the 102 IBA official cocktails) and Prohibition collections, add/rename your own, per-collection stats; 44 new catalog styles for the classics (vermouths, whiskeys, liqueurs…)
 20. ✅ Style tags — build, base spirit and flavor tags from the recipes (rules shown in the app), filter by style, fix any drink's tags
 21. ✅ Critique a recipe — AI-suggested tweaks from "too sweet / too strong…", tried as a trial, kept as "our version" (original one tap away)
+22. ✅ Rum numbers — Smuggler's Cove categories from the book, bottle lookup, photo rum checker at the store, numbers on our bar / recipes / ingredients
 
 ## Future ideas (not yet scheduled)
 
@@ -324,8 +338,7 @@ Captured from John so they don't get lost, in the order he picked (Sep 2026):
    made-on date, substitutions ("out of Campari? use Aperol").
 4. Hosting extras -- batching for a pitcher or punch bowl (with dilution),
    party prep lists, cost per drink.
-- Next up (John, Nov 2026): **Smuggler's Cove rum categories** (priority);
-  "we tried" / entering the other taster's rating; broad spirit filters
+- Next up (John, Nov 2026): "we tried" / entering the other taster's rating; broad spirit filters
   (e.g. all rums); keep the list's scroll position after viewing a card.
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time
