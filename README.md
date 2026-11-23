@@ -6,7 +6,7 @@ inventory, shopping list and recipe book, organised into **collections**
 Tiki", a tracker for Difford's Guide's Top 100 Tiki & Tropical Cocktails;
 that's now the Tiki collection, which keeps its name and tropical look.
 
-**Live:** https://tiki-adventure-app-beige.vercel.app
+**Live:** https://equalparts.online (the old https://tiki-adventure-app-beige.vercel.app still works)
 
 Recipe data (ingredients, amounts, glassware, garnish) is independently
 verified against each cocktail's actual recipe page on
