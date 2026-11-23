@@ -7,7 +7,7 @@ export const GENNY = "genny@e2e.test";
 export const MOCK_URL = "http://127.0.0.1:54329";
 
 export async function signIn(page: Page, email: string, next = "/") {
-  await page.goto(`/login?next=${encodeURIComponent(next)}`);
+  await page.goto(`/login?with=password&next=${encodeURIComponent(next)}`);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(E2E_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -17,7 +17,16 @@ export async function signIn(page: Page, email: string, next = "/") {
 /** The most recent link the mock "emailed" to this address. */
 export async function lastEmailLink(page: Page, to: string): Promise<string> {
   const res = await page.request.get(`${MOCK_URL}/__mock/outbox?to=${encodeURIComponent(to)}`);
-  const mails = (await res.json()) as { link: string }[];
+  const mails = ((await res.json()) as { link: string }[]).filter((m) => m.link);
   expect(mails.length).toBeGreaterThan(0);
   return mails[mails.length - 1].link;
+}
+
+/** The most recent sign-in code the mock "emailed" to this address. */
+export async function lastEmailCode(page: Page, to: string): Promise<string> {
+  const res = await page.request.get(`${MOCK_URL}/__mock/outbox?to=${encodeURIComponent(to)}`);
+  const mails = (await res.json()) as { code?: string }[];
+  const withCode = mails.filter((m) => m.code);
+  expect(withCode.length).toBeGreaterThan(0);
+  return withCode[withCode.length - 1].code!;
 }

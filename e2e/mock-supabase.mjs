@@ -119,6 +119,7 @@ for (const email of [
 const accessTokens = new Map(); // token -> email
 const refreshTokens = new Map(); // token -> email
 const codes = new Map(); // one-time code -> { email, type, challenge }
+const otps = new Map(); // email -> latest 6-digit sign-in code
 const outbox = []; // { to, type, link }
 
 const b64url = (s) => Buffer.from(s).toString("base64url");
@@ -231,6 +232,26 @@ async function handleAuth(req, res, url) {
     users.set(email, u);
     mailLink(email, "signup", url.searchParams.get("redirect_to"), body.code_challenge);
     return sendJson(res, 200, userJson(u));
+  }
+  // Email sign-in code (signInWithOtp). Like Supabase with create_user false,
+  // an address with no account is refused rather than signed up.
+  if (req.method === "POST" && path === "/otp") {
+    const body = await readBody(req);
+    const email = String(body.email ?? "").trim().toLowerCase();
+    if (!users.has(email)) return authError(res, 422, "otp_disabled", "Signups not allowed for otp");
+    const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
+    otps.set(email, code);
+    outbox.push({ to: email, type: "magiclink", link: "", code });
+    return sendJson(res, 200, {});
+  }
+  if (req.method === "POST" && path === "/verify") {
+    const body = await readBody(req);
+    const email = String(body.email ?? "").trim().toLowerCase();
+    if (body.type !== "email" || !otps.has(email) || otps.get(email) !== String(body.token ?? "")) {
+      return authError(res, 403, "otp_expired", "Token has expired or is invalid");
+    }
+    otps.delete(email);
+    return sendJson(res, 200, newSession(users.get(email)));
   }
   if (req.method === "POST" && path === "/recover") {
     const body = await readBody(req);

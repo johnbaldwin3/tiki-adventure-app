@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   friendlyAuthError,
+  normalizeCode,
   normalizeEmail,
   safeNextPath,
+  validateCode,
   validateNewPassword,
   validateSignIn,
   validateSignUp,
@@ -75,5 +77,24 @@ describe("friendlyAuthError", () => {
     [null, /Something went wrong/],
   ])("%j", (err, expected) => {
     expect(friendlyAuthError(err)).toMatch(expected);
+  });
+});
+
+describe("sign-in codes", () => {
+  it("accepts 6-10 digits, ignoring spaces and dashes", () => {
+    expect(normalizeCode(" 123 456 ")).toBe("123456");
+    expect(normalizeCode("123-456")).toBe("123456");
+    expect(validateCode("123456")).toEqual({});
+    expect(validateCode("12345678")).toEqual({});
+    expect(validateCode("123 456")).toEqual({});
+  });
+  it("rejects anything else", () => {
+    for (const bad of ["", "12345", "abcdef", "12345a", "12345678901"]) {
+      expect(validateCode(bad).code).toMatch(/6-digit code/);
+    }
+  });
+  it("explains wrong/expired codes and unknown emails", () => {
+    expect(friendlyAuthError({ code: "otp_expired", message: "Token has expired or is invalid" })).toMatch(/wrong or has expired/);
+    expect(friendlyAuthError({ code: "otp_disabled", message: "Signups not allowed for otp" })).toMatch(/no account for that email/);
   });
 });

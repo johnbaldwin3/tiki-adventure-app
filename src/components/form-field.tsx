@@ -13,10 +13,11 @@ interface Props {
   defaultValue?: string;
   hint?: string;
   error?: string;
-  inputMode?: "text" | "email" | "decimal";
+  inputMode?: "text" | "email" | "decimal" | "numeric";
+  maxLength?: number;
 }
 
-export function FormField({ id, label, type = "text", autoComplete, defaultValue, hint, error, inputMode }: Props) {
+export function FormField({ id, label, type = "text", autoComplete, defaultValue, hint, error, inputMode, maxLength }: Props) {
   const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(" ");
   return (
     <div>
@@ -33,6 +34,7 @@ export function FormField({ id, label, type = "text", autoComplete, defaultValue
         name={id}
         type={type}
         inputMode={inputMode}
+        maxLength={maxLength}
         autoComplete={autoComplete}
         defaultValue={defaultValue}
         aria-invalid={!!error}
