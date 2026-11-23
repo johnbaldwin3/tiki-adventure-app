@@ -27,6 +27,7 @@ comment on table public.households is 'A shared home bar: its members share the 
 alter table public.households enable row level security;
 revoke all on public.households from anon, authenticated;
 grant select on public.households to authenticated;
+grant all on public.households to service_role;
 
 alter table public.tasters
   add column household_id uuid references public.households(id) on delete restrict,
