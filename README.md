@@ -354,6 +354,7 @@ review pass:
 24. ✅ We tried it — either taster can enter or edit the other's rating (the card says who entered it), "Genny tried it too" marks both as tried, and the home page asks each of us for the ratings we still owe (migration 0016)
 25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
 26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
+27. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
 
 ## Future ideas (not yet scheduled)
 

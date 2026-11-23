@@ -398,3 +398,37 @@ test("scan a bottle (style, size, level) and a receipt into our bar", async ({ p
   await expect(row("Navy rum")).toContainText("about 700 ml"); // a new, full bottle
   await expect(row("Falernum liqueur")).toContainText("about 750 ml");
 });
+
+test("type a bottle into our bar (no photo)", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "mutates the shared cabinet");
+  const row = (name: string) =>
+    page.getByRole("listitem").filter({ has: page.getByRole("heading", { level: 2, name: new RegExp(`^${name}`) }) });
+
+  await signIn(page, JOHN, "/cabinet");
+  // Reachable from the scanner too.
+  await page.goto("/cabinet/scan");
+  await page.getByRole("button", { name: /No photo\? Type the bottle in instead/ }).click();
+  await expect(page.getByRole("heading", { name: "Type in a bottle" })).toBeVisible();
+
+  await page.goto("/cabinet");
+  await page.getByRole("link", { name: /Type in a bottle/ }).click();
+  await expect(page).toHaveURL(/\/cabinet\/scan\?type=1$/);
+  await expect(page.getByRole("heading", { name: "Type in a bottle" })).toBeVisible();
+
+  // Saving needs a style and size.
+  await page.getByRole("button", { name: "Save to our bar" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Pick what it is and its size, then save." })).toBeFocused();
+
+  // The style is guessed from the name as it's typed.
+  await page.getByLabel("Bottle", { exact: true }).fill("Smith & Cross Traditional Jamaica Rum");
+  await expect(page.getByLabel("Style in our catalog")).toHaveValue("overproof-aged-pot-rum");
+  await expect(page.getByText("Guessed from the name. Change it if it's wrong.")).toBeVisible();
+  await expect(page.getByLabel(/How full/)).toHaveValue("100");
+  await page.getByLabel("Bottle size").selectOption("750");
+  const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(r.violations).toEqual([]);
+  await page.getByRole("button", { name: "Save to our bar" }).click();
+  await expect(page).toHaveURL(/\/cabinet\/levels\?levels=saved&id=overproof-aged-pot-rum#level-overproof-aged-pot-rum$/);
+  await expect(row("Overproof aged pot-still rum")).toContainText("Smith & Cross Traditional Jamaica Rum");
+  await expect(row("Overproof aged pot-still rum")).toContainText("about 750 ml");
+});

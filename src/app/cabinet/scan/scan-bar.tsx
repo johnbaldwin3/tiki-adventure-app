@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { startTransition, useActionState, useEffect, useRef, useState, type FormEvent } from "react";
+import { guessStyle } from "@/lib/bottle-guess";
 import { resizePhoto } from "@/lib/client/resize-photo";
 import { SIZE_CHOICES } from "@/lib/inventory";
 import type { BottleDraft, ReceiptDraft } from "@/lib/scan";
@@ -9,7 +10,7 @@ import { saveReceipt, saveScannedBottle, scanPhoto, type SaveScanState, type Sca
 
 export interface CatalogGroup {
   family: string;
-  items: { id: string; name: string }[];
+  items: { id: string; name: string; brands: string[] }[];
 }
 
 /** What's in our bar now, per style: shown so a save that replaces it is no surprise. */
@@ -59,10 +60,12 @@ function StyleSelect({
     <select
       id={id}
       name={name}
-      defaultValue={value}
-      aria-invalid={invalid || undefined}
-      aria-describedby={invalid ? describedBy : undefined}
+      // Controlled when the parent tracks the choice (so it can fill in a guess).
+      value={onChange ? value : undefined}
+      defaultValue={onChange ? undefined : value}
       onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+      aria-invalid={invalid || undefined}
+      aria-describedby={invalid || onChange ? describedBy : undefined}
       className={field}
     >
       <option value="">Choose…</option>
@@ -139,10 +142,34 @@ function SaveMessage({ state }: { state: SaveScanState }) {
   );
 }
 
-function BottleReview({ draft, catalog, current }: { draft: BottleDraft; catalog: CatalogGroup[]; current: CurrentBar }) {
+/** A blank bottle to type in by hand: a full bottle, nothing guessed yet. */
+const TYPED_DRAFT: BottleDraft = { product: "", catalogId: "", sizeMl: null, fillPercent: 100, warnings: [] };
+
+function BottleReview({
+  draft,
+  catalog,
+  current,
+  typed = false,
+}: {
+  draft: BottleDraft;
+  catalog: CatalogGroup[];
+  current: CurrentBar;
+  /** Typed in by hand (no photo): the style is guessed from the name as it's typed. */
+  typed?: boolean;
+}) {
   const [state, action, pending] = useActionState<SaveScanState, FormData>(saveScannedBottle, { submission: 0, message: null, problems: [] });
   const [pct, setPct] = useState(draft.fillPercent);
   const [style, setStyle] = useState(draft.catalogId);
+  // Once the taster picks a style themselves, typing no longer changes it.
+  const [styleChosen, setStyleChosen] = useState(!typed);
+  const [guessed, setGuessed] = useState(false);
+  const styles = catalog.flatMap((g) => g.items);
+  const onProductChange = (name: string) => {
+    if (styleChosen) return;
+    const guess = guessStyle(name, styles);
+    setStyle(guess);
+    setGuessed(guess !== "");
+  };
   return (
     <form onSubmit={submitWith(action)} className="flex flex-col gap-4">
       <SaveMessage state={state} />
@@ -151,13 +178,42 @@ function BottleReview({ draft, catalog, current }: { draft: BottleDraft; catalog
         <label htmlFor="product" className="text-sm font-semibold text-ink">
           Bottle
         </label>
-        <input id="product" name="product" defaultValue={draft.product} maxLength={120} className={field} />
+        <input
+          id="product"
+          name="product"
+          defaultValue={draft.product}
+          maxLength={120}
+          autoComplete="off"
+          autoFocus={typed}
+          placeholder={typed ? "e.g. Smith & Cross" : undefined}
+          onChange={typed ? (e) => onProductChange(e.target.value) : undefined}
+          className={field}
+        />
       </div>
       <div>
         <label htmlFor="catalogId" className="text-sm font-semibold text-ink">
           Style in our catalog
         </label>
-        <StyleSelect id="catalogId" name="catalogId" value={draft.catalogId} catalog={catalog} onChange={setStyle} />
+        <StyleSelect
+          id="catalogId"
+          name="catalogId"
+          value={style}
+          catalog={catalog}
+          describedBy={guessed ? "style-guess" : undefined}
+          onChange={(v) => {
+            setStyle(v);
+            setStyleChosen(true);
+            setGuessed(false);
+          }}
+        />
+        {guessed && (
+          <p id="style-guess" className="text-xs text-ink-faint">
+            Guessed from the name. Change it if it&apos;s wrong.
+          </p>
+        )}
+        {typed && !guessed && !style && (
+          <p className="text-xs text-ink-faint">Pick the closest style. The bottle name is saved as you typed it.</p>
+        )}
         <Replaces current={current} id={style} />
       </div>
       <div>
@@ -189,7 +245,7 @@ function BottleReview({ draft, catalog, current }: { draft: BottleDraft; catalog
           className="mt-2 w-full accent-teal-deep"
         />
         <p id="fill-hint" className="text-xs text-ink-faint">
-          Estimated from the photo — adjust if it looks off.
+          {typed ? "A new bottle is full. Slide it down if it's been opened." : "Estimated from the photo — adjust if it looks off."}
         </p>
       </div>
       <button type="submit" disabled={pending} className="rounded-full bg-teal-deep px-4 py-3 text-base font-bold text-white shadow-sm disabled:opacity-70">
@@ -291,13 +347,39 @@ const KINDS: { value: ScanKind; label: string; hint: string }[] = [
  * receipt (the bottles bought). The model's answer fills a form to check;
  * nothing is saved until "Save".
  */
-export function ScanBar({ catalog, current }: { catalog: CatalogGroup[]; current: CurrentBar }) {
+export function ScanBar({ catalog, current, startTyped = false }: { catalog: CatalogGroup[]; current: CurrentBar; startTyped?: boolean }) {
   // "Scan another photo" starts over by remounting the scanner.
   const [round, setRound] = useState(0);
-  return <Scanner key={round} catalog={catalog} current={current} onRestart={() => setRound((r) => r + 1)} />;
+  const [typing, setTyping] = useState(startTyped);
+  const restart = (typed: boolean) => {
+    setTyping(typed);
+    setRound((r) => r + 1);
+  };
+  if (typing) return <TypeBottle key={round} catalog={catalog} current={current} onRestart={restart} />;
+  return <Scanner key={round} catalog={catalog} current={current} onRestart={restart} />;
 }
 
-function Scanner({ catalog, current, onRestart }: { catalog: CatalogGroup[]; current: CurrentBar; onRestart: () => void }) {
+/** No photo to hand: type the bottle in, pick its style, size and level. */
+function TypeBottle({ catalog, current, onRestart }: { catalog: CatalogGroup[]; current: CurrentBar; onRestart: (typed: boolean) => void }) {
+  return (
+    <section aria-labelledby="type-heading" className="flex flex-col gap-3">
+      <h2 id="type-heading" className="text-lg font-bold text-teal-deep">
+        Type in a bottle
+      </h2>
+      <BottleReview draft={TYPED_DRAFT} catalog={catalog} current={current} typed />
+      <div className="flex flex-wrap gap-4">
+        <button type="button" onClick={() => onRestart(false)} className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
+          Use a photo instead
+        </button>
+        <Link href="/cabinet" className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
+          Cancel
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function Scanner({ catalog, current, onRestart }: { catalog: CatalogGroup[]; current: CurrentBar; onRestart: (typed: boolean) => void }) {
   const [state, action, pending] = useActionState<ScanState, FormData>(scanPhoto, {
     submission: 0,
     kind: "bottle",
@@ -348,7 +430,7 @@ function Scanner({ catalog, current, onRestart }: { catalog: CatalogGroup[]; cur
         )}
         <BottleReview key={state.submission} draft={state.bottle} catalog={catalog} current={current} />
         <div className="flex flex-wrap gap-4">
-          <button type="button" onClick={onRestart} className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
+          <button type="button" onClick={() => onRestart(false)} className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
             Scan another photo
           </button>
           <Link href="/cabinet" className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
@@ -370,7 +452,7 @@ function Scanner({ catalog, current, onRestart }: { catalog: CatalogGroup[]; cur
         )}
         <ReceiptReview key={state.submission} draft={state.receipt} catalog={catalog} current={current} />
         <div className="flex flex-wrap gap-4">
-          <button type="button" onClick={onRestart} className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
+          <button type="button" onClick={() => onRestart(false)} className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
             Scan another photo
           </button>
           <Link href="/cabinet" className="px-1 text-sm font-semibold text-teal underline underline-offset-2">
@@ -458,6 +540,13 @@ function Scanner({ catalog, current, onRestart }: { catalog: CatalogGroup[]; cur
           {state.message}
         </p>
       )}
+      <button
+        type="button"
+        onClick={() => onRestart(true)}
+        className="w-fit px-1 text-sm font-semibold text-teal underline underline-offset-2"
+      >
+        <span aria-hidden="true">✍️ </span>No photo? Type the bottle in instead
+      </button>
       <p className="text-xs text-ink-faint">
         The photo is read by an AI model (via OpenRouter). Nothing is saved until you check it.
       </p>

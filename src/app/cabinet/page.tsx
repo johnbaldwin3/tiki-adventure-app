@@ -178,6 +178,9 @@ export default async function CabinetPage({
       <Link href="/cabinet/scan" className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline">
         <span aria-hidden="true">📷 </span>Scan a bottle or receipt <span aria-hidden="true">→</span>
       </Link>
+      <Link href="/cabinet/scan?type=1" className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline">
+        <span aria-hidden="true">✍️ </span>Type in a bottle <span aria-hidden="true">→</span>
+      </Link>
       {typeof sp.scanned === "string" && /^\d{1,2}$/.test(sp.scanned) && (
         <FocusMessage role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">
           Added {sp.scanned} {sp.scanned === "1" ? "bottle" : "bottles"} from the receipt.{" "}
