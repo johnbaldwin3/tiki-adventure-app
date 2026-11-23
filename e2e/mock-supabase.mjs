@@ -344,15 +344,23 @@ function handleShared(name, req, res, url) {
 // keeps working. That spec runs in its own Playwright project after the others.
 let dbDown = false;
 
+class AmbiguousEmbed extends Error {}
+
 function project(row, select) {
   if (!select || select === "*") return { ...row };
   const out = {};
   // Split on commas that aren't inside an embed's parentheses.
   for (const part of select.split(/,(?![^(]*\))/).map((s) => s.trim())) {
-    const embed = part.match(/^(\w+)\((.*)\)$/);
+    const embed = part.match(/^(\w+)(?:!(\w+))?\((.*)\)$/);
     if (embed && embed[1] === "tasters") {
+      // Like PostgREST: tastings has two keys to tasters (taster_id and,
+      // since migration 0016, entered_by), so a bare tasters(...) embed is
+      // ambiguous (PGRST201) and must name the key.
+      if (embed[2] !== "tastings_taster_id_fkey") {
+        throw new AmbiguousEmbed();
+      }
       const t = tasters.find((x) => x.id === row.taster_id);
-      out.tasters = t ? project(t, embed[2]) : null;
+      out.tasters = t ? project(t, embed[3]) : null;
     } else if (part in row) {
       out[part] = row[part];
     }
@@ -528,7 +536,14 @@ const server = http.createServer((req, res) => {
     const key = (r) => (r[col] === null || r[col] === undefined ? Infinity : r[col]);
     result.sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0) * (dir === "desc" ? -1 : 1));
   }
-  const body = result.map((r) => project(r, url.searchParams.get("select")));
+  let body;
+  try {
+    body = result.map((r) => project(r, url.searchParams.get("select")));
+  } catch (err) {
+    if (!(err instanceof AmbiguousEmbed)) throw err;
+    sendJson(res, 300, { code: "PGRST201", message: "Could not embed because more than one relationship was found for 'tastings' and 'tasters'" });
+    return;
+  }
   res.writeHead(200, { "content-type": "application/json" });
   res.end(JSON.stringify(body));
 });
