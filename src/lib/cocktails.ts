@@ -153,7 +153,9 @@ export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
       .from("cocktails")
       .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source, is_guess")
       .order("diffords_rank", { ascending: true, nullsFirst: false }),
-    supabase.from("tastings").select("cocktail_id, rating, tried, tasters(initials)"),
+    // tastings has two keys to tasters (taster_id and entered_by, migration
+    // 0016), so the embed must name the one it means or PostgREST refuses it.
+    supabase.from("tastings").select("cocktail_id, rating, tried, tasters!tastings_taster_id_fkey(initials)"),
     // Collections are extra: if they can't load, the list still works (no collection tags).
     fetchCollections().catch((err) => {
       console.error("cocktails: failed to load collections", err);
