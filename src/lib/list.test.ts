@@ -93,6 +93,15 @@ describe("ingredient filter helpers", () => {
     expect(matchesIngredients(has, ["falernum"], "any")).toBe(false);
   });
 
+  it("matches a broad spirit pick against any bottle of that kind", () => {
+    const has = new Set(["navy-rum", "lime"]);
+    expect(matchesIngredients(has, ["any-rum"], "all")).toBe(true);
+    expect(matchesIngredients(has, ["any-gin"], "all")).toBe(false);
+    expect(matchesIngredients(has, ["any-rum", "lime"], "all")).toBe(true);
+    expect(matchesIngredients(has, ["any-gin", "any-rum"], "all")).toBe(false);
+    expect(matchesIngredients(has, ["any-gin", "any-rum"], "any")).toBe(true);
+  });
+
   it("builds canonical list URLs", () => {
     expect(listHref({})).toBe("/");
     expect(listHref({ show: "tasted" })).toBe("/?show=tasted");

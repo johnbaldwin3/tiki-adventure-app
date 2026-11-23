@@ -1,3 +1,4 @@
+import { BackToList } from "@/components/back-to-list";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, unstable_rethrow } from "next/navigation";
@@ -135,12 +136,7 @@ function OurRecipeFooter({ cocktail, canEdit }: { cocktail: CocktailDetail; canE
 
 function BackLink() {
   return (
-    <Link
-      href="/"
-      className="inline-flex w-fit items-center gap-1 rounded-full px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline"
-    >
-      <span aria-hidden="true">←</span> All cocktails
-    </Link>
+    <BackToList className="inline-flex w-fit items-center gap-1 rounded-full px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline" />
   );
 }
 

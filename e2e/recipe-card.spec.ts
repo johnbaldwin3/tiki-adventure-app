@@ -28,8 +28,9 @@ test("tapping a cocktail opens its full recipe card, and Back returns to the lis
   await expect(credit).toHaveAttribute("href", /diffordsguide\.com\/cocktails\/recipe\//);
   await expect(credit).toHaveAttribute("target", "_blank");
 
-  await page.getByRole("link", { name: /All cocktails/ }).click();
-  await expect(page).toHaveURL(/\/$/);
+  // Back goes to the list we came from, Tasted filter and all.
+  await page.getByRole("link", { name: "Back to the list" }).click();
+  await expect(page).toHaveURL(/\/\?show=tasted$/);
 });
 
 test("the tasting-notes link jumps to the Our tasting section", async ({ page }) => {

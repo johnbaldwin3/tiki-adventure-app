@@ -127,3 +127,25 @@ test.describe("without JavaScript", () => {
     await expect(list(page)).toHaveCount(1);
   });
 });
+
+test("a broad pick: any rum, combined with a single ingredient", async ({ page }) => {
+  await page.goto("/");
+  await page.getByText("Filter by ingredient").click();
+  const option = page.getByLabel("Pick an ingredient").locator("optgroup[label='Any of a kind'] option", { hasText: /^Any rum or cane spirit — in \d+$/ });
+  const rumCount = Number((await option.textContent())!.match(/in (\d+)$/)![1]);
+  // Far more than any single rum style (aged Jamaican is the biggest at 17).
+  expect(rumCount).toBeGreaterThan(40);
+  await addIngredient(page, /^Any rum or cane spirit/);
+  await expect(page).toHaveURL(/\/\?ing=any-rum$/);
+  await expect(list(page)).toHaveCount(rumCount);
+  await expect(page.getByRole("link", { name: "Remove Any rum or cane spirit" })).toBeVisible();
+  // Already chosen, so it's no longer offered.
+  await expect(page.getByLabel("Add another ingredient").locator("option", { hasText: /^Any rum/ })).toHaveCount(0);
+
+  // Every Falernum drink here is a rum drink, so "all of" with falernum
+  // leaves a subset; Zombie is one.
+  await addIngredient(page, /^Falernum liqueur/);
+  await expect(page).toHaveURL(/\/\?ing=any-rum,falernum$/);
+  await expect(list(page).filter({ hasText: "Zombie" })).toHaveCount(1);
+  expect(await list(page).count()).toBeLessThan(rumCount);
+});

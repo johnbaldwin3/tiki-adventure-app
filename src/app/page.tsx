@@ -3,6 +3,7 @@ import { RecipeCredits } from "@/components/recipe-credits";
 import Link from "next/link";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { IngredientFilter } from "@/components/ingredient-filter";
+import { ListScrollMemory } from "@/components/list-scroll-memory";
 import { SearchBox } from "@/components/search-box";
 import { StyleFilter } from "@/components/style-filter";
 import { matchesStyles, parseStyleFilter } from "@/lib/styles";
@@ -13,6 +14,7 @@ import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
 import { APP_NAME, collectionCounts, inCollection, parseCollection, TIKI_SLUG, type Collection } from "@/lib/collections";
 import { fetchCollections } from "@/lib/collections-data";
 import { getIngredient, lineIds } from "@/lib/ingredients";
+import { getSpiritGroup, hasIngredientOrGroup, SPIRIT_GROUPS } from "@/lib/spirit-groups";
 import {
   filterCocktails,
   LIST_FILTERS,
@@ -42,7 +44,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   const filter = parseListFilter(sp.show);
   const passwordUpdated = sp.password === "updated";
   const recipeDeleted = sp.recipe === "deleted";
-  const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id));
+  const ingredientIds = parseIngredientFilter(sp.ing, sp.add, (id) => !!getIngredient(id) || !!getSpiritGroup(id));
   const match = parseIngredientMatch(sp.match);
   const q = parseSearch(sp.q);
   const style = parseStyleFilter(sp.style);
@@ -130,6 +132,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   };
   const usageCounts: Record<string, number> = {};
   for (const ids of idsBySlug.values()) for (const id of ids) usageCounts[id] = (usageCounts[id] ?? 0) + 1;
+  for (const ids of idsBySlug.values())
+    for (const g of SPIRIT_GROUPS) if (hasIngredientOrGroup(ids, g.id)) usageCounts[g.id] = (usageCounts[g.id] ?? 0) + 1;
 
   const cabinet = await cabinetPromise;
   // Tasters only (same cached read as the cabinet): bottles running low.
@@ -544,6 +548,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         </>
       )}
 
+      <ListScrollMemory />
       <RecipeCredits />
     </main>
   );
