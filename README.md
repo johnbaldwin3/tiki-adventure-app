@@ -296,6 +296,18 @@ chart colors were checked for colorblind separation -- see the comments in
 that file. After changing colors, re-run the e2e suite: the axe scan fails
 on any contrast regression.
 
+### App icons
+
+The logo is a carved tiki head under palm fronds on a teal-to-coral sunset
+(the grin's two rows of teeth make an equals sign). `src/app/icon.svg` is
+the master: modern browsers use it as the tab icon, and
+`src/components/logo.tsx` draws the same artwork in the header. The PNG/ICO
+versions are exported from it: `src/app/favicon.ico` (16/32/48),
+`src/app/apple-icon.png` (180, square corners for iOS) and
+`public/icons/` (192 and 512 for Android / Add to Home Screen, plus a
+maskable 512), listed in `src/app/manifest.ts`. After changing the SVG,
+update `logo.tsx` to match and run `node scripts/export-icons.mjs`.
+
 ## Project status
 
 Built in small phases, each unit + e2e tested and reviewed by a dedicated
