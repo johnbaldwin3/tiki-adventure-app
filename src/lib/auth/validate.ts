@@ -20,6 +20,15 @@ export function validateSignIn(email: string, password: string): FieldErrors<"em
   return errors;
 }
 
+/** Supabase emails a 6-digit code by default (the length is a project setting, 6-10). */
+export function normalizeCode(raw: string): string {
+  return raw.replace(/[\s-]/g, "");
+}
+
+export function validateCode(code: string): FieldErrors<"code"> {
+  return /^\d{6,10}$/.test(normalizeCode(code)) ? {} : { code: "Enter the 6-digit code from the email." };
+}
+
 export function validateNewPassword(
   password: string,
   confirm: string
@@ -91,6 +100,12 @@ export function friendlyAuthError(error: AuthErrorLike | null | undefined): stri
   // 500 code and also covers e.g. a failed confirmation email.)
   if (/database error saving new user/i.test(message)) {
     return "That email isn't on the tasters list, so it can't be used to sign up.";
+  }
+  if (code === "otp_expired" || /token has expired or is invalid/i.test(message)) {
+    return "That code is wrong or has expired. Check the latest email, or send a new code.";
+  }
+  if (code === "otp_disabled" || code === "signup_disabled" || /signups not allowed/i.test(message)) {
+    return "There's no account for that email yet. Ask John or Genny for an invite.";
   }
   if (code === "weak_password") {
     return `Choose a stronger password (at least ${PASSWORD_MIN_LENGTH} characters).`;

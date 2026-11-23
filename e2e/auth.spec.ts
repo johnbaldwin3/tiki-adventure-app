@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { E2E_PASSWORD, GENNY, JOHN, lastEmailLink, signIn } from "./auth";
+import { E2E_PASSWORD, GENNY, JOHN, lastEmailCode, lastEmailLink, signIn } from "./auth";
 
 test("signed out: cards are read-only with a sign-in prompt", async ({ page }) => {
   await page.goto("/cocktails/tiki-max");
@@ -14,7 +14,7 @@ test("signed out: cards are read-only with a sign-in prompt", async ({ page }) =
 });
 
 test("wrong password shows a friendly error; the right one signs in and returns to next", async ({ page }) => {
-  await page.goto("/login?next=%2Fcocktails%2Ftiki-max");
+  await page.goto("/login?with=password&next=%2Fcocktails%2Ftiki-max");
   await page.getByLabel("Email").fill(JOHN);
   await page.getByLabel("Password").fill("not-the-password");
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -84,7 +84,7 @@ test("sign-up is refused for emails not on the tasters list", async ({ page }) =
 
 test("forgot password: email link, choose a new one, sign in with it", async ({ page }, testInfo) => {
   const email = `reset-${testInfo.project.name}@e2e.test`;
-  await page.goto("/login");
+  await page.goto("/login?with=password");
   await page.getByRole("link", { name: "Forgot your password?" }).click();
   await expect(page).toHaveURL(/\/forgot-password$/);
   await page.getByLabel("Email").fill(email);
@@ -99,7 +99,7 @@ test("forgot password: email link, choose a new one, sign in with it", async ({ 
   await expect(page).toHaveURL(/\/\?password=updated$/);
 
   await page.getByRole("button", { name: "Sign out" }).click();
-  await page.goto("/login");
+  await page.goto("/login?with=password");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("fresh-password-2");
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -158,4 +158,48 @@ test("an expired or reused email link says so", async ({ page }) => {
 test("login page rejects off-site redirects", async ({ page }) => {
   await signIn(page, JOHN, "https://evil.example/");
   await expect(page).toHaveURL(/127\.0\.0\.1:3100\/$/);
+});
+
+test("sign in with an emailed code: wrong code, then the right one returns to next", async ({ page }, testInfo) => {
+  // A per-project account, so parallel projects don't replace each other's codes.
+  const email = `reset-${testInfo.project.name}@e2e.test`;
+  await page.goto("/login?next=%2Fcocktails%2Fzombie");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+  await expect(page.getByRole("status")).toContainText(`emailed a sign-in code to ${email}`);
+  await expect(page.getByLabel("Sign-in code")).toBeFocused();
+
+  await page.getByLabel("Sign-in code").fill("000000");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "wrong or has expired" })).toBeVisible();
+
+  // A new code replaces the old one.
+  await page.getByRole("button", { name: "Send a new code" }).click();
+  await expect(page.getByRole("status")).toContainText("emailed a sign-in code");
+  await page.getByLabel("Sign-in code").fill(await lastEmailCode(page, email));
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/zombie$/);
+  await expect(page.getByText(/^Signed in as/)).toBeVisible();
+});
+
+test("code sign-in: no account for that email, and 'use a different email' goes back", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("stranger@e2e.test");
+  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "no account for that email" })).toBeVisible();
+
+  await page.getByLabel("Email").fill(JOHN);
+  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+  await page.getByRole("button", { name: "Use a different email" }).click();
+  await expect(page.getByLabel("Email")).toHaveValue(JOHN);
+  await expect(page.getByLabel("Sign-in code")).toHaveCount(0);
+});
+
+test("the password form is still there for anyone who has one", async ({ page }) => {
+  await page.goto("/login?next=%2Fstats");
+  await page.getByRole("link", { name: "Use a password instead" }).click();
+  await expect(page).toHaveURL(/\/login\?with=password&next=%2Fstats$/);
+  await expect(page.getByLabel("Password")).toBeVisible();
+  await page.getByRole("link", { name: "Email me a code instead" }).click();
+  await expect(page).toHaveURL(/\/login\?next=%2Fstats$/);
 });

@@ -28,3 +28,23 @@ export const initialAuthState: AuthFormState = {
   errors: {},
   message: null,
 };
+
+/** State for the two-step "email me a code" sign-in (requestSignInCode / verifySignInCode). */
+export interface CodeFormState {
+  /** "email": ask for the address; "code": the code was sent, ask for it. */
+  step: "email" | "code";
+  status: "idle" | "invalid" | "error" | "sent";
+  submission: number;
+  email: string;
+  errors: FieldErrors<"email" | "code">;
+  message: string | null;
+}
+
+export const initialCodeState: CodeFormState = {
+  step: "email",
+  status: "idle",
+  submission: 0,
+  email: "",
+  errors: {},
+  message: null,
+};

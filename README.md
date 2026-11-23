@@ -209,7 +209,10 @@ in; see below.
 
 ### Signing in & saving ratings
 
-JB and GM sign in with email + password (Supabase Auth) and can then add
+JB and GM sign in with a **6-digit code emailed to them** (the default on
+`/login`: `signInWithOtp` with `shouldCreateUser: false`, then `verifyOtp`
+in the same tab, so it works when the email opens in a mail app's own
+browser) or with email + password (`/login?with=password`), and can then add
 or edit **their own** rating, date and notes from any recipe card
 (`/cocktails/[slug]/tasting/[jb|gm]`). You stay signed in until you sign
 out: the session cookie lasts 400 days and `src/proxy.ts` refreshes the
@@ -238,6 +241,10 @@ One-time Supabase setup (Dashboard → Authentication):
   match the app.
 - Once JB and GM have both created accounts, turn **Allow new users to
   sign up** OFF. The allow-list trigger stays as a backstop.
+- **Emails → Templates → Magic link:** must show the code, `{{ .Token }}`
+  (the default template only has a link). Code sign-in sends this template.
+  Send it through your own SMTP (e.g. Resend); Supabase's built-in email is
+  heavily rate-limited.
 - Leave session time-box / inactivity timeout off (so sign-ins persist).
 - Recommended: turn on **Secure password change** (Sign In / Providers →
   Email). The app only offers the change-password form right after a reset
@@ -340,6 +347,7 @@ review pass:
 22. ✅ Rum numbers — Smuggler's Cove categories from the book, bottle lookup, photo rum checker at the store, numbers on our bar / recipes / ingredients
 23. ✅ Back to the list & broad spirit picks — a recipe card's back link (and the browser's back button) returns to the list with its filters, scroll position and the drink you opened; "Any rum", "Any gin"… in the ingredient filter
 24. ✅ We tried it — either taster can enter or edit the other's rating (the card says who entered it), "Genny tried it too" marks both as tried, and the home page asks each of us for the ratings we still owe (migration 0016)
+25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
 
 ## Future ideas (not yet scheduled)
 

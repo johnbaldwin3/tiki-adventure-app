@@ -6,13 +6,15 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
   friendlyAuthError,
+  normalizeCode,
   normalizeEmail,
   safeNextPath,
   validateNewPassword,
+  validateCode,
   validateSignIn,
   validateSignUp,
 } from "@/lib/auth/validate";
-import { RESET_COOKIE, type AuthFormState } from "@/lib/auth/form-state";
+import { RESET_COOKIE, type AuthFormState, type CodeFormState } from "@/lib/auth/form-state";
 
 const str = (fd: FormData, key: string) => {
   const v = fd.get(key);
@@ -48,6 +50,56 @@ export async function signIn(prev: AuthFormState, fd: FormData): Promise<AuthFor
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     return { status: "error", submission, email, errors: {}, message: friendlyAuthError(error) };
+  }
+  revalidatePath("/", "layout");
+  redirect(next);
+}
+
+/**
+ * Step 1 of code sign-in: email a one-time code. Only existing accounts get
+ * one (shouldCreateUser: false); new people will join by invite instead.
+ * The code is typed into this same tab, so it works even when the email
+ * opens in a mail app's own browser or on another device.
+ */
+export async function requestSignInCode(prev: CodeFormState, fd: FormData): Promise<CodeFormState> {
+  const submission = prev.submission + 1;
+  const email = normalizeEmail(str(fd, "email"));
+  const { email: emailError } = validateSignIn(email, "x");
+  if (emailError) {
+    return { step: "email", status: "invalid", submission, email, errors: { email: emailError }, message: "Please fix the highlighted fields." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error) {
+    return { step: "email", status: "error", submission, email, errors: {}, message: friendlyAuthError(error) };
+  }
+  return {
+    step: "code",
+    status: "sent",
+    submission,
+    email,
+    errors: {},
+    message: `We emailed a sign-in code to ${email}. It can take a minute to arrive.`,
+  };
+}
+
+/** Step 2 of code sign-in: check the code, set the session, continue to ?next=. */
+export async function verifySignInCode(prev: CodeFormState, fd: FormData): Promise<CodeFormState> {
+  const submission = prev.submission + 1;
+  const email = normalizeEmail(str(fd, "email"));
+  const code = normalizeCode(str(fd, "code"));
+  const next = safeNextPath(str(fd, "next"));
+
+  const errors = validateCode(code);
+  if (errors.code) {
+    return { step: "code", status: "invalid", submission, email, errors, message: "Please fix the highlighted fields." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
+  if (error) {
+    return { step: "code", status: "error", submission, email, errors: {}, message: friendlyAuthError(error) };
   }
   revalidatePath("/", "layout");
   redirect(next);
@@ -153,4 +205,14 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut({ scope: "local" });
   revalidatePath("/", "layout");
   redirect("/");
+}
+
+/** One form, three buttons: send a code, check it, or start over with another email. */
+export async function codeSignIn(prev: CodeFormState, fd: FormData): Promise<CodeFormState> {
+  const intent = str(fd, "intent");
+  if (intent === "verify") return verifySignInCode(prev, fd);
+  if (intent === "restart") {
+    return { step: "email", status: "idle", submission: prev.submission + 1, email: normalizeEmail(str(fd, "email")), errors: {}, message: null };
+  }
+  return requestSignInCode(prev, fd);
 }
