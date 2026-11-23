@@ -1,5 +1,6 @@
 import type { CocktailRecord } from "./cocktails";
 import { byListOrder } from "./order";
+import { hasIngredientOrGroup } from "./spirit-groups";
 import type { RankedTastingRecord } from "./tasting";
 
 export type ListFilter = "all" | "tasted" | "untasted";
@@ -72,10 +73,15 @@ export function parseIngredientMatch(value: string | string[] | undefined): Ingr
   return v === "any" ? "any" : "all";
 }
 
-/** Does a cocktail (given its catalog ingredient ids) satisfy the ingredient filter? */
+/**
+ * Does a cocktail (given its catalog ingredient ids) satisfy the ingredient
+ * filter? A selected id can also be a broad spirit pick ("any-rum"), which
+ * any bottle of that kind satisfies.
+ */
 export function matchesIngredients(cocktailIds: Set<string>, selected: string[], match: IngredientMatch): boolean {
   if (selected.length === 0) return true;
-  return match === "all" ? selected.every((id) => cocktailIds.has(id)) : selected.some((id) => cocktailIds.has(id));
+  const has = (id: string) => hasIngredientOrGroup(cocktailIds, id);
+  return match === "all" ? selected.every(has) : selected.some(has);
 }
 
 /** Builds a home-list URL, omitting defaults so links stay short and canonical. */

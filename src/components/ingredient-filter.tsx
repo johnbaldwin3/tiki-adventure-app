@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FilterFocus } from "./filter-focus";
 import { getIngredient, ingredientsByFamily } from "@/lib/ingredients";
 import { listHref, type IngredientMatch, type ListFilter } from "@/lib/list";
+import { getSpiritGroup, SPIRIT_GROUPS } from "@/lib/spirit-groups";
 
 interface Props {
   /** Current search (?q=), kept across ingredient changes. */
@@ -29,7 +30,10 @@ interface Props {
  * choice. Every state is a shareable URL.
  */
 export function IngredientFilter({ q = "", c = null, style = [], showCount = true, show, selected, match, usageCounts, resultCount }: Props) {
-  const chosen = selected.map((id) => getIngredient(id)).filter((i) => !!i);
+  const chosen = selected
+    .map((id) => getIngredient(id) ?? (getSpiritGroup(id) ? { id, name: getSpiritGroup(id)!.label } : undefined))
+    .filter((i) => !!i);
+  const broad = SPIRIT_GROUPS.filter((g) => !selected.includes(g.id) && (usageCounts[g.id] ?? 0) > 0);
   const groups = ingredientsByFamily()
     .map((g) => ({ ...g, items: g.items.filter((i) => !selected.includes(i.id) && (usageCounts[i.id] ?? 0) > 0) }))
     .filter((g) => g.items.length > 0);
@@ -105,6 +109,15 @@ export function IngredientFilter({ q = "", c = null, style = [], showCount = tru
               <option value="" disabled>
                 Choose…
               </option>
+              {broad.length > 0 && (
+                <optgroup label="Any of a kind">
+                  {broad.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.label} — in {usageCounts[g.id]}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
               {groups.map((g) => (
                 <optgroup key={g.family} label={g.family}>
                   {g.items.map((i) => (

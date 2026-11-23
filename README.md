@@ -326,6 +326,7 @@ review pass:
 20. ✅ Style tags — build, base spirit and flavor tags from the recipes (rules shown in the app), filter by style, fix any drink's tags
 21. ✅ Critique a recipe — AI-suggested tweaks from "too sweet / too strong…", tried as a trial, kept as "our version" (original one tap away)
 22. ✅ Rum numbers — Smuggler's Cove categories from the book, bottle lookup, photo rum checker at the store, numbers on our bar / recipes / ingredients
+23. ✅ Back to the list & broad spirit picks — a recipe card's back link (and the browser's back button) returns to the list with its filters, scroll position and the drink you opened; "Any rum", "Any gin"… in the ingredient filter
 
 ## Future ideas (not yet scheduled)
 
@@ -338,7 +339,8 @@ Captured from John so they don't get lost, in the order he picked (Sep 2026):
    made-on date, substitutions ("out of Campari? use Aperol").
 4. Hosting extras -- batching for a pitcher or punch bowl (with dilution),
    party prep lists, cost per drink.
-- Next up (John, Nov 2026): "we tried" / entering the other taster's rating; broad spirit filters
-  (e.g. all rums); keep the list's scroll position after viewing a card.
+- Next up (John, Nov 2026): "we tried" / entering the other taster's rating;
+  ~~broad spirit filters (e.g. all rums)~~ and ~~keep the list's scroll
+  position after viewing a card~~ (done, phase 23).
 - Smaller ideas: Add to Home Screen (PWA), photos on tastings, progress
   over time
