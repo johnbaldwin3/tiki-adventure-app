@@ -221,9 +221,14 @@ out that browser.
 
 Who may sign up, and who may edit what, is enforced in the database
 (`supabase/migrations/0003_taster_auth.sql`): only emails listed in
-`taster_accounts` can create an account, and RLS lets a signed-in taster
-insert/update only their own tastings. Emails are kept out of git; add one
-with:
+`taster_accounts` can create an account. Every taster belongs to a
+**household** (a bar; migration 0017): the cabinet, shopping list and pours
+belong to the household, and RLS lets you see and change only your own
+household's, and add or edit tastings only for people in your household.
+JB and GM are one household and the app's admins (`tasters.is_admin`);
+collections, style tag fixes and "our version" trials are admin-only for
+now. A new taster needs a household (`tasters.household_id`). Emails are
+kept out of git; add one with:
 
 ```sql
 insert into public.taster_accounts (taster_id, email)
@@ -348,6 +353,7 @@ review pass:
 23. ✅ Back to the list & broad spirit picks — a recipe card's back link (and the browser's back button) returns to the list with its filters, scroll position and the drink you opened; "Any rum", "Any gin"… in the ingredient filter
 24. ✅ We tried it — either taster can enter or edit the other's rating (the card says who entered it), "Genny tried it too" marks both as tried, and the home page asks each of us for the ratings we still owe (migration 0016)
 25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
+26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
 
 ## Future ideas (not yet scheduled)
 

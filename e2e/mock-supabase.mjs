@@ -311,8 +311,8 @@ function handleShared(name, req, res, url) {
     return;
   }
   if (req.method === "POST") {
-    if (url.searchParams.get("on_conflict") !== "ingredient_id") {
-      sendJson(res, 400, { message: "mock-supabase: expected on_conflict=ingredient_id" });
+    if (url.searchParams.get("on_conflict") !== "household_id,ingredient_id") {
+      sendJson(res, 400, { message: "mock-supabase: expected on_conflict=household_id,ingredient_id" });
       return;
     }
     const ignoreDuplicates = /resolution=ignore-duplicates/.test(req.headers.prefer ?? "");

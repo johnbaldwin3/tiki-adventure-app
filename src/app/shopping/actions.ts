@@ -55,7 +55,7 @@ export async function addToShopping(formData: FormData): Promise<void> {
     .from("shopping_items")
     .upsert(
       ids.map((id) => ({ ingredient_id: id, added_by: taster.id })),
-      { onConflict: "ingredient_id", ignoreDuplicates: true }
+      { onConflict: "household_id,ingredient_id", ignoreDuplicates: true }
     );
   if (error) {
     console.error("addToShopping failed", error);
@@ -89,7 +89,7 @@ export async function boughtShoppingItem(formData: FormData): Promise<void> {
     .from("cabinet_items")
     .upsert(
       ids.map((id) => ({ ingredient_id: id, bottle: null, updated_by: taster.id })),
-      { onConflict: "ingredient_id", ignoreDuplicates: true }
+      { onConflict: "household_id,ingredient_id", ignoreDuplicates: true }
     );
   if (addError) {
     console.error("boughtShoppingItem: cabinet add failed", addError);
