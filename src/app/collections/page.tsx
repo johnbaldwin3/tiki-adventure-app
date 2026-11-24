@@ -43,7 +43,8 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
     unstable_rethrow(err);
     return null;
   });
-  const canEdit = !!user?.taster;
+  // Collections are shared by everyone, so only admins (John and Genny) change them (migration 0017).
+  const canEdit = !!user?.isAdmin;
 
   if (!data) {
     return (
@@ -192,12 +193,12 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
             Add drinks to it from any recipe card (&ldquo;Change collections&rdquo;), or when adding a recipe.
           </p>
         </section>
-      ) : (
+      ) : user?.taster ? null : (
         <p className={`${card} text-sm text-ink-soft`}>
           <Link href="/login?next=%2Fcollections" className="font-semibold text-teal underline underline-offset-2">
             Sign in
           </Link>{" "}
-          to add or rename collections.
+          to see your collections.
         </p>
       )}
     </PageShell>

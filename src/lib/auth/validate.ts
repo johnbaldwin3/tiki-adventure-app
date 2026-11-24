@@ -52,6 +52,41 @@ export function validateSignUp(
   return errors;
 }
 
+/** A new member's name on the join page: 1-40 characters, with at least one letter. */
+export function validateName(raw: string): FieldErrors<"name"> {
+  const name = raw.trim();
+  if (name === "") return { name: "Enter your name." };
+  if (name.length > 40) return { name: "Use 40 characters or fewer." };
+  if (!/\p{L}/u.test(name)) return { name: "Use at least one letter." };
+  return {};
+}
+
+/** Why claim_invite (migration 0019) refused, in plain words. */
+export function inviteProblem(result: string): string | null {
+  switch (result) {
+    case "ok":
+      return null;
+    case "bad_name":
+      return "Enter your name.";
+    case "bad_email":
+      return "Enter a valid email address.";
+    case "email_taken":
+      return "That email already has an account. Sign in instead.";
+    case "used":
+      return "This invite has already been used. If it was yours, sign in instead.";
+    case "expired":
+      return "This invite has expired. Ask for a new one.";
+    case "revoked":
+      return "This invite was cancelled. Ask for a new one.";
+    case "closed":
+      return "New invites are paused right now. Try again later.";
+    case "full":
+      return "The app is full for now. Ask whoever invited you.";
+    default:
+      return "That invite link isn't valid. Check you have the whole link.";
+  }
+}
+
 /**
  * Only allow redirects back into this site after sign-in: a same-origin
  * path like "/cocktails/zombie/tasting/jb". Anything else (absolute URLs,
@@ -109,6 +144,9 @@ export function friendlyAuthError(error: AuthErrorLike | null | undefined): stri
   }
   if (code === "weak_password") {
     return `Choose a stronger password (at least ${PASSWORD_MIN_LENGTH} characters).`;
+  }
+  if (code === "reauthentication_needed" || /reauthenticat/i.test(message)) {
+    return "For security, sign out and back in with a code, then set your password.";
   }
   if (code === "same_password") {
     return "That's already your password. Choose a different one.";

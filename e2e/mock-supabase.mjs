@@ -19,6 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createCollectionMocks, seedIba } from "./mock-collections.mjs";
 import { createRecipeMocks } from "./mock-recipes.mjs";
+import { createInviteMocks } from "./mock-invites.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const seed = JSON.parse(
@@ -39,10 +40,10 @@ const slugify = (name) =>
 // John & Genny share a household; Fran is a friend of John's (a connection,
 // migration 0018) in a household of one; Sam is a stranger to them all.
 const tasters = [
-  { id: "taster-jb", initials: "JB", display_name: "John", household_id: "household-jbgm" },
-  { id: "taster-gm", initials: "GM", display_name: "Genny", household_id: "household-jbgm" },
-  { id: "taster-fr", initials: "FR", display_name: "Fran", household_id: "household-fr" },
-  { id: "taster-sa", initials: "SA", display_name: "Sam", household_id: "household-sa" },
+  { id: "taster-jb", initials: "JB", display_name: "John", household_id: "household-jbgm", is_admin: true },
+  { id: "taster-gm", initials: "GM", display_name: "Genny", household_id: "household-jbgm", is_admin: true },
+  { id: "taster-fr", initials: "FR", display_name: "Fran", household_id: "household-fr", is_admin: false },
+  { id: "taster-sa", initials: "SA", display_name: "Sam", household_id: "household-sa", is_admin: false },
 ];
 const connections = [["taster-fr", "taster-jb"]];
 
@@ -172,6 +173,7 @@ function userJson(u) {
 }
 
 function newSession(u) {
+  u.lastSignInAt = new Date().toISOString();
   const ttl = SHORT_LIVED.has(u.email) ? 100 : 3600;
   const exp = nowSec() + ttl;
   // HS256-style header, so supabase-js verifies it by calling GET /auth/v1/user.
@@ -269,7 +271,12 @@ async function handleAuth(req, res, url) {
   if (req.method === "POST" && path === "/otp") {
     const body = await readBody(req);
     const email = String(body.email ?? "").trim().toLowerCase();
-    if (!users.has(email)) return authError(res, 422, "otp_disabled", "Signups not allowed for otp");
+    if (!users.has(email)) {
+      if (!body.create_user) return authError(res, 422, "otp_disabled", "Signups not allowed for otp");
+      // The sign-up trigger (migration 0003): only emails on taster_accounts.
+      if (!accounts.has(email)) return authError(res, 500, "unexpected_failure", "Database error saving new user");
+      users.set(email, { id: crypto.randomUUID(), email, password: null, confirmed: false, createdAt: new Date().toISOString() });
+    }
     const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
     otps.set(email, code);
     outbox.push({ to: email, type: "magiclink", link: "", code });
@@ -282,6 +289,7 @@ async function handleAuth(req, res, url) {
       return authError(res, 403, "otp_expired", "Token has expired or is invalid");
     }
     otps.delete(email);
+    users.get(email).confirmed = true;
     return sendJson(res, 200, newSession(users.get(email)));
   }
   if (req.method === "POST" && path === "/recover") {
@@ -483,6 +491,7 @@ function handlePours(req, res, url) {
 }
 
 const handleRecipeMocks = createRecipeMocks({ cocktails, tastings, accounts, bearerEmail, readBody, sendJson, project });
+const handleInviteMocks = createInviteMocks({ tasters, accounts, connections, users, bearerEmail, readBody, sendJson, project });
 const handleCollectionMocks = createCollectionMocks({ here, cocktails, accounts, bearerEmail, readBody, sendJson, project });
 
 const server = http.createServer((req, res) => {
@@ -525,6 +534,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (handleRecipeMocks(req, res, url, match?.[1])) return;
+  if (handleInviteMocks(req, res, url, match?.[1])) return;
   if (handleCollectionMocks(req, res, url, match?.[1])) return;
   if (handlePours(req, res, url)) return;
   if (req.method === "POST" && url.pathname === "/rest/v1/rpc/current_taster_id") {
