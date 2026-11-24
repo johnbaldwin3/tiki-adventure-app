@@ -49,11 +49,16 @@ export function expiresIn(expiresAt: string, now: Date = new Date()): string {
 }
 
 /**
- * A ready-to-send invite email, opened in the inviter's own mail app
- * (mailto:, so nothing is sent by us). The note ("Sam") becomes the greeting
+ * A ready-to-send invite email, which the inviter sends from their own mail
+ * app or service (nothing is sent by us). The note ("Sam") becomes the greeting
  * when it looks like a name.
  */
-export function inviteMailto(url: string, inviter: string, note: string | null): string {
+export interface InviteEmail {
+  subject: string;
+  body: string;
+}
+
+export function inviteEmail(url: string, inviter: string, note: string | null): InviteEmail {
   const greeting = note && /^[\p{L}][\p{L} '.-]{0,40}$/u.test(note) ? `Hi ${note},` : "Hi,";
   const subject = `${inviter} invited you to Equal Parts`;
   const body = [
@@ -69,5 +74,15 @@ export function inviteMailto(url: string, inviter: string, note: string | null):
     "Cheers,",
     inviter,
   ].join("\n");
+  return { subject, body };
+}
+
+/** The same email as a mailto: link, for the inviter's default mail app. */
+export function inviteMailto({ subject, body }: InviteEmail): string {
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/** The same email as plain text, to paste into any email service. */
+export function inviteEmailText({ subject, body }: InviteEmail): string {
+  return `Subject: ${subject}\n\n${body}`;
 }

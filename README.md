@@ -382,7 +382,7 @@ review pass:
 26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
 27. ✅ Friends & private ratings — connections between tasters; ratings, tasters and home-made recipes visible only to your household and friends; signed out, only a landing page (recipes are members-only); the list, stats and card follow the signed-in household instead of fixed JB/GM columns (migration 0018)
 28. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
-29. ✅ Invites — members make personal, single-use invite links in Settings (copy, share, or "Email it" with a prefilled message in their own mail app; 14-day expiry, cancel any time); a new person joins with their name and email and an emailed code, gets their own household and is connected to whoever invited them, then sees a welcome screen. Settings also lets anyone set a password. Collections, style fixes, our versions and the AI critique are for admins only. Kill switch and caps in `app_settings` (migration 0019)
+29. ✅ Invites — members make personal, single-use invite links in Settings (copy, share, "Email it" with a prefilled message in their own mail app, or "Copy email" to paste into any email service; 14-day expiry, cancel any time); a new person joins with their name and email and an emailed code, gets their own household and is connected to whoever invited them, then sees a welcome screen. Settings also lets anyone set a password. Collections, style fixes, our versions and the AI critique are for admins only. Kill switch and caps in `app_settings` (migration 0019)
 
 ## Future ideas (not yet scheduled)
 

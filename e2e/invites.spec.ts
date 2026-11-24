@@ -14,6 +14,13 @@ async function makeInvite(page: Page, note: string): Promise<string> {
   const mail = await page.getByRole("listitem").filter({ hasText: note }).getByRole("link", { name: "Email it" }).getAttribute("href");
   expect(mail).toMatch(/^mailto:\?subject=John%20invited%20you/);
   expect(decodeURIComponent(mail!)).toContain(link);
+  // "Copy email" puts the same email on the clipboard, for any other email service.
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("listitem").filter({ hasText: note }).getByRole("button", { name: "Copy email" }).click();
+  await expect(page.getByText("Email copied!")).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toMatch(/^Subject: John invited you to Equal Parts\n\n/);
+  expect(copied).toContain(link);
   return new URL(link).pathname;
 }
 
