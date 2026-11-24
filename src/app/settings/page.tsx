@@ -6,7 +6,7 @@ import { getSignedInUser } from "@/lib/auth/current-taster";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/validate";
 import { expiresIn, INVITE_NOTE_MAX, inviteEmail, inviteEmailText, inviteMailto, inviteStatus, type InviteRow } from "@/lib/invites";
 import { getPeople } from "@/lib/people-data";
-import { siteOrigin } from "@/lib/site-origin";
+import { appLinkOrigin } from "@/lib/site-origin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { setPassword } from "../auth/actions";
 import { AuthForm } from "../auth/auth-form";
@@ -45,7 +45,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
       .eq("invited_by", user.taster.id)
       .order("created_at", { ascending: false }),
     getPeople(),
-    siteOrigin(),
+    appLinkOrigin(),
   ]);
   if (inviteError) console.error("settings: failed to load invites", inviteError.message);
   const invites = (inviteData ?? []) as InviteRow[];
