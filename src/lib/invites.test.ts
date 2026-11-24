@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { cleanInviteNote, createInviteProblem, expiresIn, inviteEmail, inviteEmailText, inviteMailto, inviteStatus, type InviteRow } from "./invites";
+import {
+  approvalNeededEmail,
+  cleanInviteNote,
+  createInviteProblem,
+  expiresIn,
+  inviteApprovedEmail,
+  inviteEmail,
+  inviteEmailText,
+  inviteMailto,
+  inviteStatus,
+  pendingInviteLabel,
+  type InviteRow,
+} from "./invites";
 
 const now = new Date("2026-11-24T12:00:00Z");
 const row = (over: Partial<InviteRow> = {}): InviteRow => ({
@@ -20,6 +32,12 @@ describe("inviteStatus", () => {
     expect(inviteStatus(row({ claimed_by: "x", claimed_at: "2026-11-21T00:00:00Z" }), now)).toBe("joined");
     expect(inviteStatus(row({ revoked_at: "2026-11-21T00:00:00Z" }), now)).toBe("revoked");
     expect(inviteStatus(row({ expires_at: "2026-11-24T12:00:00Z" }), now)).toBe("expired");
+  });
+  it("waits for an admin until approved (migration 0020)", () => {
+    expect(inviteStatus(row({ approved_at: null }), now)).toBe("waiting");
+    expect(inviteStatus(row({ approved_at: "2026-11-21T00:00:00Z" }), now)).toBe("open");
+    expect(inviteStatus(row({ approved_at: null, expires_at: "2026-11-24T12:00:00Z" }), now)).toBe("expired");
+    expect(inviteStatus(row({ approved_at: null, revoked_at: "2026-11-21T00:00:00Z", declined_at: "2026-11-21T00:00:00Z" }), now)).toBe("declined");
   });
   it("counts a claimed link as joined even after its expiry date", () => {
     expect(inviteStatus(row({ claimed_by: "x", expires_at: "2026-11-01T00:00:00Z" }), now)).toBe("joined");
@@ -80,5 +98,24 @@ describe("inviteEmailText", () => {
     const text = inviteEmailText(inviteEmail("https://equalparts.online/join/abc", "John", "Sam"));
     expect(text.startsWith("Subject: John invited you to Equal Parts\n\nHi Sam,\n")).toBe(true);
     expect(text).toContain("https://equalparts.online/join/abc");
+  });
+});
+
+describe("approval emails", () => {
+  it("tells the admins who wants to invite whom, with the Settings link", () => {
+    const e = approvalNeededEmail("https://equalparts.online/settings#approvals", "Fran", "Sam");
+    expect(e.subject).toBe("Fran wants to invite someone to Equal Parts");
+    expect(e.body).toContain("Fran made an invite link for Sam.");
+    expect(e.body).toContain("https://equalparts.online/settings#approvals");
+    expect(approvalNeededEmail("u", "Fran", null).body).toContain("Fran made an invite link. ");
+  });
+  it("tells the inviter their link is ready", () => {
+    const e = inviteApprovedEmail("https://equalparts.online/settings#invites", "Fran", "Sam");
+    expect(e.subject).toBe("Your Equal Parts invite for Sam is ready");
+    expect(e.body).toMatch(/^Hi Fran,/);
+  });
+  it("labels a waiting link", () => {
+    expect(pendingInviteLabel({ inviter: "Fran", note: "Sam" })).toBe("Fran's invite for Sam");
+    expect(pendingInviteLabel({ inviter: "Fran", note: null })).toBe("Fran's invite");
   });
 });

@@ -12,15 +12,22 @@ export interface InviteRow {
   revoked_at: string | null;
   claimed_by: string | null;
   claimed_at: string | null;
+  /** Migration 0020: null while the link waits for an admin's OK. */
+  approved_at?: string | null;
+  /** Migration 0020: an admin said no (revoked_at is set too). */
+  declined_at?: string | null;
 }
 
-export type InviteStatus = "open" | "joined" | "revoked" | "expired";
+export type InviteStatus = "open" | "waiting" | "joined" | "revoked" | "declined" | "expired";
 
 /** Where a link stands, the way claim_invite() sees it. */
 export function inviteStatus(row: InviteRow, now: Date = new Date()): InviteStatus {
+  if (row.declined_at) return "declined";
   if (row.revoked_at) return "revoked";
   if (row.claimed_by || row.claimed_at) return "joined";
   if (new Date(row.expires_at).getTime() <= now.getTime()) return "expired";
+  // undefined: a row read before migration 0020 ran, when every link worked at once.
+  if (row.approved_at === null) return "waiting";
   return "open";
 }
 
@@ -85,4 +92,52 @@ export function inviteMailto({ subject, body }: InviteEmail): string {
 /** The same email as plain text, to paste into any email service. */
 export function inviteEmailText({ subject, body }: InviteEmail): string {
   return `Subject: ${subject}\n\n${body}`;
+}
+
+/** A link waiting for an admin (pending_invites(), migration 0020). */
+export interface PendingInvite {
+  id: string;
+  note: string | null;
+  inviter: string;
+  created_at: string;
+}
+
+/** "Fran's invite for Sam" / "Fran's invite". */
+export function pendingInviteLabel(p: Pick<PendingInvite, "inviter" | "note">): string {
+  return p.note ? `${p.inviter}'s invite for ${p.note}` : `${p.inviter}'s invite`;
+}
+
+/** The email to the admins when a member's invite needs their OK. */
+export function approvalNeededEmail(settingsUrl: string, inviter: string, note: string | null): InviteEmail {
+  const forWho = note ? ` for ${note}` : "";
+  return {
+    subject: `${inviter} wants to invite someone to Equal Parts`,
+    body: [
+      "Hi,",
+      "",
+      `${inviter} made an invite link${forWho}. It won't work until an admin approves it.`,
+      "",
+      "Approve or decline it in Settings:",
+      settingsUrl,
+      "",
+      "Equal Parts",
+    ].join("\n"),
+  };
+}
+
+/** The email to the inviter when an admin approves their link. */
+export function inviteApprovedEmail(settingsUrl: string, inviterName: string, note: string | null): InviteEmail {
+  const forWho = note ? ` for ${note}` : "";
+  return {
+    subject: `Your Equal Parts invite${forWho} is ready`,
+    body: [
+      `Hi ${inviterName},`,
+      "",
+      `Your invite link${forWho} was approved. Open Settings to copy it or email it. It works once and expires in 14 days.`,
+      "",
+      settingsUrl,
+      "",
+      "Equal Parts",
+    ].join("\n"),
+  };
 }

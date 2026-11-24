@@ -80,6 +80,8 @@ export function inviteProblem(result: string): string | null {
       return "This invite was cancelled. Ask for a new one.";
     case "closed":
       return "New invites are paused right now. Try again later.";
+    case "pending":
+      return "This invite is still waiting for an admin to approve it. Try the link again once whoever invited you says it's ready.";
     case "full":
       return "The app is full for now. Ask whoever invited you.";
     default:

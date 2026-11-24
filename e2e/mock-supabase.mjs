@@ -528,6 +528,14 @@ const server = http.createServer((req, res) => {
     sendJson(res, 500, { message: "mock-supabase: database is down (test switch)" });
     return;
   }
+  // Resend's API stand-in (src/lib/server/email.ts): app emails land in the outbox too.
+  if (req.method === "POST" && url.pathname === "/__resend/emails") {
+    readBody(req).then((body) => {
+      for (const to of body.to ?? []) outbox.push({ to, type: "app", link: "", subject: body.subject, text: body.text });
+      sendJson(res, 200, { id: crypto.randomUUID() });
+    });
+    return;
+  }
   if (req.method === "GET" && url.pathname === "/__mock/outbox") {
     const to = url.searchParams.get("to");
     sendJson(res, 200, outbox.filter((m) => !to || m.to === to));

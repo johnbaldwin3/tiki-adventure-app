@@ -94,6 +94,9 @@ export default defineConfig({
         TIKI_OPEN_ROUTER_API_KEY: "e2e-openrouter-key",
         OPENROUTER_BASE_URL: `${MOCK_SUPABASE_URL}/__openrouter`,
         IMPORT_ALLOW_PRIVATE_HOSTS: "1",
+        // App emails (invite approvals) go to the mock's Resend stand-in.
+        RESEND_API_KEY: "e2e-resend-key",
+        RESEND_BASE_URL: `${MOCK_SUPABASE_URL}/__resend`,
       },
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
