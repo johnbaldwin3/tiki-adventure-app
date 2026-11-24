@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { GENNY, JOHN, MOCK_URL, signIn } from "./auth";
+import { GENNY, JOHN, MOCK_URL, signIn, SIGNED_OUT } from "./auth";
 import type { Page } from "@playwright/test";
 
 /** Expand a family's <details> (families you own start open). */
@@ -24,21 +24,16 @@ test.beforeEach(async ({ request }, testInfo) => {
 // in memory while projects run in parallel. So the test that changes it runs
 // in the desktop project only; the mobile project checks read-only views.
 
-test("signed out, our bar asks you to sign in", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: /Our bar/ }).click();
-  await expect(page).toHaveURL(/\/cabinet$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Our bar" })).toBeVisible();
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute(
-    "href",
-    "/login?next=%2Fcabinet"
-  );
-  await expect(page.getByRole("link", { name: /^(Edit our bar|Add what we have)$/ })).toHaveCount(0);
-});
-
-test("the edit page needs a signed-in taster", async ({ page }) => {
-  await page.goto("/cabinet/edit");
-  await expect(page).toHaveURL(/\/login\?next=%2Fcabinet%2Fedit$/);
+test.describe("signed out", () => {
+  test.use({ storageState: SIGNED_OUT });
+  test("our bar sends you to sign in, then back", async ({ page }) => {
+    await page.goto("/cabinet");
+    await expect(page).toHaveURL(/\/login\?next=%2Fcabinet$/);
+  });
+  test("so does the edit page", async ({ page }) => {
+    await page.goto("/cabinet/edit");
+    await expect(page).toHaveURL(/\/login\?next=%2Fcabinet%2Fedit$/);
+  });
 });
 
 test("stock the bar, see what we can make, and share it between tasters", async ({ page, browser }, testInfo) => {
@@ -225,14 +220,12 @@ test("shopping list: add missing, see what it unlocks, got it, remove", async ({
   await expect(page.getByText(/^0 ingredients on the shelf/)).toBeVisible();
 });
 
-test("signed out, the shopping list asks you to sign in", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: /Shopping list/ }).click();
-  await expect(page).toHaveURL(/\/shopping$/);
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login?next=%2Fshopping");
-  // No shopping controls on public pages.
-  await page.goto("/ingredients/falernum");
-  await expect(page.getByRole("button", { name: /shopping list/ })).toHaveCount(0);
+test.describe("signed out (shopping)", () => {
+  test.use({ storageState: SIGNED_OUT });
+  test("the shopping list sends you to sign in", async ({ page }) => {
+    await page.goto("/shopping");
+    await expect(page).toHaveURL(/\/login\?next=%2Fshopping$/);
+  });
 });
 
 test("bottle levels, 'We made this' counting down (and undo), and running-low alerts", async ({ page }, testInfo) => {

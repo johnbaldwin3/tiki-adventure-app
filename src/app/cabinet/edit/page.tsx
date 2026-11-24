@@ -30,7 +30,7 @@ export default async function EditCabinetPage() {
 
   if (!cabinet) {
     return (
-      <PageShell back={back} eyebrow="JB & GM's home bar" title="Edit our bar" icon="🍾">
+      <PageShell back={back} eyebrow="Our home bar" title="Edit our bar" icon="🍾">
         <p role="alert" className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm">
           Couldn&apos;t load our bar right now. Please try refreshing the page.
         </p>
@@ -51,7 +51,7 @@ export default async function EditCabinetPage() {
   return (
     <PageShell
       back={back}
-      eyebrow="JB & GM's home bar"
+      eyebrow="Our home bar"
       title="Edit our bar"
       icon="🍾"
       intro="Tick what we have. Optionally note the exact bottle. Fresh citrus, water, soda, salt and Angostura are assumed on hand."

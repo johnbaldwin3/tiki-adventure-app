@@ -24,8 +24,8 @@ function make(name: string, diffordsRank: number, tried: boolean, rank: number |
     primarySpirits: [],
     ingredientTexts: [],
     tried,
-    jbRating: null,
-    gmRating: null,
+    aRating: null,
+    bRating: null,
     avgRating: rank === null ? null : 10 - rank,
     rank,
   };

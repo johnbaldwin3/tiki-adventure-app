@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { JOHN, signIn } from "./auth";
 
 // Fixtures: seed-data/cocktails.json via e2e/mock-supabase.mjs. The tasting
 // e2e test edits Nui Nui / Hawaiian Eye in parallel, so assertions here stick
@@ -14,7 +15,7 @@ test("home links to the stats dashboard", async ({ page }) => {
 });
 
 test("stats dashboard shows progress, tasters, spread, disagreements and top 5", async ({ page }) => {
-  await page.goto("/stats");
+  await signIn(page, JOHN, "/stats");
   await expect(page.getByText("of 196 tasted")).toBeVisible();
 
   // All, the three collections, and Difford's four bands.

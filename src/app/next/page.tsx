@@ -5,7 +5,8 @@ import { PageShell } from "@/components/page-shell";
 import { SuggestionCard } from "@/components/suggestion-card";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { fetchCabinet } from "@/lib/cabinet-data";
-import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { type CocktailRecord } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { suggestNext } from "@/lib/suggest";
 import { rankCocktails } from "@/lib/tasting";
 

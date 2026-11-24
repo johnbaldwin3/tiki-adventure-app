@@ -27,9 +27,8 @@ async function critique(page: Page, chip: string | null, note = "") {
   await section.getByRole("button", { name: "Suggest tweaks" }).click();
 }
 
-test("signed out: no critique, and the recipe is the original", async ({ page }) => {
+test("the recipe starts as the original", async ({ page }) => {
   await page.goto("/cocktails/negroni");
-  await expect(page.getByText("Critique this recipe")).toHaveCount(0);
   await expect(ingredients(page)).toContainText("30 ml");
 });
 

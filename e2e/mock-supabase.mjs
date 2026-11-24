@@ -36,10 +36,15 @@ const slugify = (name) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+// John & Genny share a household; Fran is a friend of John's (a connection,
+// migration 0018) in a household of one; Sam is a stranger to them all.
 const tasters = [
-  { id: "taster-jb", initials: "JB", display_name: "John" },
-  { id: "taster-gm", initials: "GM", display_name: "Genny" },
+  { id: "taster-jb", initials: "JB", display_name: "John", household_id: "household-jbgm" },
+  { id: "taster-gm", initials: "GM", display_name: "Genny", household_id: "household-jbgm" },
+  { id: "taster-fr", initials: "FR", display_name: "Fran", household_id: "household-fr" },
+  { id: "taster-sa", initials: "SA", display_name: "Sam", household_id: "household-sa" },
 ];
+const connections = [["taster-fr", "taster-jb"]];
 
 const cocktails = seed.map((c, i) => ({
   id: `cocktail-${i + 1}`,
@@ -80,6 +85,30 @@ seed.forEach((c, i) => {
   }
 });
 
+// Fran and Sam have each rated one drink (Fran's is visible to John & Genny, Sam's to no one else).
+tastings.push(
+  { cocktail_id: cocktails[0].id, taster_id: "taster-fr", rating: "6.5", notes: "Too sweet for me", tried: true, tasted_at: null, entered_by: "taster-fr" },
+  { cocktail_id: cocktails[0].id, taster_id: "taster-sa", rating: "2", notes: "Sam's secret", tried: true, tasted_at: null, entered_by: "taster-sa" }
+);
+
+/**
+ * Who a request may see, like visible_taster_ids() (migration 0018): the
+ * signed-in taster's household, plus the households of anyone connected to
+ * someone in it. Nobody when signed out.
+ */
+function visibleTasterIds(req) {
+  const email = bearerEmail(req);
+  const me = tasters.find((t) => t.id === (email ? accounts.get(email) : null));
+  if (!me) return new Set();
+  const mine = new Set(tasters.filter((t) => t.household_id === me.household_id).map((t) => t.id));
+  const households = new Set([me.household_id]);
+  for (const [a, b] of connections) {
+    if (mine.has(a)) households.add(tasters.find((t) => t.id === b)?.household_id);
+    if (mine.has(b)) households.add(tasters.find((t) => t.id === a)?.household_id);
+  }
+  return new Set(tasters.filter((t) => households.has(t.household_id)).map((t) => t.id));
+}
+
 // For POST /__mock/reset-tastings (tests that change tastings put them back).
 const tastingsAtStart = JSON.stringify(tastings);
 
@@ -97,6 +126,7 @@ const PROJECTS = ["chromium", "mobile-chrome"];
 const accounts = new Map([
   ["john@e2e.test", "taster-jb"],
   ["genny@e2e.test", "taster-gm"],
+  ["fran@e2e.test", "taster-fr"],
   ...PROJECTS.map((p) => [`newbie-${p}@e2e.test`, "taster-gm"]), // allowlisted, not yet signed up
   ...PROJECTS.map((p) => [`reset-${p}@e2e.test`, "taster-gm"]),
   ...PROJECTS.map((p) => [`refresh-${p}@e2e.test`, "taster-gm"]),
@@ -111,6 +141,7 @@ const users = new Map(); // email -> { id, email, password, confirmed, createdAt
 for (const email of [
   "john@e2e.test",
   "genny@e2e.test",
+  "fran@e2e.test",
   ...PROJECTS.map((p) => `reset-${p}@e2e.test`),
   ...PROJECTS.map((p) => `refresh-${p}@e2e.test`),
 ]) {
@@ -506,8 +537,8 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (req.method === "POST" && match?.[1] === "tastings") {
-    // Emulates the RLS policies from migration 0016: any signed-in taster
-    // may write any taster's row, and entered_by is set to the writer (the
+    // Emulates the RLS policies from migrations 0016/0017: a signed-in taster
+    // may write any row of their household's, and entered_by is set to the writer (the
     // trigger). Also insists on the real upsert key, so e2e fails if the app
     // loses its on_conflict target.
     const email = bearerEmail(req);
@@ -518,7 +549,8 @@ const server = http.createServer((req, res) => {
     }
     readBody(req).then((body) => {
       const incoming = [body].flat();
-      if (!mine || incoming.some((row) => !tasters.some((t) => t.id === row.taster_id) || "entered_by" in row)) {
+      const house = tasters.find((t) => t.id === mine)?.household_id;
+      if (!mine || incoming.some((row) => !tasters.some((t) => t.id === row.taster_id && t.household_id === house) || "entered_by" in row)) {
         sendJson(res, 403, { code: "42501", message: 'new row violates row-level security policy for table "tastings"' });
         return;
       }
@@ -543,7 +575,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  let result = rows.slice();
+  // Row-level security on reads (migration 0018).
+  const visible = visibleTasterIds(req);
+  const allowed = {
+    tasters: (r) => visible.has(r.id),
+    tastings: (r) => visible.has(r.taster_id),
+    cocktails: (r) => r.source !== "ours" || visible.has(r.added_by),
+  }[match?.[1]];
+  let result = allowed ? rows.filter(allowed) : rows.slice();
   for (const [key, value] of url.searchParams) {
     if (key === "select" || key === "order" || key === "limit") continue;
     if (value.startsWith("eq.")) {

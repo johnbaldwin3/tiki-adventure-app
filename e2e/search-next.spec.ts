@@ -66,9 +66,10 @@ test("try next: three picks on the home page, ten with reasons on /next", async 
   await expect(page.getByRole("heading", { level: 1, name: "What to try next" })).toBeVisible();
   const picks = page.getByRole("list", { name: "Suggestions" }).getByRole("listitem");
   await expect(picks).toHaveCount(10);
-  // Each pick says why (a "Like …" match, or its Difford's rank).
-  for (const pick of await picks.all()) await expect(pick).toContainText(/Like .+ \(our [\d.]+\): both use|on Difford's list/);
-  await expect(page.getByRole("main").getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login?next=%2Fnext");
+  // Each pick says why (what our bar is missing, a "Like …" match, or its Difford's rank).
+  for (const pick of await picks.all()) {
+    await expect(pick).toContainText(/We can make it now|Just need|Like .+ \(our [\d.]+\): both use|on Difford's list/);
+  }
 
   // Suggestions are never drinks we've tried: the first one's card has no ratings yet.
   await picks.first().getByRole("link").click(); // the drink's name

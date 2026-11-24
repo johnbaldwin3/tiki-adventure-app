@@ -55,7 +55,6 @@ test("a recipe card shows its style tags; tasters can fix them", async ({ page }
     "Bitter (see all drinks tagged this)",
   ]);
   await expect(panel.getByText("Worked out from the recipe.")).toBeVisible();
-  await expect(panel.getByText("Fix style tags")).toHaveCount(0);
   await panel.getByRole("link", { name: /^Bitter/ }).click();
   await expect(page).toHaveURL(/\/\?style=bitter$/);
 

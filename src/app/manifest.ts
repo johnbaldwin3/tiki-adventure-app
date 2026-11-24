@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Equal Parts",
     short_name: "Equal Parts",
-    description: "JB & GM's home bar: tasting log, bar inventory and recipes.",
+    description: "A home bar for friends & family: tasting log, bar inventory and recipes.",
     start_url: "/",
     display: "standalone",
     background_color: "#fff7e8",

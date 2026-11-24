@@ -36,7 +36,7 @@ export default async function ScanPage({ searchParams }: PageProps<"/cabinet/sca
   return (
     <PageShell
       back={{ href: "/cabinet", label: "Our bar" }}
-      eyebrow="JB & GM's home bar"
+      eyebrow="Our home bar"
       title={startTyped ? "Add a bottle" : "Scan into our bar"}
       icon={startTyped ? "🍾" : "📷"}
       intro={

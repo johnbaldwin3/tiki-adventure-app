@@ -14,21 +14,31 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
+    // Signs in once; the projects below start from that session.
+    {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+      use: { launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH } },
+    },
     {
       name: "chromium",
       testIgnore: /(db-down|recipes|collections|styles|critique|rums|we-tried)\.spec\.ts/,
+      dependencies: ["setup"],
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+        storageState: "e2e/.auth/john.json",
       },
     },
     // Chromium-based mobile viewport (avoids requiring a separate WebKit install).
     {
       name: "mobile-chrome",
       testIgnore: /(db-down|recipes|collections|styles|critique|rums|we-tried)\.spec\.ts/,
+      dependencies: ["setup"],
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+        storageState: "e2e/.auth/john.json",
       },
     },
     // Adds, edits and deletes our own recipes, which changes the list every
@@ -41,6 +51,7 @@ export default defineConfig({
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+        storageState: "e2e/.auth/john.json",
       },
     },
     // Flips the mock database "down", so it must run on its own after the
@@ -53,6 +64,7 @@ export default defineConfig({
       use: {
         ...devices["Pixel 7"],
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH },
+        storageState: "e2e/.auth/john.json",
       },
     },
   ],

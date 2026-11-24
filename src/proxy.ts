@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_COOKIE_OPTIONS } from "@/lib/auth/cookies";
+import { isPublicPath } from "@/lib/auth/public-paths";
 
 /**
  * Keeps Supabase sign-ins fresh (Next 16 "proxy", formerly middleware).
@@ -8,6 +9,8 @@ import { AUTH_COOKIE_OPTIONS } from "@/lib/auth/cookies";
  * expiring one and writes the new session cookies onto both the request -- so the page render
  * sees it -- and the response -- so the browser keeps it (see
  * src/lib/auth/cookies.ts for how long sign-ins last).
+ * Also: signed-out visitors only get the landing and sign-in pages
+ * (src/lib/auth/public-paths.ts); anything else goes to sign in, then back.
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -37,7 +40,18 @@ export async function proxy(request: NextRequest) {
 
   // Refreshes the session if needed. Don't put code between creating the
   // client and this call, or sessions can get out of sync.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+
+  const { pathname, search } = request.nextUrl;
+  if (!data?.claims && !isPublicPath(pathname)) {
+    const login = request.nextUrl.clone();
+    login.pathname = "/login";
+    login.search = `?next=${encodeURIComponent(pathname + search)}`;
+    const redirect = NextResponse.redirect(login);
+    // Keep any cookie changes (e.g. a cleared, expired session).
+    for (const c of response.cookies.getAll()) redirect.cookies.set(c);
+    return redirect;
+  }
 
   return response;
 }

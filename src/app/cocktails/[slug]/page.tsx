@@ -6,12 +6,8 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { AmountControls } from "@/components/amount-controls";
 import { displayAmount, parseServings, parseUnitMode, UNITS_COOKIE } from "@/lib/amounts";
-import {
-  fetchCocktailBySlug,
-  fetchCocktailRecords,
-  type CocktailDetail,
-  type TasterEntry,
-} from "@/lib/cocktails";
+import type { CocktailDetail, TasterEntry } from "@/lib/cocktails";
+import { fetchCocktailBySlug, fetchCocktailRecords } from "@/lib/cocktails-data";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { drinkAvailability } from "@/lib/cabinet";
 import { fetchBar, fetchCabinet, fetchPour, fetchShoppingList } from "@/lib/cabinet-data";
@@ -324,9 +320,9 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
     ? (rankCocktails(records).find((r) => r.name === cocktail.name)?.rank ?? null)
     : null;
 
-  const jb = cocktail.tasters.find((t) => t.initials === "JB");
-  const gm = cocktail.tasters.find((t) => t.initials === "GM");
-  const avg = averageRating(jb?.rating, gm?.rating);
+  // The household's average (its first two members, as in the list's ranks).
+  const [a, b] = cocktail.tasters.filter((t) => t.household);
+  const avg = averageRating(a?.rating, b?.rating);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-4 pb-8 pt-6 sm:max-w-lg">
@@ -588,11 +584,27 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           </h2>
           <span aria-hidden="true" className="h-px flex-1 bg-teal/20" />
         </div>
-        <ul className="flex flex-col gap-2">
-          {cocktail.tasters.map((t) => (
-            <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={!!myInitials} isMe={t.initials === myInitials} />
-          ))}
-        </ul>
+        {cocktail.tasters.some((t) => t.household) && (
+          <ul className="flex flex-col gap-2">
+            {cocktail.tasters
+              .filter((t) => t.household)
+              .map((t) => (
+                <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={!!myInitials} isMe={t.initials === myInitials} />
+              ))}
+          </ul>
+        )}
+        {cocktail.tasters.some((t) => !t.household) && (
+          <>
+            <h3 className="text-xs font-bold uppercase tracking-wide text-ink-soft">Friends</h3>
+            <ul aria-label="Friends' tasting" className="flex flex-col gap-2">
+              {cocktail.tasters
+                .filter((t) => !t.household)
+                .map((t) => (
+                  <TasterCard key={t.initials} taster={t} slug={cocktail.slug} canEdit={false} isMe={false} />
+                ))}
+            </ul>
+          </>
+        )}
         {user && !user.taster && (
           <p className="text-center text-sm text-ink-soft">
             You&apos;re signed in as {user.email}, which isn&apos;t linked to a taster.
@@ -606,7 +618,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
             >
               Sign in
             </Link>{" "}
-            to add your rating &amp; notes.
+            to see our ratings and add yours.
           </p>
         )}
       </section>

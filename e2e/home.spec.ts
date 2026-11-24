@@ -1,11 +1,15 @@
 import { test, expect } from "@playwright/test";
+import { JOHN, signIn } from "./auth";
 
 // Runs against e2e/mock-supabase.mjs fixtures (seed-data/cocktails.json +
 // iba-cocktails.json + collections.json): 196 drinks, 21 tasted (all in
 // the Tiki collection, which has 103), Tiki Max is our #1 (avg 9.41).
+// Ratings are private (migration 0018), so tests that need them sign in as John.
 
 test("home page loads as Equal Parts and shows the tasting progress summary", async ({ page }) => {
-  await page.goto("/");
+  await signIn(page, JOHN, "/");
+  await expect(page.getByText("John's average")).toBeVisible();
+  await expect(page.getByText("Genny's average")).toBeVisible();
 
   await expect(page.getByRole("heading", { level: 1, name: "Equal Parts" })).toBeVisible();
   await expect(page.getByText("21 / 196")).toBeVisible();
@@ -14,7 +18,7 @@ test("home page loads as Equal Parts and shows the tasting progress summary", as
 });
 
 test("list shows all drinks by default and filters to tasted / not yet", async ({ page }) => {
-  await page.goto("/");
+  await signIn(page, JOHN, "/");
   const list = page.getByRole("region", { name: "All drinks" }).getByRole("listitem");
   await expect(list).toHaveCount(196);
 
@@ -36,7 +40,7 @@ test("list shows all drinks by default and filters to tasted / not yet", async (
 });
 
 test("collections: switch between them, keeping the other filters; Tiki keeps its look", async ({ page }) => {
-  await page.goto("/?show=untasted");
+  await signIn(page, JOHN, "/?show=untasted");
   const nav = page.getByRole("navigation", { name: "Collections" });
   await expect(nav.getByRole("link", { name: /^All drinks 196/ })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: /^Classics 102/ })).toBeVisible();
@@ -69,7 +73,7 @@ test("collections: switch between them, keeping the other filters; Tiki keeps it
 });
 
 test("an unknown ?show= or ?c= value falls back to the full list", async ({ page }) => {
-  await page.goto("/?show=bogus");
+  await signIn(page, JOHN, "/?show=bogus");
   await expect(page.getByRole("region", { name: "All drinks" }).getByRole("listitem")).toHaveCount(196);
   await page.goto("/?c=bogus&show=tasted");
   await expect(page).toHaveURL(/\/\?show=tasted$/);

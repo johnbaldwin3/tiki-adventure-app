@@ -25,7 +25,7 @@ export default async function NewRecipePage({ searchParams }: PageProps<"/cockta
       <PageShell {...shell}>
         <p className="rounded-2xl bg-card p-4 text-sm text-ink-soft shadow-sm">
           {user ? (
-            <>Only JB &amp; GM can add recipes.</>
+            <>Only members can add recipes.</>
           ) : (
             <>
               <Link href="/login?next=%2Fcocktails%2Fnew" className="font-semibold text-teal underline underline-offset-2">

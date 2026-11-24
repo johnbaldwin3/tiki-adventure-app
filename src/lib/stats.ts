@@ -32,15 +32,15 @@ export interface HistogramBin {
   /** Inclusive lower bound; upper bound is exclusive except for the last bin (10 is included). */
   min: number;
   max: number;
-  jb: number;
-  gm: number;
+  a: number;
+  b: number;
 }
 
 export interface Disagreement {
   name: string;
   slug: string;
-  jb: number;
-  gm: number;
+  a: number;
+  b: number;
   gap: number;
 }
 
@@ -57,8 +57,8 @@ export interface DashboardStats {
   bands: BandProgress[];
   /** Our own recipes (not in any Difford's band); null when we haven't added any. */
   ours: { tried: number; total: number } | null;
-  jb: TasterStats;
-  gm: TasterStats;
+  a: TasterStats;
+  b: TasterStats;
   bothRated: number;
   averageGap: number | null;
   histogram: HistogramBin[];
@@ -127,29 +127,29 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
   const oursList = records.filter((r) => r.source === "ours");
   const ours = oursList.length > 0 ? { tried: oursList.filter((r) => r.tried).length, total: oursList.length } : null;
 
-  const histogram: HistogramBin[] = HISTOGRAM_BINS.map((b) => ({ ...b, jb: 0, gm: 0 }));
+  const histogram: HistogramBin[] = HISTOGRAM_BINS.map((b) => ({ ...b, a: 0, b: 0 }));
   // Out-of-range ratings can't happen (DB check 0-10), but skip rather than crash.
   for (const r of records) {
-    const jbBin = isNum(r.jbRating) ? binIndex(r.jbRating) : -1;
-    const gmBin = isNum(r.gmRating) ? binIndex(r.gmRating) : -1;
-    if (jbBin >= 0) histogram[jbBin].jb += 1;
-    if (gmBin >= 0) histogram[gmBin].gm += 1;
+    const aBin = isNum(r.aRating) ? binIndex(r.aRating) : -1;
+    const bBin = isNum(r.bRating) ? binIndex(r.bRating) : -1;
+    if (aBin >= 0) histogram[aBin].a += 1;
+    if (bBin >= 0) histogram[bBin].b += 1;
   }
 
-  const both = records.filter((r) => isNum(r.jbRating) && isNum(r.gmRating));
+  const both = records.filter((r) => isNum(r.aRating) && isNum(r.bRating));
   const gaps = both.map((r) => ({
     name: r.name,
     slug: r.slug,
-    jb: r.jbRating as number,
-    gm: r.gmRating as number,
-    gap: round2(Math.abs((r.jbRating as number) - (r.gmRating as number))),
+    a: r.aRating as number,
+    b: r.bRating as number,
+    gap: round2(Math.abs((r.aRating as number) - (r.bRating as number))),
     diffordsRank: r.diffordsRank,
   }));
   const sortedGaps = gaps
     .filter((g) => g.gap > 0)
     .sort((a, b) => b.gap - a.gap || byListOrder(a, b));
   const disagreements = takeWithTies(sortedGaps, topN, (g) => g.gap)
-    .map(({ name, slug, jb, gm, gap }) => ({ name, slug, jb, gm, gap }));
+    .map(({ name, slug, a, b, gap }) => ({ name, slug, a, b, gap }));
 
   const slugByName = new Map(records.map((r) => [r.name, r.slug]));
   const ranked = rankCocktails(records)
@@ -163,8 +163,8 @@ export function computeDashboardStats(records: CocktailRecord[], topN = 5): Dash
     total: records.length,
     bands,
     ours,
-    jb: tasterStats(records, (r) => r.jbRating),
-    gm: tasterStats(records, (r) => r.gmRating),
+    a: tasterStats(records, (r) => r.aRating),
+    b: tasterStats(records, (r) => r.bRating),
     bothRated: both.length,
     averageGap: gaps.length ? round2(gaps.reduce((s, g) => s + g.gap, 0) / gaps.length) : null,
     histogram,

@@ -1,6 +1,7 @@
 /**
  * Core tasting-log math, mirroring the original spreadsheet's formulas:
- *  - Avg Rating: average of JB and GM ratings, blank if neither has rated.
+ *  - Avg Rating: average of the two household columns (a and b: for John &
+ *    Genny, JB and GM; a household of one has only a), blank if neither has rated.
  *  - Rank: competition rank (Excel/SQL RANK() semantics) by Avg Rating,
  *    descending — ties share a rank and the next rank skips (e.g. 1, 1, 3),
  *    which is NOT the same as dense rank. Blank for unrated cocktails.
@@ -12,8 +13,10 @@ export type Rating = number | null | undefined;
 export interface TastingRecord {
   name: string;
   tried: boolean;
-  jbRating: Rating;
-  gmRating: Rating;
+  /** The first household member's rating (see householdSlots in ./people). */
+  aRating: Rating;
+  /** The second household member's rating; always null for a household of one. */
+  bRating: Rating;
 }
 
 export interface RankedTastingRecord extends TastingRecord {
@@ -25,14 +28,16 @@ export interface RankedTastingRecord extends TastingRecord {
  * Drinks a taster has tried but not rated (e.g. the other taster ticked
  * "we both tried it"), in list order -- the home page asks for those ratings.
  */
-export function toRate<T extends TastingRecord & { triedBy?: string[] }>(records: T[], initials: string): T[] {
-  const mine = (r: T) => (initials === "JB" ? r.jbRating : initials === "GM" ? r.gmRating : undefined);
-  return records.filter((r) => r.triedBy?.includes(initials) && mine(r) === null);
+export function toRate<T extends { triedBy?: string[]; ratings?: Record<string, Rating> }>(
+  records: T[],
+  initials: string
+): T[] {
+  return records.filter((r) => r.triedBy?.includes(initials) && (r.ratings?.[initials] ?? null) === null);
 }
 
-/** Average of JB and GM ratings. Returns null if neither rating is present. */
-export function averageRating(jbRating: Rating, gmRating: Rating): number | null {
-  const values = [jbRating, gmRating].filter(
+/** Average of the two household ratings. Returns null if neither rating is present. */
+export function averageRating(aRating: Rating, bRating: Rating): number | null {
+  const values = [aRating, bRating].filter(
     (v): v is number => typeof v === "number" && !Number.isNaN(v)
   );
   if (values.length === 0) return null;
@@ -49,7 +54,7 @@ export function averageRating(jbRating: Rating, gmRating: Rating): number | null
 export function rankCocktails(records: TastingRecord[]): RankedTastingRecord[] {
   const withAverages = records.map((r) => ({
     ...r,
-    avgRating: averageRating(r.jbRating, r.gmRating),
+    avgRating: averageRating(r.aRating, r.bRating),
   }));
 
   const sortedRated = withAverages
@@ -80,20 +85,20 @@ export interface ProgressSummary {
   triedCount: number;
   total: number;
   fraction: number;
-  jbAverage: number | null;
-  gmAverage: number | null;
+  aAverage: number | null;
+  bAverage: number | null;
 }
 
-/** Mirrors the KPI scorecard formulas: tasted count, progress %, JB/GM overall averages. */
+/** Mirrors the KPI scorecard formulas: tasted count, progress %, each household column's overall average. */
 export function summarizeProgress(records: TastingRecord[]): ProgressSummary {
   const total = records.length;
   const triedCount = records.filter((r) => r.tried).length;
 
-  const jbValues = records
-    .map((r) => r.jbRating)
+  const aValues = records
+    .map((r) => r.aRating)
     .filter((v): v is number => typeof v === "number" && !Number.isNaN(v));
-  const gmValues = records
-    .map((r) => r.gmRating)
+  const bValues = records
+    .map((r) => r.bRating)
     .filter((v): v is number => typeof v === "number" && !Number.isNaN(v));
 
   const avg = (values: number[]) =>
@@ -105,7 +110,7 @@ export function summarizeProgress(records: TastingRecord[]): ProgressSummary {
     triedCount,
     total,
     fraction: total === 0 ? 0 : triedCount / total,
-    jbAverage: avg(jbValues),
-    gmAverage: avg(gmValues),
+    aAverage: avg(aValues),
+    bAverage: avg(bValues),
   };
 }
