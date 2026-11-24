@@ -174,6 +174,10 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       <>It shows the email you sign in with. Codes are always sent there.</>,
       <>Want a password as well as the emailed code? Type one under {b("Password")} and tap {b("Save password")}.</>,
       <>Want to bring someone in? {b("Invite a friend")} is there too. Once they join, you see each other&apos;s ratings.</>,
+      <>
+        John or Genny approve each new invite first. Your link shows up in Settings once it&apos;s approved, and we email you when it&apos;s ready to
+        send.
+      </>,
     ],
     link: { href: "/settings", label: "Open Settings" },
   },

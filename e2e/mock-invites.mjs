@@ -1,7 +1,9 @@
 // Mock pieces for invite links (migration 0019), used by e2e/mock-supabase.mjs:
 // create_invite / revoke_invite / invite_preview / claim_invite RPCs and a
 // read of the invites table, with the same rules as the SQL functions
-// (single use, 14-day expiry, a claim moves until the new person signs in).
+// (single use, 14-day expiry, a claim moves until the new person signs in),
+// plus migration 0020's approvals: a non-admin's link waits for an admin
+// (pending_invites / approve_invite / decline_invite / admin_alert_emails).
 import crypto from "node:crypto";
 
 export function createInviteMocks({ tasters, accounts, connections, users, bearerEmail, readBody, sendJson, project }) {
@@ -37,6 +39,7 @@ export function createInviteMocks({ tasters, accounts, connections, users, beare
     const inv = invites.find((i) => i.token === p_token);
     if (!inv) return "unknown";
     if (inv.revoked_at) return "revoked";
+    if (!inv.approved_at) return "pending";
     if (!settings.invites_enabled) return "closed";
     const existing = accounts.get(email) ?? null;
     if (inv.claimed_by) {
@@ -80,6 +83,10 @@ export function createInviteMocks({ tasters, accounts, connections, users, beare
           revoked_at: null,
           claimed_by: null,
           claimed_at: null,
+          approved_at: isAdmin(me) ? new Date().toISOString() : null,
+          approved_by: isAdmin(me) ? me : null,
+          declined_at: null,
+          admins_alerted_at: null,
         };
         invites.push(inv);
         sendJson(res, 200, inv.token);
@@ -107,11 +114,58 @@ export function createInviteMocks({ tasters, accounts, connections, users, beare
               ? "used"
               : !inv.claimed_by && new Date(inv.expires_at) <= new Date()
                 ? "expired"
-                : !settings.invites_enabled
-                  ? "closed"
-                  : "ok";
+                : !inv.approved_at
+                  ? "pending"
+                  : !settings.invites_enabled
+                    ? "closed"
+                    : "ok";
         const inviter = inv ? (tasters.find((t) => t.id === inv.invited_by)?.display_name ?? null) : null;
         sendJson(res, 200, [{ status, inviter }]);
+      });
+      return true;
+    }
+    const waiting = (i) => !i.approved_at && !i.revoked_at && !i.claimed_at && new Date(i.expires_at) > new Date();
+    if (req.method === "POST" && rpc === "pending_invites") {
+      const me = meOf(req);
+      const rows = me && isAdmin(me) ? invites.filter(waiting) : [];
+      sendJson(
+        res,
+        200,
+        rows.map((i) => ({ id: i.id, note: i.note, inviter: tasters.find((t) => t.id === i.invited_by)?.display_name, created_at: i.created_at }))
+      );
+      return true;
+    }
+    if (req.method === "POST" && rpc === "approve_invite") {
+      readBody(req).then((body) => {
+        const me = meOf(req);
+        const inv = invites.find((i) => i.id === body.p_id);
+        if (!me || !isAdmin(me) || !inv || !waiting(inv)) return sendJson(res, 200, []);
+        inv.approved_at = new Date().toISOString();
+        inv.approved_by = me;
+        inv.expires_at = new Date(Date.now() + 14 * 86_400_000).toISOString();
+        const email = [...accounts].find(([, id]) => id === inv.invited_by)?.[0] ?? null;
+        const name = tasters.find((t) => t.id === inv.invited_by)?.display_name ?? null;
+        sendJson(res, 200, [{ inviter_email: email, inviter_name: name, note: inv.note }]);
+      });
+      return true;
+    }
+    if (req.method === "POST" && rpc === "decline_invite") {
+      readBody(req).then((body) => {
+        const me = meOf(req);
+        const inv = invites.find((i) => i.id === body.p_id);
+        const ok = !!me && isAdmin(me) && !!inv && !inv.approved_at && !inv.revoked_at && !inv.claimed_at;
+        if (ok) inv.revoked_at = inv.declined_at = new Date().toISOString();
+        sendJson(res, 200, ok);
+      });
+      return true;
+    }
+    if (req.method === "POST" && rpc === "admin_alert_emails") {
+      readBody(req).then((body) => {
+        const me = meOf(req);
+        const inv = invites.find((i) => i.token === body.p_token);
+        if (!me || !inv || inv.invited_by !== me || inv.approved_at || inv.revoked_at || inv.admins_alerted_at) return sendJson(res, 200, []);
+        inv.admins_alerted_at = new Date().toISOString();
+        sendJson(res, 200, [...new Set([...accounts].filter(([, id]) => isAdmin(id)).map(([email]) => email))]);
       });
       return true;
     }

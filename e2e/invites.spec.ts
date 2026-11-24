@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { FRAN, lastEmailCode, signIn } from "./auth";
+import { FRAN, JOHN, lastEmailCode, MOCK_URL, signIn } from "./auth";
 
 // Invite links (migration 0019). Specs start signed in as John (e2e/auth.setup.ts).
 
@@ -80,6 +80,61 @@ test("a cancelled invite stops working", async ({ page }, testInfo) => {
   await page.goto(path);
   await expect(page.getByRole("main").getByRole("alert")).toHaveText(/was cancelled/);
   await expect(page.getByLabel("Your name")).toHaveCount(0);
+});
+
+/** App emails (via the mock's Resend stand-in) sent to this address. */
+async function appEmails(page: Page, to: string): Promise<{ subject: string; text: string }[]> {
+  const res = await page.request.get(`${MOCK_URL}/__mock/outbox?to=${encodeURIComponent(to)}`);
+  return ((await res.json()) as { type: string; subject: string; text: string }[]).filter((m) => m.type === "app");
+}
+
+/** Fran (not an admin) makes a link: it waits for an admin, with no link to copy yet. */
+async function franMakesInvite(page: Page, note: string) {
+  await signIn(page, FRAN, "/settings");
+  await page.getByLabel(/Who is it for/).fill(note);
+  await page.getByRole("button", { name: "Make an invite link" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "An admin needs to approve it first" })).toBeVisible();
+  const item = page.getByRole("listitem").filter({ hasText: note });
+  await expect(item).toContainText("Waiting for an admin to approve");
+  await expect(page.getByLabel(`Invite link for ${note}`)).toHaveCount(0);
+  // The admins hear about it by email.
+  await expect.poll(async () => (await appEmails(page, JOHN)).some((m) => m.text.includes(`Fran made an invite link for ${note}.`))).toBe(true);
+}
+
+test("a friend's invite waits for an admin, then works once approved", async ({ page }, testInfo) => {
+  const note = `Approve ${testInfo.project.name} ${testInfo.retry}-${testInfo.repeatEachIndex}`;
+  await franMakesInvite(page, note);
+
+  // John sees a badge on Settings, and approves it there.
+  await signIn(page, JOHN, "/");
+  await page.getByRole("link", { name: /Settings \(\d+ invites? needs? your approval\)/ }).click();
+  await expect(page).toHaveURL(/\/settings#approvals$/);
+  await page.getByRole("button", { name: `Approve Fran's invite for ${note}` }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Approved" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Invites to approve" }).getByText(note)).toHaveCount(0);
+
+  // Fran gets an email, and her link is ready to send.
+  await expect.poll(async () => (await appEmails(page, FRAN)).some((m) => m.subject === `Your Equal Parts invite for ${note} is ready`)).toBe(true);
+  await signIn(page, FRAN, "/settings");
+  const link = await page.getByLabel(`Invite link for ${note}`).inputValue();
+  await page.context().clearCookies();
+  await page.goto(new URL(link).pathname);
+  await expect(page.getByRole("heading", { name: "Fran invited you" })).toBeVisible();
+});
+
+test("an admin can decline a friend's invite", async ({ page }, testInfo) => {
+  const note = `Decline ${testInfo.project.name} ${testInfo.retry}-${testInfo.repeatEachIndex}`;
+  await franMakesInvite(page, note);
+  await signIn(page, JOHN, "/settings");
+  await page.getByRole("button", { name: `Decline Fran's invite for ${note}` }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Declined" })).toBeVisible();
+  await signIn(page, FRAN, "/settings");
+  await expect(page.getByRole("listitem").filter({ hasText: note })).toContainText("Not approved");
+});
+
+test("only admins see invites to approve", async ({ page }) => {
+  await signIn(page, FRAN, "/settings");
+  await expect(page.getByRole("heading", { name: "Invites to approve" })).toHaveCount(0);
 });
 
 test("an unknown invite link says so", async ({ page }) => {

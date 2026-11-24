@@ -261,6 +261,19 @@ theirs. Until their first sign-in the same link can correct a mistyped email;
 after that it's spent. The "Confirm signup" email template must include
 `{{ .Token }}`, since a brand-new account's first code is sent with that template.
 
+**Invite approvals** (migration 0020): an admin's link works straight
+away; anyone else's waits (`invites.approved_at` is null) and shows no
+link until John or Genny approve it under "Invites to approve" at the top
+of Settings (`pending_invites()`, `approve_invite()`, `decline_invite()`).
+Admins see a count badge on Settings in the top bar while anything waits.
+A waiting link answers `pending` in `invite_preview()` / `claim_invite()`.
+Approving restarts its 14 days. The app emails the admins once per waiting
+link (`admin_alert_emails()`) and emails the inviter when it's approved,
+through Resend's API (`src/lib/server/email.ts`): set `RESEND_API_KEY` in
+Vercel for Production and Preview (optional `RESEND_FROM`, default
+`Equal Parts <invites@equalparts.online>`). Without the key the emails are
+skipped and logged, and the badge still works.
+
 Emails are kept out of git; add one with:
 
 ```sql
@@ -391,6 +404,7 @@ review pass:
 28. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
 29. ✅ Invites — members make personal, single-use invite links in Settings (copy, share, "Email it" with a prefilled message in their own mail app, or "Copy email" to paste into any email service; 14-day expiry, cancel any time); a new person joins with their name and email and an emailed code, gets their own household and is connected to whoever invited them, then sees a welcome screen. Settings also lets anyone set a password. Collections, style fixes, our versions and the AI critique are for admins only. Kill switch and caps in `app_settings` (migration 0019)
 30. ✅ How it works — a quick guide to every feature (`/guide`), Help link in the top bar, and a hideable "New here?" card on the home page
+31. ✅ Invite approvals — members' invite links wait for an admin's OK (Approve / Decline in Settings, a count badge on Settings for admins, an email to the admins and to the inviter once approved, via Resend); admins' own links work straight away (migration 0020)
 
 ## Future ideas (not yet scheduled)
 
