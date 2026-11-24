@@ -19,7 +19,7 @@ export default async function LevelsPage({ searchParams }: PageProps<"/cabinet/l
   const sp = await searchParams;
   const user = await getSignedInUser();
   if (!user) redirect("/login?next=%2Fcabinet%2Flevels");
-  const shell = { back: { href: "/cabinet", label: "Our bar" }, eyebrow: "JB & GM's home bar", title: "Bottle levels", icon: "🍾" };
+  const shell = { back: { href: "/cabinet", label: "Our bar" }, eyebrow: "Our home bar", title: "Bottle levels", icon: "🍾" };
   if (!user.taster && !user.lookupFailed) redirect("/cabinet");
 
   let bar: Awaited<ReturnType<typeof fetchBar>> = null;

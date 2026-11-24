@@ -14,7 +14,8 @@ import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { LevelMeter } from "@/components/level-meter";
 import { FocusMessage } from "@/components/focus-message";
 import { describeLeft, isLow } from "@/lib/inventory";
-import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { type CocktailRecord } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { getIngredient } from "@/lib/ingredients";
 import { RumBadge } from "@/components/rum-badge";
 import { fetchBarRums } from "@/lib/rum-bar-data";
@@ -56,7 +57,7 @@ export default async function CabinetPage({
   if (!user) {
     return (
       <PageShell
-        eyebrow="JB & GM only"
+        eyebrow="Members only"
         title="Our bar"
         icon="🍾"
         intro="What's on our shelf, what we can make tonight, and what to buy next."
@@ -75,7 +76,7 @@ export default async function CabinetPage({
   }
   if (!user.taster && !user.lookupFailed) {
     return (
-      <PageShell eyebrow="JB & GM only" title="Our bar" icon="🍾">
+      <PageShell eyebrow="Members only" title="Our bar" icon="🍾">
         <p className={`${card} text-sm text-ink-soft`}>
           You&apos;re signed in as {user.email}, which isn&apos;t linked to a
           taster, so the bar isn&apos;t available.
@@ -107,7 +108,7 @@ export default async function CabinetPage({
 
   if (!cabinet || !records) {
     return (
-      <PageShell eyebrow="JB & GM's home bar" title="Our bar" icon="🍾">
+      <PageShell eyebrow="Our home bar" title="Our bar" icon="🍾">
         <p
           role="alert"
           className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm"
@@ -146,7 +147,7 @@ export default async function CabinetPage({
 
   return (
     <PageShell
-      eyebrow="JB & GM's home bar"
+      eyebrow="Our home bar"
       title="Our bar"
       icon="🍾"
       intro={`${cabinet.size} ${cabinet.size === 1 ? "ingredient" : "ingredients"} on the shelf · ${summary.ready.length} ${summary.ready.length === 1 ? "drink" : "drinks"} ready to make`}
@@ -177,6 +178,9 @@ export default async function CabinetPage({
       )}
       <Link href="/cabinet/scan" className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline">
         <span aria-hidden="true">📷 </span>Scan a bottle or receipt <span aria-hidden="true">→</span>
+      </Link>
+      <Link href="/cabinet/scan?type=1" className="w-fit px-1 text-sm font-semibold text-teal underline-offset-2 hover:underline">
+        <span aria-hidden="true">✍️ </span>Type in a bottle <span aria-hidden="true">→</span>
       </Link>
       {typeof sp.scanned === "string" && /^\d{1,2}$/.test(sp.scanned) && (
         <FocusMessage role="status" className="rounded-2xl border border-teal/30 bg-card p-3 text-sm text-teal-deep shadow-sm">

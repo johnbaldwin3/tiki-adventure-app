@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, unstable_rethrow } from "next/navigation";
-import { fetchCocktailRecords, type CocktailRecord } from "@/lib/cocktails";
+import { type CocktailRecord } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { fetchCabinet, fetchShoppingList } from "@/lib/cabinet-data";
 import { ShoppingButton, ShoppingStatus } from "@/components/shopping-button";
 import { aliasesFor, getIngredient, resolveLine } from "@/lib/ingredients";

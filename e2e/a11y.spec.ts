@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
-import { GENNY, signIn } from "./auth";
+import { GENNY, signIn, SIGNED_OUT } from "./auth";
 
 // Automated WCAG 2.1 A/AA checks (axe-core) on every page, signed out and
 // signed in, including form-validation errors (database-down states are
@@ -39,6 +39,8 @@ const signedOutPages = [
   "/signup",
   "/forgot-password",
   "/reset-password",
+  "/settings",
+  "/welcome",
   "/this-does-not-exist",
   "/cocktails/not-a-real-drink",
 ];
@@ -66,20 +68,39 @@ test("a11y: signed-in card, edit form, and form errors", async ({ page }) => {
   await expectNoViolations(page);
 });
 
-test("a11y: sign-in with a code (email step error, then code step)", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
-  await expect(page.getByText("Enter your email address.")).toBeVisible();
-  await expectNoViolations(page);
-  await page.getByLabel("Email").fill("genny@e2e.test");
-  await page.getByRole("button", { name: "Email me a sign-in code" }).click();
-  await expect(page.getByLabel("Sign-in code")).toBeFocused();
-  await expectNoViolations(page);
-});
+test.describe("signed out", () => {
+  test.use({ storageState: SIGNED_OUT });
 
-test("a11y: sign-in error state", async ({ page }) => {
-  await page.goto("/login?with=password");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByText("Enter your email address.")).toBeVisible();
-  await expectNoViolations(page);
+  test("a11y: sign-in with a code (email step error, then code step)", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+    await expect(page.getByText("Enter your email address.")).toBeVisible();
+    await expectNoViolations(page);
+    await page.getByLabel("Email").fill("genny@e2e.test");
+    await page.getByRole("button", { name: "Email me a sign-in code" }).click();
+    await expect(page.getByLabel("Sign-in code")).toBeFocused();
+    await expectNoViolations(page);
+  });
+
+  test("a11y: joining by invite link (with a field error)", async ({ page, browser }) => {
+    // John makes a real link in his own session, then this signed-out page opens it.
+    const john = await browser.newContext({ storageState: "e2e/.auth/john.json", baseURL: test.info().project.use.baseURL });
+    const jp = await john.newPage();
+    await jp.goto("/settings");
+    await jp.getByRole("button", { name: "Make an invite link" }).click();
+    const link = await jp.getByLabel("Invite link for Invite").first().inputValue();
+    await john.close();
+    await page.goto(new URL(link).pathname);
+    await expectNoViolations(page);
+    await page.getByRole("button", { name: "Join and email me a code" }).click();
+    await expect(page.getByText("Enter your name.")).toBeVisible();
+    await expectNoViolations(page);
+  });
+
+  test("a11y: sign-in error state", async ({ page }) => {
+    await page.goto("/login?with=password");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Enter your email address.")).toBeVisible();
+    await expectNoViolations(page);
+  });
 });

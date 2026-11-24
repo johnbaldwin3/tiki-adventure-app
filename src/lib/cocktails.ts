@@ -1,14 +1,9 @@
-import { collectionSlugsByCocktail } from "./collections";
-import { fetchCollections } from "./collections-data";
 import { applyStyleOverrides, computeStyles, type StyleOverride } from "./styles";
-import { fetchStyleOverrides } from "./styles-data";
-import { fetchVersions } from "./versions-data";
-import type { DrinkVersions } from "./versions";
 import { byListOrder } from "./order";
-import { supabase } from "./supabase";
-import type { TastingRecord } from "./tasting";
+import { byTasterOrder } from "./people";
+import type { Rating, TastingRecord } from "./tasting";
 
-/** diffords: Difford's Top 100 (tiki); iba: the IBA official list; ours: added by JB & GM. */
+/** diffords: Difford's Top 100 (tiki); iba: the IBA official list; ours: added by a household. */
 export type CocktailSource = "diffords" | "ours" | "iba";
 
 export interface CocktailRecord extends TastingRecord {
@@ -30,11 +25,13 @@ export interface CocktailRecord extends TastingRecord {
   collections?: string[];
   /** Style tag ids (computed from the ingredients, with any taster fixes). */
   styles?: string[];
-  /** Initials of the tasters who've tried it (rated or not). */
+  /** Initials of the tasters who've tried it (rated or not): household and friends. */
   triedBy?: string[];
+  /** Every visible taster's rating, by initials (null: tried, not rated). */
+  ratings?: Record<string, Rating>;
 }
 
-interface RawCocktailRow {
+export interface RawCocktailRow {
   id: string;
   name: string;
   slug: string;
@@ -51,7 +48,7 @@ function toSource(value: unknown, diffordsRank: number | null): CocktailSource {
   return diffordsRank === null ? "ours" : "diffords";
 }
 
-interface RawTastingRow {
+export interface RawTastingRow {
   cocktail_id: string;
   // PostgREST serializes Postgres `numeric` columns as JSON strings (to
   // avoid float precision loss), so tastings.rating comes back as e.g.
@@ -63,24 +60,33 @@ interface RawTastingRow {
   tasters: { initials: string } | { initials: string }[] | null;
 }
 
+export interface RecordOptions {
+  /** Initials for the a/b rating columns (the household, see householdSlots). */
+  slots?: readonly string[];
+  collectionsByCocktail?: Map<string, string[]>;
+  styleOverrides?: Map<string, StyleOverride[]>;
+  /** "Our version" lines (a kept critique tweak), which replace the original's for bar/shopping/styles. */
+  activeLines?: Map<string, Ingredient[]>;
+}
+
 /**
  * Pure reshaping step, kept separate from the network call so it can be
  * unit-tested without hitting Supabase. Folds the normalized
  * cocktails + tastings rows (one tastings row per cocktail x taster) into
  * the flat TastingRecord shape that src/lib/tasting.ts's
  * rankCocktails/summarizeProgress already expect and have tests for.
+ * Only the household's ratings (slots) count toward aRating/bRating and so
+ * the averages and ranks; friends' ratings are in `ratings` and `triedBy`.
  */
 export function mapRowsToCocktailRecords(
   cocktailRows: RawCocktailRow[],
   tastingRows: RawTastingRow[],
-  collectionsByCocktail: Map<string, string[]> = new Map(),
-  styleOverrides: Map<string, StyleOverride[]> = new Map(),
-  /** "Our version" lines (a kept critique tweak), which replace the original's for bar/shopping/styles. */
-  activeLines: Map<string, Ingredient[]> = new Map()
+  { slots = [], collectionsByCocktail = new Map(), styleOverrides = new Map(), activeLines = new Map() }: RecordOptions = {}
 ): CocktailRecord[] {
+  const [slotA, slotB] = slots;
   const tastingsByCocktail = new Map<
     string,
-    { jbRating: number | null; gmRating: number | null; tried: boolean; triedBy: string[] }
+    { ratings: Record<string, Rating>; tried: boolean; triedBy: string[] }
   >();
 
   for (const row of tastingRows) {
@@ -88,22 +94,15 @@ export function mapRowsToCocktailRecords(
     const initials = tasterEntry?.initials;
     if (!initials) continue;
 
-    const existing =
-      tastingsByCocktail.get(row.cocktail_id) ?? {
-        jbRating: null,
-        gmRating: null,
-        tried: false,
-        triedBy: [],
-      };
+    const existing = tastingsByCocktail.get(row.cocktail_id) ?? { ratings: {}, tried: false, triedBy: [] };
 
     const numericRating =
       row.rating === null || row.rating === undefined ? null : Number(row.rating);
     const safeRating =
       numericRating !== null && Number.isNaN(numericRating) ? null : numericRating;
 
-    if (initials === "JB") existing.jbRating = safeRating;
-    if (initials === "GM") existing.gmRating = safeRating;
-    existing.tried = existing.tried || row.tried;
+    existing.ratings[initials] = safeRating;
+    existing.tried = existing.tried || (row.tried && slots.includes(initials));
     if (row.tried && !existing.triedBy.includes(initials)) existing.triedBy.push(initials);
 
     tastingsByCocktail.set(row.cocktail_id, existing);
@@ -130,63 +129,11 @@ export function mapRowsToCocktailRecords(
         isGuess: c.is_guess === true,
         tried: t?.tried ?? false,
         triedBy: t?.triedBy ?? [],
-        jbRating: t?.jbRating ?? null,
-        gmRating: t?.gmRating ?? null,
+        ratings: t?.ratings ?? {},
+        aRating: slotA ? (t?.ratings[slotA] ?? null) : null,
+        bRating: slotB ? (t?.ratings[slotB] ?? null) : null,
       };
     });
-}
-
-/**
- * Fetches all cocktails and their tastings from Supabase and reshapes them
- * into CocktailRecord[]. Runs both queries in parallel since neither
- * depends on the other's result.
- */
-export async function fetchCocktailRecords(): Promise<CocktailRecord[]> {
-  const [
-    { data: cocktailRows, error: cocktailsError },
-    { data: tastingRows, error: tastingsError },
-    { collections, memberships },
-    styleOverrides,
-    versions,
-  ] = await Promise.all([
-    supabase
-      .from("cocktails")
-      .select("id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, ingredients, source, is_guess")
-      .order("diffords_rank", { ascending: true, nullsFirst: false }),
-    // tastings has two keys to tasters (taster_id and entered_by, migration
-    // 0016), so the embed must name the one it means or PostgREST refuses it.
-    supabase.from("tastings").select("cocktail_id, rating, tried, tasters!tastings_taster_id_fkey(initials)"),
-    // Collections are extra: if they can't load, the list still works (no collection tags).
-    fetchCollections().catch((err) => {
-      console.error("cocktails: failed to load collections", err);
-      return { collections: [], memberships: [] };
-    }),
-    // Likewise style fixes: without them the computed tags still show.
-    fetchStyleOverrides().catch((err) => {
-      console.error("cocktails: failed to load style fixes", err);
-      return new Map<string, StyleOverride[]>();
-    }),
-    // And our versions: without them every drink uses its original recipe.
-    fetchVersions().catch((err) => {
-      console.error("cocktails: failed to load our versions", err);
-      return new Map<string, DrinkVersions>();
-    }),
-  ]);
-
-  if (cocktailsError) {
-    throw new Error(`Failed to fetch cocktails: ${cocktailsError.message}`);
-  }
-  if (tastingsError) {
-    throw new Error(`Failed to fetch tastings: ${tastingsError.message}`);
-  }
-
-  return mapRowsToCocktailRecords(
-    (cocktailRows ?? []) as RawCocktailRow[],
-    (tastingRows ?? []) as unknown as RawTastingRow[],
-    collectionSlugsByCocktail(collections, memberships),
-    styleOverrides,
-    new Map([...versions].flatMap(([id, v]) => (v.active ? [[id, v.active.ingredients] as const] : [])))
-  );
 }
 
 // ---------------------------------------------------------------------------
@@ -203,6 +150,8 @@ export interface Ingredient {
 
 export interface TasterEntry {
   initials: string;
+  /** In the viewer's household: always listed, and they can enter it. Friends are read-only. */
+  household: boolean;
   displayName: string;
   /** Initials of whoever last saved this tasting, when it wasn't this taster. */
   enteredBy: string | null;
@@ -231,7 +180,10 @@ export interface CocktailDetail {
   garnish: string | null;
   methodSummary: string | null;
   ingredients: Ingredient[];
-  /** One entry per known taster (JB, GM), in that order, even if they haven't tasted it. */
+  /**
+   * The viewer's household (always, even untasted), then any friend who has
+   * tasted it. Empty when signed out.
+   */
   tasters: TasterEntry[];
 }
 
@@ -250,6 +202,7 @@ export interface RawTasterRow {
   id: string;
   initials: string;
   display_name: string;
+  household_id?: string | null;
 }
 
 export interface RawDetailTastingRow {
@@ -291,33 +244,30 @@ export function parseIngredients(value: unknown): Ingredient[] {
     }));
 }
 
-/** Preferred display order for tasters; anyone else sorts after, by initials. */
-const TASTER_ORDER = ["JB", "GM"];
-
 /**
- * Pure reshaping for the recipe card: the cocktail row plus its tastings,
- * with every known taster represented (an untasted entry if they have no
- * tastings row yet) so the card can always show both JB and GM.
+ * Pure reshaping for the recipe card: the cocktail row plus its tastings.
+ * Household members are always listed (an untasted entry if they have no
+ * tastings row yet) so the card can always offer them a rating; friends
+ * only when they've tasted it. tasterRows is whoever RLS lets the viewer see.
  */
 export function mapRowsToCocktailDetail(
   cocktailRow: RawCocktailDetailRow,
   tasterRows: RawTasterRow[],
-  tastingRows: RawDetailTastingRow[]
+  tastingRows: RawDetailTastingRow[],
+  /** The viewer's household; null when signed out (no one is listed). */
+  householdId: string | null
 ): CocktailDetail {
   const tastingByTaster = new Map(tastingRows.map((t) => [t.taster_id, t]));
-
-  const orderOf = (initials: string) => {
-    const i = TASTER_ORDER.indexOf(initials);
-    return i === -1 ? TASTER_ORDER.length : i;
-  };
+  const mine = (t: RawTasterRow) => householdId !== null && t.household_id === householdId;
 
   const tasters = tasterRows
-    .slice()
-    .sort((a, b) => orderOf(a.initials) - orderOf(b.initials) || a.initials.localeCompare(b.initials))
+    .filter((taster) => householdId !== null && (mine(taster) || tastingByTaster.has(taster.id)))
+    .sort((a, b) => Number(mine(b)) - Number(mine(a)) || byTasterOrder(a, b))
     .map((taster) => {
       const t = tastingByTaster.get(taster.id);
       return {
         initials: taster.initials,
+        household: mine(taster),
         displayName: taster.display_name,
         enteredBy:
           t?.entered_by && t.entered_by !== taster.id
@@ -348,45 +298,4 @@ export function mapRowsToCocktailDetail(
     ingredients: parseIngredients(cocktailRow.ingredients),
     tasters,
   };
-}
-
-/**
- * Fetches one cocktail's full recipe + tastings by slug. Returns null when
- * no cocktail has that slug (the page turns that into a 404).
- */
-export async function fetchCocktailBySlug(slug: string): Promise<CocktailDetail | null> {
-  const [{ data: cocktailRow, error: cocktailError }, { data: tasterRows, error: tastersError }] =
-    await Promise.all([
-      supabase
-        .from("cocktails")
-        .select(
-          "id, name, slug, diffords_rank, diffords_guide_url, primary_spirits, glass, garnish, method_summary, ingredients, source, source_url, source_note, added_by, is_guess"
-        )
-        .eq("slug", slug)
-        .maybeSingle(),
-      supabase.from("tasters").select("id, initials, display_name"),
-    ]);
-
-  if (cocktailError) {
-    throw new Error(`Failed to fetch cocktail: ${cocktailError.message}`);
-  }
-  if (tastersError) {
-    throw new Error(`Failed to fetch tasters: ${tastersError.message}`);
-  }
-  if (!cocktailRow) return null;
-
-  const { data: tastingRows, error: tastingsError } = await supabase
-    .from("tastings")
-    .select("taster_id, rating, notes, tried, tasted_at, entered_by")
-    .eq("cocktail_id", (cocktailRow as RawCocktailDetailRow).id);
-
-  if (tastingsError) {
-    throw new Error(`Failed to fetch tastings: ${tastingsError.message}`);
-  }
-
-  return mapRowsToCocktailDetail(
-    cocktailRow as RawCocktailDetailRow,
-    (tasterRows ?? []) as RawTasterRow[],
-    (tastingRows ?? []) as RawDetailTastingRow[]
-  );
 }

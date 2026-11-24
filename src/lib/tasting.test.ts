@@ -21,10 +21,10 @@ describe("averageRating", () => {
 describe("rankCocktails", () => {
   it("ranks rated cocktails by descending average, leaving unrated ones blank", () => {
     const records = [
-      { name: "Tiki Max", tried: true, jbRating: null, gmRating: 9.41 },
-      { name: "Painkiller", tried: true, jbRating: 8.59, gmRating: null },
-      { name: "Untasted Drink", tried: false, jbRating: null, gmRating: null },
-      { name: "Three Dots and a Dash", tried: true, jbRating: 8.9, gmRating: 8.71 },
+      { name: "Tiki Max", tried: true, aRating: null, bRating: 9.41 },
+      { name: "Painkiller", tried: true, aRating: 8.59, bRating: null },
+      { name: "Untasted Drink", tried: false, aRating: null, bRating: null },
+      { name: "Three Dots and a Dash", tried: true, aRating: 8.9, bRating: 8.71 },
     ];
 
     const ranked = rankCocktails(records);
@@ -39,9 +39,9 @@ describe("rankCocktails", () => {
 
   it("gives tied averages the same rank", () => {
     const records = [
-      { name: "A", tried: true, jbRating: 8, gmRating: 8 },
-      { name: "B", tried: true, jbRating: 8, gmRating: 8 },
-      { name: "C", tried: true, jbRating: 7, gmRating: 7 },
+      { name: "A", tried: true, aRating: 8, bRating: 8 },
+      { name: "B", tried: true, aRating: 8, bRating: 8 },
+      { name: "C", tried: true, aRating: 7, bRating: 7 },
     ];
     const ranked = rankCocktails(records);
     const byName = Object.fromEntries(ranked.map((r) => [r.name, r]));
@@ -54,24 +54,24 @@ describe("rankCocktails", () => {
 describe("summarizeProgress", () => {
   it("computes tasted count, progress fraction, and per-taster averages", () => {
     const records = [
-      { name: "A", tried: true, jbRating: 8, gmRating: 9 },
-      { name: "B", tried: true, jbRating: 6, gmRating: null },
-      { name: "C", tried: false, jbRating: null, gmRating: null },
+      { name: "A", tried: true, aRating: 8, bRating: 9 },
+      { name: "B", tried: true, aRating: 6, bRating: null },
+      { name: "C", tried: false, aRating: null, bRating: null },
     ];
     const summary = summarizeProgress(records);
     expect(summary.triedCount).toBe(2);
     expect(summary.total).toBe(3);
     expect(summary.fraction).toBeCloseTo(2 / 3, 5);
-    expect(summary.jbAverage).toBe(7);
-    expect(summary.gmAverage).toBe(9);
+    expect(summary.aAverage).toBe(7);
+    expect(summary.bAverage).toBe(9);
   });
 
   it("returns null averages when nobody has rated anything", () => {
     const summary = summarizeProgress([
-      { name: "A", tried: false, jbRating: null, gmRating: null },
+      { name: "A", tried: false, aRating: null, bRating: null },
     ]);
-    expect(summary.jbAverage).toBeNull();
-    expect(summary.gmAverage).toBeNull();
+    expect(summary.aAverage).toBeNull();
+    expect(summary.bAverage).toBeNull();
   });
 });
 
@@ -79,10 +79,10 @@ describe("toRate", async () => {
   const { toRate } = await import("./tasting");
   it("lists what a taster tried but hasn't rated", () => {
     const rows = [
-      { name: "A", tried: true, jbRating: null, gmRating: 8, triedBy: ["JB", "GM"] },
-      { name: "B", tried: true, jbRating: 7, gmRating: null, triedBy: ["JB"] },
-      { name: "C", tried: false, jbRating: null, gmRating: null, triedBy: [] },
-      { name: "D", tried: true, jbRating: null, gmRating: null },
+      { name: "A", tried: true, ratings: { JB: null, GM: 8 }, triedBy: ["JB", "GM"] },
+      { name: "B", tried: true, ratings: { JB: 7 }, triedBy: ["JB"] },
+      { name: "C", tried: false, aRating: null, bRating: null, triedBy: [] },
+      { name: "D", tried: true, aRating: null, bRating: null },
     ];
     expect(toRate(rows, "JB").map((r) => r.name)).toEqual(["A"]);
     expect(toRate(rows, "GM").map((r) => r.name)).toEqual([]);

@@ -42,7 +42,7 @@ export async function scanPhoto(prev: ScanState, formData: FormData): Promise<Sc
   const base = { submission, kind, bottle: null, receipt: null };
   const fail = (message: string): ScanState => ({ ...base, status: "error", message });
 
-  if (!(await requireTaster())) return fail("Only JB & GM can add to our bar.");
+  if (!(await requireTaster())) return fail("Only members can add to our bar.");
   const image = String(formData.get("image") ?? "");
   if (image.length > MAX_IMAGE_CHARS) return fail("That photo is too large. Try a smaller one.");
   if (!IMAGE.test(image)) return fail("Take or choose a photo first.");
@@ -101,7 +101,7 @@ async function saveBottles(saves: BottleSave[], tasterId: string): Promise<boole
 export async function saveScannedBottle(prev: SaveScanState, formData: FormData): Promise<SaveScanState> {
   const submission = (prev?.submission ?? 0) + 1;
   const taster = await requireTaster();
-  if (!taster) return { submission, message: "Only JB & GM can add to our bar.", problems: [] };
+  if (!taster) return { submission, message: "Only members can add to our bar.", problems: [] };
   const save = readBottleForm(formData);
   if (!save) return { submission, message: "Pick what it is and its size, then save.", problems: [] };
   if (!(await saveBottles([save], taster.id))) return { submission, message: "Saving failed. Please try again.", problems: [] };
@@ -111,7 +111,7 @@ export async function saveScannedBottle(prev: SaveScanState, formData: FormData)
 export async function saveReceipt(prev: SaveScanState, formData: FormData): Promise<SaveScanState> {
   const submission = (prev?.submission ?? 0) + 1;
   const taster = await requireTaster();
-  if (!taster) return { submission, message: "Only JB & GM can add to our bar.", problems: [] };
+  if (!taster) return { submission, message: "Only members can add to our bar.", problems: [] };
   const { saves, problems } = readReceiptForm(formData);
   if (problems.length > 0) {
     const message = problems.some((p) => p.duplicate)

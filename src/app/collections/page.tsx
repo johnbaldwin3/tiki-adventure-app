@@ -30,7 +30,7 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
   const problemFor = typeof sp.for === "string" ? sp.for : null;
   // Only the new-collection form gets its typed name back (to fix it).
   const retryName = problem && problemFor === "new" && typeof sp.name === "string" ? sp.name.slice(0, COLLECTION_LIMITS.name) : "";
-  const shell = { eyebrow: "JB & GM's home bar", title: "Collections", icon: "🗂️" };
+  const shell = { eyebrow: "Our home bar", title: "Collections", icon: "🗂️" };
 
   let data: { collections: Collection[]; memberships: Membership[] } | null = null;
   try {
@@ -43,7 +43,8 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
     unstable_rethrow(err);
     return null;
   });
-  const canEdit = !!user?.taster;
+  // Collections are shared by everyone, so only admins (John and Genny) change them (migration 0017).
+  const canEdit = !!user?.isAdmin;
 
   if (!data) {
     return (
@@ -192,12 +193,12 @@ export default async function CollectionsPage({ searchParams }: PageProps<"/coll
             Add drinks to it from any recipe card (&ldquo;Change collections&rdquo;), or when adding a recipe.
           </p>
         </section>
-      ) : (
+      ) : user?.taster ? null : (
         <p className={`${card} text-sm text-ink-soft`}>
           <Link href="/login?next=%2Fcollections" className="font-semibold text-teal underline underline-offset-2">
             Sign in
           </Link>{" "}
-          to add or rename collections.
+          to see your collections.
         </p>
       )}
     </PageShell>

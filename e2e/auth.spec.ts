@@ -1,14 +1,34 @@
 import { test, expect } from "@playwright/test";
-import { E2E_PASSWORD, GENNY, JOHN, lastEmailCode, lastEmailLink, signIn } from "./auth";
+import { E2E_PASSWORD, GENNY, JOHN, lastEmailCode, lastEmailLink, signIn, SIGNED_OUT } from "./auth";
 
-test("signed out: cards are read-only with a sign-in prompt", async ({ page }) => {
-  await page.goto("/cocktails/tiki-max");
-  await expect(page.getByRole("link", { name: "Sign in", exact: true }).first()).toBeVisible();
-  const tasting = page.getByRole("region", { name: "Our tasting" });
-  await expect(tasting.getByRole("link", { name: /Edit|Add rating/ })).toHaveCount(0);
-  await expect(page.getByText("to add your rating & notes.")).toBeVisible();
+// Signing in and out: every test starts signed out.
+test.use({ storageState: SIGNED_OUT });
+
+test("signed out: the home page is a landing page with no recipes", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1, name: "Equal Parts" })).toBeVisible();
+  await expect(page.getByText("Equal Parts is invite-only.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Create your account" })).toHaveAttribute("href", "/signup");
+  await expect(page.getByRole("list", { name: "Cocktails" })).toHaveCount(0);
+  await expect(page.getByText(/Tiki Max/)).toHaveCount(0);
+  await page.getByRole("link", { name: "Sign in", exact: true }).first().click();
+  await expect(page).toHaveURL(/\/login$/);
+});
+
+test("signed out: recipes, stats and the bar send you to sign in, then back", async ({ page }) => {
+  for (const path of ["/cocktails/tiki-max", "/stats", "/cabinet", "/ingredients", "/next"]) {
+    await page.goto(path);
+    await expect.poll(() => new URL(page.url()).pathname).toBe("/login");
+    expect(new URL(page.url()).searchParams.get("next")).toBe(path);
+  }
+  await page.goto("/login?with=password&next=%2Fcocktails%2Ftiki-max");
+  await page.getByLabel("Email").fill(JOHN);
+  await page.getByLabel("Password").fill(E2E_PASSWORD);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/cocktails\/tiki-max$/);
 
   // The edit page itself sends you to sign in, then back.
+  await page.context().clearCookies();
   await page.goto("/cocktails/tiki-max/tasting/jb");
   await expect(page).toHaveURL(/\/login\?next=%2Fcocktails%2Ftiki-max%2Ftasting%2Fjb$/);
 });
@@ -50,7 +70,7 @@ test("sign out", async ({ page }) => {
   await signIn(page, GENNY);
   await expect(page.getByText("Signed in as Genny")).toBeVisible();
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByRole("link", { name: "Sign in", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Sign in", exact: true }).first()).toBeVisible();
   await expect(page.getByText(/^Signed in as/)).toHaveCount(0);
 });
 

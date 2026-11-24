@@ -4,7 +4,7 @@ import { signOut } from "@/app/auth/actions";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { Logo } from "@/components/logo";
 
-/** Slim bar above every page: the logo (home link), and who's signed in, with sign-in / sign-out. */
+/** Slim bar above every page: the logo (home link), and who's signed in, with Settings and sign-in / sign-out. */
 export async function AccountBar() {
   let user: Awaited<ReturnType<typeof getSignedInUser>> = null;
   try {
@@ -33,6 +33,9 @@ export async function AccountBar() {
               <span className="sr-only sm:not-sr-only">Signed in as </span>
               <strong className="text-ink">{user.taster?.displayName ?? user.email}</strong>
             </span>
+            <Link href="/settings" className="whitespace-nowrap font-semibold text-teal underline-offset-2 hover:underline">
+              Settings
+            </Link>
             <form action={signOut}>
               <button type="submit" className="whitespace-nowrap font-semibold text-teal underline-offset-2 hover:underline">
                 Sign out

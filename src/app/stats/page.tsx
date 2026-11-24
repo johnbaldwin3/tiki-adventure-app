@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { RecipeCredits } from "@/components/recipe-credits";
 import Link from "next/link";
-import { fetchCocktailRecords } from "@/lib/cocktails";
+import { fetchCocktailRecords } from "@/lib/cocktails-data";
 import { collectionProgress } from "@/lib/collections";
 import { fetchCollections } from "@/lib/collections-data";
+import type { Person } from "@/lib/people";
+import { getPeople } from "@/lib/people-data";
 import { computeDashboardStats, type DashboardStats, type TasterStats } from "@/lib/stats";
 
 // Same always-fresh reasoning as the home page (src/app/page.tsx).
@@ -13,10 +15,24 @@ export const metadata: Metadata = {
   title: "Our stats",
 };
 
-const TASTERS = [
-  { key: "jb" as const, initials: "JB", name: "John", color: "bg-chart-jb" },
-  { key: "gm" as const, initials: "GM", name: "Genny", color: "bg-chart-gm" },
-];
+/** A rating column on the charts: the household's first two members (see householdSlots). */
+interface Column {
+  key: "a" | "b";
+  initials: string;
+  name: string;
+  color: string;
+}
+
+const COLUMN_COLORS = ["bg-chart-jb", "bg-chart-gm"];
+
+function toColumns(household: Person[]): Column[] {
+  return household.slice(0, 2).map((p, i) => ({
+    key: i === 0 ? "a" : "b",
+    initials: p.initials,
+    name: p.displayName,
+    color: COLUMN_COLORS[i],
+  }));
+}
 
 function SectionHeading({ id, children }: { id: string; children: React.ReactNode }) {
   return (
@@ -42,16 +58,16 @@ function Meter({ value, total, label }: { value: number; total: number; label: s
       aria-valuetext={`${value} of ${total}`}
       className="h-2.5 w-full overflow-hidden rounded-full bg-chart-track"
     >
-      {/* teal-deep on the teal-100 track is ~7:1; chart-jb stays reserved for John's data. */}
+      {/* teal-deep on the teal-100 track is ~7:1; the chart colors stay reserved for people's data. */}
       <div className="h-full rounded-full bg-teal-deep" style={{ width: `${pct}%` }} />
     </div>
   );
 }
 
-function Legend() {
+function Legend({ cols }: { cols: Column[] }) {
   return (
     <ul className="flex gap-4 text-xs font-semibold text-ink-soft" aria-label="Legend">
-      {TASTERS.map((t) => (
+      {cols.map((t) => (
         <li key={t.key} className="flex items-center gap-1.5">
           <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-sm ${t.color}`} />
           {t.name} ({t.initials})
@@ -94,21 +110,23 @@ function TasterTile({ initials, name, stats }: { initials: string; name: string;
   );
 }
 
-/** Grouped columns: one pair (JB, GM) per rating bin. Counts labeled on the caps. */
-function RatingSpread({ histogram }: { histogram: DashboardStats["histogram"] }) {
-  const max = Math.max(1, ...histogram.flatMap((b) => [b.jb, b.gm]));
+/** Grouped columns: one per person per rating bin. Counts labeled on the caps. */
+function RatingSpread({ histogram, cols }: { histogram: DashboardStats["histogram"]; cols: Column[] }) {
+  const max = Math.max(1, ...histogram.flatMap((b) => cols.map((t) => b[t.key])));
   const PLOT_H = 128; // px
   return (
     <figure className="flex flex-col gap-3 rounded-2xl bg-card p-4 shadow-sm">
       <figcaption className="flex flex-col gap-2">
-        <span className="text-sm text-ink-soft">How many cocktails each of us rated in each range.</span>
-        <Legend />
+        <span className="text-sm text-ink-soft">
+          {cols.length > 1 ? "How many cocktails each of us rated in each range." : "How many cocktails you rated in each range."}
+        </span>
+        <Legend cols={cols} />
       </figcaption>
       {/* Visual chart is one labelled image for screen readers; the exact
           counts are also in the table below. */}
       <div
         role="img"
-        aria-label={TASTERS.map(
+        aria-label={cols.map(
           (t) => `${t.name}: ${histogram.map((b) => `${b[t.key]} rated ${b.label}`).join(", ")}`
         ).join(". ")}
         className="relative"
@@ -117,7 +135,7 @@ function RatingSpread({ histogram }: { histogram: DashboardStats["histogram"] })
         <div className="flex items-end justify-between gap-2 border-b border-chart-grid" style={{ height: PLOT_H + 18 }}>
           {histogram.map((b) => (
             <div key={b.label} className="flex flex-1 items-end justify-center gap-0.5">
-              {TASTERS.map((t) => {
+              {cols.map((t) => {
                 const count = b[t.key];
                 const h = Math.round((count / max) * PLOT_H);
                 return (
@@ -150,16 +168,18 @@ function RatingSpread({ histogram }: { histogram: DashboardStats["histogram"] })
           <thead>
             <tr className="text-xs uppercase tracking-wide text-ink-soft">
               <th scope="col" className="py-1 font-semibold">Rating</th>
-              <th scope="col" className="py-1 font-semibold">John</th>
-              <th scope="col" className="py-1 font-semibold">Genny</th>
+              {cols.map((t) => (
+                <th key={t.key} scope="col" className="py-1 font-semibold">{t.name}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {histogram.map((b) => (
               <tr key={b.label} className="border-t border-chart-grid">
                 <th scope="row" className="py-1 font-normal text-ink">{b.label}</th>
-                <td className="py-1 text-ink">{b.jb}</td>
-                <td className="py-1 text-ink">{b.gm}</td>
+                {cols.map((t) => (
+                  <td key={t.key} className="py-1 text-ink">{b[t.key]}</td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -169,9 +189,9 @@ function RatingSpread({ histogram }: { histogram: DashboardStats["histogram"] })
   );
 }
 
-/** Dumbbells: JB and GM dots on a shared rating scale, joined by a line. */
-function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
-  const lo = Math.max(0, Math.floor(Math.min(...items.flatMap((d) => [d.jb, d.gm]))) - 1);
+/** Dumbbells: both people's dots on a shared rating scale, joined by a line. */
+function Disagreements({ items, cols }: { items: DashboardStats["disagreements"]; cols: Column[] }) {
+  const lo = Math.max(0, Math.floor(Math.min(...items.flatMap((d) => [d.a, d.b]))) - 1);
   const hi = 10;
   const pos = (v: number) => `${((v - lo) / (hi - lo)) * 100}%`;
   const ticks = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).filter(
@@ -181,11 +201,11 @@ function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
     <figure className="flex flex-col gap-3 rounded-2xl bg-card p-4 shadow-sm">
       <figcaption className="flex flex-col gap-2">
         <span className="text-sm text-ink-soft">Cocktails we both rated, biggest gap first.</span>
-        <Legend />
+        <Legend cols={cols} />
       </figcaption>
       <ul aria-label="Cocktails we disagree on" className="flex flex-col gap-4">
         {items.map((d) => {
-          const [left, right] = d.jb <= d.gm ? [d.jb, d.gm] : [d.gm, d.jb];
+          const [left, right] = d.a <= d.b ? [d.a, d.b] : [d.b, d.a];
           // When the dots would overlap (tiny gap), nudge them apart vertically
           // so neither hides the other; the exact values are in the text above.
           const close = (right - left) / (hi - lo) < 0.04;
@@ -196,7 +216,7 @@ function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
                   {d.name}
                 </Link>
                 <span className="shrink-0 text-xs text-ink-soft">
-                  JB {d.jb} · GM {d.gm} · gap {d.gap}
+                  {cols[0].initials} {d.a} · {cols[1].initials} {d.b} · gap {d.gap}
                 </span>
               </div>
               <div aria-hidden="true" className="relative mx-1.5 h-4">
@@ -205,7 +225,7 @@ function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
                   className="absolute top-1/2 h-0.5 -translate-y-1/2 bg-ink-faint/50"
                   style={{ left: pos(left), width: `calc(${pos(right)} - ${pos(left)})` }}
                 />
-                {TASTERS.map((t, i) => (
+                {cols.map((t, i) => (
                   <span
                     key={t.key}
                     title={`${t.name}: ${d[t.key]}`}
@@ -236,7 +256,12 @@ function Disagreements({ items }: { items: DashboardStats["disagreements"] }) {
 export default async function StatsPage() {
   let stats: DashboardStats | null = null;
   let byCollection: ReturnType<typeof collectionProgress> = [];
+  let cols: Column[] = [];
+  let signedOut = false;
   try {
+    const people = await getPeople();
+    signedOut = !people.me;
+    cols = toColumns(people.household);
     const records = await fetchCocktailRecords();
     stats = computeDashboardStats(records);
     byCollection = collectionProgress((await fetchCollections()).collections, records);
@@ -262,7 +287,7 @@ export default async function StatsPage() {
           Equal Parts
         </p>
         <h1 className="relative mt-1 text-3xl font-extrabold tracking-tight">Our stats</h1>
-        {stats && (
+        {stats && !signedOut && (
           <p className="relative mt-4 text-5xl font-extrabold leading-none">
             {stats.tried}
             <span className="text-lg font-semibold text-white/85"> of {stats.total} tasted</span>
@@ -273,6 +298,14 @@ export default async function StatsPage() {
       {!stats ? (
         <p role="alert" className="rounded-2xl border border-coral/30 bg-card p-3 text-sm text-coral-deep shadow-sm">
           Couldn&apos;t load the stats right now. Please try refreshing the page.
+        </p>
+      ) : signedOut ? (
+        <p className="rounded-2xl bg-card p-4 text-sm text-ink-soft shadow-sm">
+          Ratings are private.{" "}
+          <Link href="/login?next=%2Fstats" className="font-semibold text-teal underline-offset-2 hover:underline">
+            Sign in
+          </Link>{" "}
+          to see your stats.
         </p>
       ) : (
         <>
@@ -327,31 +360,38 @@ export default async function StatsPage() {
           </section>
 
           <section aria-labelledby="tasters-heading" className="flex flex-col gap-3">
-            <SectionHeading id="tasters-heading">John vs Genny</SectionHeading>
+            <SectionHeading id="tasters-heading">
+              {cols.length > 1 ? `${cols[0].name} vs ${cols[1].name}` : "Your ratings"}
+            </SectionHeading>
             <div className="grid grid-cols-2 gap-3">
-              <TasterTile initials="JB" name="John" stats={stats.jb} />
-              <TasterTile initials="GM" name="Genny" stats={stats.gm} />
-              <div className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal">Rated by both</p>
-                <p className="text-2xl font-bold text-teal-deep">{stats.bothRated}</p>
-              </div>
-              <div className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wide text-teal">Average gap</p>
-                <p className="text-2xl font-bold text-teal-deep">{stats.averageGap ?? "—"}</p>
-                <p className="text-xs text-ink-soft">points apart</p>
-              </div>
+              {cols.map((t) => (
+                <TasterTile key={t.key} initials={t.initials} name={t.name} stats={stats[t.key]} />
+              ))}
+              {cols.length > 1 && (
+                <>
+                  <div className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-teal">Rated by both</p>
+                    <p className="text-2xl font-bold text-teal-deep">{stats.bothRated}</p>
+                  </div>
+                  <div className="rounded-2xl border border-teal/15 bg-sand-deep p-3 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-teal">Average gap</p>
+                    <p className="text-2xl font-bold text-teal-deep">{stats.averageGap ?? "—"}</p>
+                    <p className="text-xs text-ink-soft">points apart</p>
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
           <section aria-labelledby="spread-heading" className="flex flex-col gap-3">
             <SectionHeading id="spread-heading">Rating spread</SectionHeading>
-            <RatingSpread histogram={stats.histogram} />
+            <RatingSpread histogram={stats.histogram} cols={cols} />
           </section>
 
-          {stats.disagreements.length > 0 && (
+          {cols.length > 1 && stats.disagreements.length > 0 && (
             <section aria-labelledby="disagree-heading" className="flex flex-col gap-3">
               <SectionHeading id="disagree-heading">Where we disagree</SectionHeading>
-              <Disagreements items={stats.disagreements} />
+              <Disagreements items={stats.disagreements} cols={cols} />
             </section>
           )}
 

@@ -30,10 +30,11 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     title: "Signing in",
     summary: "No password needed: we email you a code.",
     tips: [
+      <>New here? Open the invite link a friend sent you, type your name and email, then enter the code we email you. That&apos;s your account made.</>,
       <>Tap {b("Sign in")} at the top, enter your email and tap {b("Email me a sign-in code")}.</>,
       <>Type the 6-digit code from the email into the same page. (If the email opens in your mail app&apos;s browser, just copy the code back to where you asked for it.)</>,
       <>You stay signed in on that phone or computer until you tap {b("Sign out")}.</>,
-      <>Prefer a password? {b("Use a password instead")} is under the sign-in box. The code always works too.</>,
+      <>Prefer a password? Set one in {b("Settings")}, then use {b("Use a password instead")} under the sign-in box. The code always works too.</>,
     ],
   },
   {
@@ -72,8 +73,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       <>On a recipe card, under {b("Our tasting")}, tap {b("Add rating & notes")}: a score out of 10, the date and a note.</>,
       <>Drinking together? Tick {b("… tried it too")} so it counts for both of you, then each add your own score.</>,
       <>The home page reminds you of drinks you&apos;ve tried but haven&apos;t rated yet.</>,
+      <>Your ratings are private: only your household and the friends you&apos;re connected to can see them.</>,
     ],
-    // Multi-user step 2b: add who can see your ratings here once private ratings and friends ship.
   },
   {
     id: "next",
@@ -90,7 +91,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     id: "bar",
     icon: "🍾",
     title: "Our bar",
-    summary: "Tell the app what bottles you have, and it tells you what you can make.",
+    summary: "Tell the app what bottles you have, and it tells you what you can make. Your bar is shared with your household only.",
     tips: [
       <>Tap {b("Add what we have")} (later {b("Edit our bar")}) and tick what&apos;s on your shelf.</>,
       <>No ticking needed: {b("Scan a bottle or receipt")} reads a photo of a bottle (or a shop receipt) and fills in the form for you to check.</>,
@@ -142,6 +143,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       <>On a recipe card, {b("Critique this recipe")}: say what was off and the helper suggests small changes, with reasons.</>,
       <>Save it as a trial and make it. Then {b("Keep it")} (it becomes &quot;our version&quot;) or {b("Drop it")}.</>,
       <>The original is always one tap away with {b("See the original")}.</>,
+      <>For now only John and Genny can tweak recipes, fix style tags and change collections. Everyone sees the results.</>,
     ],
   },
   {
@@ -164,6 +166,18 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     link: { href: "/stats", label: "See the stats" },
   },
   {
+    id: "settings",
+    icon: "⚙️",
+    title: "Settings",
+    summary: "Your account and password. Tap Settings at the top of any page.",
+    tips: [
+      <>It shows the email you sign in with. Codes are always sent there.</>,
+      <>Want a password as well as the emailed code? Type one under {b("Password")} and tap {b("Save password")}.</>,
+      <>Want to bring someone in? {b("Invite a friend")} is there too. Once they join, you see each other&apos;s ratings.</>,
+    ],
+    link: { href: "/settings", label: "Open Settings" },
+  },
+  {
     id: "phone",
     icon: "📱",
     title: "Put it on your phone",
@@ -178,7 +192,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
 /** Shown at the end of the guide. */
 export const GUIDE_HELP: ReactNode = (
   <>
-    Stuck, or found something that looks wrong? Tell John or Genny. And if you just want to dive in,{" "}
+    Stuck, or found something that looks wrong? Tell John or Genny, or whoever invited you. And if you just want to dive in,{" "}
     <Link href="/" className={a}>
       start with the drinks
     </Link>

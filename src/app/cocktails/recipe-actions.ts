@@ -8,7 +8,6 @@ import { parseIngredients } from "@/lib/cocktails";
 import { planMembershipChange, readShownCollections } from "@/lib/collections";
 import type { GuessInfo, ImportKind } from "@/lib/recipe-import";
 import { guessFromMenu, importRecipe, ImportError } from "@/lib/server/recipe-ai";
-import { supabase } from "@/lib/supabase";
 import { SLUG_PATTERN } from "@/lib/slug";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 
@@ -38,7 +37,8 @@ export interface ImportState {
 
 /** Our tested recipes (not other guesses), as ratio references for a menu guess: "1 1/2 fl oz Navy rum…". */
 async function recipeLibrary(): Promise<{ name: string; slug: string; lines: string[] }[]> {
-  const { data, error } = await supabase.from("cocktails").select("name, slug, ingredients, is_guess").order("name");
+  const db = await createSupabaseServerClient();
+  const { data, error } = await db.from("cocktails").select("name, slug, ingredients, is_guess").order("name");
   if (error) throw new Error(`Failed to load recipes: ${error.message}`);
   return ((data ?? []) as { name: string; slug: string; ingredients: unknown; is_guess?: boolean | null }[])
     .filter((r) => r.is_guess !== true)
@@ -62,7 +62,7 @@ export async function extractRecipe(prev: ImportState, formData: FormData): Prom
   const kind: ImportKind = k === "photo" || k === "link" || k === "menu" ? k : "text";
   const fail = (message: string): ImportState => ({ submission, status: "error", message, draft: null, warnings: [], kind });
 
-  if (!(await requireTaster())) return fail("Only JB & GM can add recipes.");
+  if (!(await requireTaster())) return fail("Only members can add recipes.");
 
   const text = String(formData.get("text") ?? "").trim();
   const url = String(formData.get("url") ?? "").trim();
@@ -129,7 +129,7 @@ export async function saveRecipe(prev: SaveState, formData: FormData): Promise<S
 
   const editing = String(formData.get("editSlug") ?? "");
   const taster = await requireTaster();
-  if (!taster) return back({ form: "Only JB & GM can add or edit recipes." });
+  if (!taster) return back({ form: "Only members can add or edit recipes." });
 
   const errors = validateRecipe(draft);
   if (hasErrors(errors)) return back(errors);

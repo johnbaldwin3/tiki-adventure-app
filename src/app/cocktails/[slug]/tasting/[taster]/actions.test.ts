@@ -2,32 +2,31 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // The action must re-check everything itself (Server Actions can be POSTed
 // to directly): valid input, a signed-in taster, a real cocktail and taster
-// -- and only then write, as that user (so RLS applies too). Either taster
-// may save either tasting (household rule, migration 0016).
+// -- and only then write, as that user (so RLS applies too). Anyone in a
+// household may save any of its tastings (migration 0016), never a friend's.
 type User = { email: string; taster: { id: string; initials: string; displayName: string } | null } | null;
 let signedIn: User = null;
 vi.mock("@/lib/auth/current-taster", () => ({ getSignedInUser: async () => signedIn }));
 
 const upsert = vi.fn<(row: unknown, opts: unknown) => Promise<{ error: unknown }>>(async () => ({ error: null }));
 let existing: { data: unknown; error: unknown } = { data: [], error: null };
+let cocktailLookup: { data: unknown; error: unknown } = { data: { id: "c1" }, error: null };
+// JB and GM share a household; FR is a friend (visible, but not theirs to enter).
+const TASTERS = [
+  { id: "t-jb", initials: "JB", household_id: "h1" },
+  { id: "t-gm", initials: "GM", household_id: "h1" },
+  { id: "t-fr", initials: "FR", household_id: "h2" },
+];
 const createSupabaseServerClient = vi.fn(async () => ({
-  from: () => ({ upsert, select: () => ({ eq: async () => existing }) }),
+  from: (table: string) =>
+    table === "tasters"
+      ? { select: async () => ({ data: TASTERS, error: null }) }
+      : table === "cocktails"
+        ? { select: () => ({ eq: () => ({ maybeSingle: async () => cocktailLookup }) }) }
+        : { upsert, select: () => ({ eq: async () => existing }) },
 }));
 vi.mock("@/lib/supabase-server", () => ({ createSupabaseServerClient }));
 
-let cocktailLookup: { data: unknown; error: unknown } = { data: { id: "c1" }, error: null };
-const TASTERS = [
-  { id: "t-jb", initials: "JB" },
-  { id: "t-gm", initials: "GM" },
-];
-vi.mock("@/lib/supabase", () => ({
-  supabase: {
-    from: (table: string) =>
-      table === "tasters"
-        ? { select: async () => ({ data: TASTERS, error: null }) }
-        : { select: () => ({ eq: () => ({ maybeSingle: async () => cocktailLookup }) }) },
-  },
-}));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const redirect = vi.fn((url: string) => {
   throw new Error(`REDIRECT:${url}`);
@@ -83,6 +82,12 @@ describe("saveTasting", () => {
     await expect(saveTasting(prev, form({ ...valid, taster: "gm" }))).rejects.toThrow("REDIRECT:/cocktails/tiki-max#tasting");
     expect(upsert).toHaveBeenCalledTimes(1);
     expect(upsert.mock.calls[0][0]).toMatchObject({ taster_id: "t-gm", rating: 8.5 });
+  });
+
+  it("refuses a friend's tasting (friends can be seen, not entered)", async () => {
+    const s = await saveTasting(prev, form({ ...valid, taster: "fr" }));
+    expect(s.status).toBe("error");
+    expect(upsert).not.toHaveBeenCalled();
   });
 
   it("refuses an unknown taster", async () => {
