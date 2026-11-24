@@ -205,6 +205,13 @@ in; see below.
   guesses carry a **Best guess** badge on the card and in the list
   (`cocktails.is_guess`, migration 0010: only our recipes can be guesses);
   untick it in the editor once you've tasted and adjusted it.
+- **How it works (`/guide`)** -- a short, friendly guide to every feature
+  for people who didn't help build the app, linked as **Help** in the top
+  bar on every page. Signed-in people also get a "New here?" card on the
+  home page until they tap **Hide this** (remembered per browser in the
+  `ep_welcome` cookie; the guide's last section brings it back). The
+  content is one array in `src/app/guide/sections.tsx`: add an entry (or a
+  tip) when a feature ships.
 - **Sign-in & editing** -- see below.
 
 ### Signing in & saving ratings
@@ -383,6 +390,7 @@ review pass:
 27. ✅ Friends & private ratings — connections between tasters; ratings, tasters and home-made recipes visible only to your household and friends; signed out, only a landing page (recipes are members-only); the list, stats and card follow the signed-in household instead of fixed JB/GM columns (migration 0018)
 28. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
 29. ✅ Invites — members make personal, single-use invite links in Settings (copy, share, "Email it" with a prefilled message in their own mail app, or "Copy email" to paste into any email service; 14-day expiry, cancel any time); a new person joins with their name and email and an emailed code, gets their own household and is connected to whoever invited them, then sees a welcome screen. Settings also lets anyone set a password. Collections, style fixes, our versions and the AI critique are for admins only. Kill switch and caps in `app_settings` (migration 0019)
+30. ✅ How it works — a quick guide to every feature (`/guide`), Help link in the top bar, and a hideable "New here?" card on the home page
 
 ## Future ideas (not yet scheduled)
 

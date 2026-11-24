@@ -50,6 +50,9 @@ export default async function WelcomePage() {
         <Link href="/cabinet/edit" className="rounded-full border border-teal/30 px-4 py-2.5 text-sm font-semibold text-teal-deep">
           Set up my bar
         </Link>
+        <Link href="/guide" className="rounded-full px-2 py-2.5 text-sm font-semibold text-teal underline-offset-2 hover:underline">
+          How everything works <span aria-hidden="true">→</span>
+        </Link>
       </div>
     </main>
   );

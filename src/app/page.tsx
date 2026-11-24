@@ -33,6 +33,9 @@ import { suggestNext } from "@/lib/suggest";
 import { rankCocktails, summarizeProgress, toRate } from "@/lib/tasting";
 import { Landing } from "@/components/landing";
 import { getSignedInUser } from "@/lib/auth/current-taster";
+import { cookies } from "next/headers";
+import { WelcomeCard } from "@/components/welcome-card";
+import { isWelcomeHidden, WELCOME_COOKIE } from "@/lib/welcome";
 import { NOBODY } from "@/lib/people";
 import { getPeople } from "@/lib/people-data";
 
@@ -177,6 +180,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
   // Signed-in tasters: drinks you've tried (or were marked as tried) but not rated yet.
   const me = people.me;
   const unrated = me ? toRate(allRecords, me.initials) : [];
+  // Signed in and hasn't hidden it: the "New here?" card pointing at the guide.
+  const showWelcomeCard = !!me && !isWelcomeHidden((await cookies()).get(WELCOME_COOKIE)?.value);
   const tryNext = loadError
     ? []
     : suggestNext(listed, { have: cabinet ? new Set(cabinet.keys()) : null, limit: 3 });
@@ -268,6 +273,8 @@ export default async function Page({ searchParams }: PageProps<"/">) {
           Your password has been updated.
         </p>
       )}
+
+      {showWelcomeCard && <WelcomeCard name={me?.displayName} />}
 
       {loadError && (
         <p

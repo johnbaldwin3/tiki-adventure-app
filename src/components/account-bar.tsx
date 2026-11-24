@@ -23,6 +23,9 @@ export async function AccountBar() {
         <span className="text-base">Equal Parts</span>
       </Link>
       <nav aria-label="Account" className="flex min-w-0 items-center justify-end gap-3">
+        <Link href="/guide" className="shrink-0 font-semibold text-teal underline-offset-2 hover:underline">
+          Help
+        </Link>
         {user ? (
           <>
             <span className="min-w-0 truncate text-ink-soft">

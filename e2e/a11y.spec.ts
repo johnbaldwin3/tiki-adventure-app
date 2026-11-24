@@ -30,6 +30,7 @@ const signedOutPages = [
   "/cocktails/zombie",
   "/cocktails/zombie?serves=4&units=oz",
   "/stats",
+  "/guide",
   "/ingredients",
   "/ingredients/aged-jamaican-rum",
   "/ingredients/lime",
