@@ -4,7 +4,7 @@ import { PageShell } from "@/components/page-shell";
 import { SubmitButton } from "@/components/submit-button";
 import { getSignedInUser } from "@/lib/auth/current-taster";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/validate";
-import { expiresIn, INVITE_NOTE_MAX, inviteStatus, type InviteRow } from "@/lib/invites";
+import { expiresIn, INVITE_NOTE_MAX, inviteMailto, inviteStatus, type InviteRow } from "@/lib/invites";
 import { getPeople } from "@/lib/people-data";
 import { siteOrigin } from "@/lib/site-origin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
@@ -51,6 +51,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
   const invites = (inviteData ?? []) as InviteRow[];
   const names = new Map([...people.household, ...people.friends].map((p) => [p.id, p.displayName]));
   const now = new Date();
+  const myName = user.taster.displayName;
 
   return (
     <PageShell eyebrow="Your account" title="Settings" icon="⚙️">
@@ -84,7 +85,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           Invite a friend
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
-          Make a link for each person and send it to them yourself. Once they join, you&apos;ll see each other&apos;s
+          Make a link for each person, then copy it or email it from your own mail app. Once they join, you&apos;ll see each other&apos;s
           ratings. Links work once and expire after 14 days.
         </p>
 
@@ -138,7 +139,11 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
                   </div>
                   {status === "open" && (
                     <div className="mt-2 flex flex-col gap-2">
-                      <CopyLink url={`${origin}/join/${inv.token}`} label={`Invite link for ${who}`} />
+                      <CopyLink
+                        url={`${origin}/join/${inv.token}`}
+                        label={`Invite link for ${who}`}
+                        mailto={inviteMailto(`${origin}/join/${inv.token}`, myName, inv.note)}
+                      />
                       <form action={revokeInvite}>
                         <input type="hidden" name="id" value={inv.id} />
                         <SubmitButton className="text-sm font-semibold text-coral-deep underline-offset-2 hover:underline" pendingText="Cancelling…">

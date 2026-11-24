@@ -47,3 +47,27 @@ export function expiresIn(expiresAt: string, now: Date = new Date()): string {
   if (days <= 1) return "Expires within a day";
   return `Expires in ${days} days`;
 }
+
+/**
+ * A ready-to-send invite email, opened in the inviter's own mail app
+ * (mailto:, so nothing is sent by us). The note ("Sam") becomes the greeting
+ * when it looks like a name.
+ */
+export function inviteMailto(url: string, inviter: string, note: string | null): string {
+  const greeting = note && /^[\p{L}][\p{L} '.-]{0,40}$/u.test(note) ? `Hi ${note},` : "Hi,";
+  const subject = `${inviter} invited you to Equal Parts`;
+  const body = [
+    greeting,
+    "",
+    "I'm using Equal Parts, a little home bar app for friends & family: a tasting log, what's in your bar, and a recipe library. Join me and we can see each other's ratings.",
+    "",
+    "Here's your personal invite link (it works once and expires in 14 days):",
+    url,
+    "",
+    "Open it, add your name and email, and type the code it emails you. No password needed.",
+    "",
+    "Cheers,",
+    inviter,
+  ].join("\n");
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}

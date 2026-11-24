@@ -4,8 +4,8 @@ import { useState, useSyncExternalStore } from "react";
 
 const noSubscribe = () => () => {};
 
-/** An invite link you can select, copy, or (on phones) share. */
-export function CopyLink({ url, label }: { url: string; label: string }) {
+/** An invite link you can select, copy, email (prefilled, in your own mail app) or, on phones, share. */
+export function CopyLink({ url, label, mailto }: { url: string; label: string; mailto?: string }) {
   const [copied, setCopied] = useState(false);
   // false on the server and during hydration, then the real answer.
   const canShare = useSyncExternalStore(noSubscribe, () => typeof navigator.share === "function", () => false);
@@ -33,6 +33,11 @@ export function CopyLink({ url, label }: { url: string; label: string }) {
         <button type="button" onClick={copy} className="rounded-full bg-teal-deep px-3 py-1.5 text-sm font-bold text-white shadow-sm">
           Copy link
         </button>
+        {mailto && (
+          <a href={mailto} className="rounded-full border border-teal/30 px-3 py-1.5 text-sm font-semibold text-teal-deep">
+            Email it
+          </a>
+        )}
         {canShare && (
           <button
             type="button"

@@ -10,6 +10,10 @@ async function makeInvite(page: Page, note: string): Promise<string> {
   await expect(page.getByRole("status").filter({ hasText: "Invite link ready" })).toBeVisible();
   const link = await page.getByLabel(`Invite link for ${note}`).inputValue();
   expect(link).toMatch(/\/join\/[0-9a-f]{64}$/);
+  // "Email it" opens the inviter's own mail app with the link filled in.
+  const mail = await page.getByRole("listitem").filter({ hasText: note }).getByRole("link", { name: "Email it" }).getAttribute("href");
+  expect(mail).toMatch(/^mailto:\?subject=John%20invited%20you/);
+  expect(decodeURIComponent(mail!)).toContain(link);
   return new URL(link).pathname;
 }
 

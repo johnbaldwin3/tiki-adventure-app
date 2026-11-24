@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanInviteNote, createInviteProblem, expiresIn, inviteStatus, type InviteRow } from "./invites";
+import { cleanInviteNote, createInviteProblem, expiresIn, inviteMailto, inviteStatus, type InviteRow } from "./invites";
 
 const now = new Date("2026-11-24T12:00:00Z");
 const row = (over: Partial<InviteRow> = {}): InviteRow => ({
@@ -48,5 +48,29 @@ describe("expiresIn", () => {
   it("rounds up to whole days", () => {
     expect(expiresIn("2026-12-04T12:00:00Z", now)).toBe("Expires in 10 days");
     expect(expiresIn("2026-11-25T06:00:00Z", now)).toBe("Expires within a day");
+  });
+});
+
+describe("inviteMailto", () => {
+  const link = "https://equalparts.online/join/abc";
+  const parts = (m: string) => {
+    const q = new URLSearchParams(m.replace(/^mailto:\?/, ""));
+    return { subject: q.get("subject"), body: q.get("body") ?? "" };
+  };
+  it("prefills a subject and a body with the link, greeting the note's name", () => {
+    const m = inviteMailto(link, "John", "Sam");
+    expect(m.startsWith("mailto:?subject=")).toBe(true);
+    const { subject, body } = parts(m);
+    expect(subject).toBe("John invited you to Equal Parts");
+    expect(body.startsWith("Hi Sam,\n")).toBe(true);
+    expect(body).toContain(`\n${link}\n`);
+    expect(body.endsWith("Cheers,\nJohn")).toBe(true);
+  });
+  it("uses a plain greeting when the note isn't a name", () => {
+    expect(parts(inviteMailto(link, "John", "the neighbours #2")).body.startsWith("Hi,\n")).toBe(true);
+    expect(parts(inviteMailto(link, "John", null)).body.startsWith("Hi,\n")).toBe(true);
+  });
+  it("encodes characters that would break the link", () => {
+    expect(inviteMailto(link, "A & B", null)).not.toContain(" & ");
   });
 });
