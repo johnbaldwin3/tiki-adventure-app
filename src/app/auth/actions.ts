@@ -1,9 +1,10 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { siteOrigin } from "@/lib/site-origin";
 import {
   friendlyAuthError,
   normalizeCode,
@@ -13,6 +14,8 @@ import {
   validateCode,
   validateSignIn,
   validateSignUp,
+  validateName,
+  inviteProblem,
 } from "@/lib/auth/validate";
 import { RESET_COOKIE, type AuthFormState, type CodeFormState } from "@/lib/auth/form-state";
 
@@ -20,20 +23,6 @@ const str = (fd: FormData, key: string) => {
   const v = fd.get(key);
   return typeof v === "string" ? v : "";
 };
-
-/**
- * This site's origin, for links in auth emails. Prefers a configured URL
- * (NEXT_PUBLIC_SITE_URL, else Vercel's production domain) over request
- * headers; Supabase additionally only honors allow-listed redirect URLs.
- */
-async function siteOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 export async function signIn(prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
   const submission = prev.submission + 1;
@@ -212,7 +201,76 @@ export async function codeSignIn(prev: CodeFormState, fd: FormData): Promise<Cod
   const intent = str(fd, "intent");
   if (intent === "verify") return verifySignInCode(prev, fd);
   if (intent === "restart") {
-    return { step: "email", status: "idle", submission: prev.submission + 1, email: normalizeEmail(str(fd, "email")), errors: {}, message: null };
+    return {
+      step: "email",
+      status: "idle",
+      submission: prev.submission + 1,
+      email: normalizeEmail(str(fd, "email")),
+      name: str(fd, "name"),
+      errors: {},
+      message: null,
+    };
   }
+  if (str(fd, "token")) return requestJoinCode(prev, fd);
   return requestSignInCode(prev, fd);
+}
+
+/**
+ * Joining by invite (migration 0019): claim_invite makes the new member
+ * (their taster, a household of one, a connection to whoever invited them)
+ * and allows their email to sign up; then we email them a code like any
+ * sign-in. Their account only exists once they type the code, which proves
+ * the email is theirs. Asking again (a typo, a lost email) moves the claim.
+ */
+export async function requestJoinCode(prev: CodeFormState, fd: FormData): Promise<CodeFormState> {
+  const submission = prev.submission + 1;
+  const token = str(fd, "token");
+  const name = str(fd, "name").trim();
+  const email = normalizeEmail(str(fd, "email"));
+  const errors = { ...validateName(name), ...(validateSignIn(email, "x").email ? { email: "Enter a valid email address." } : {}) };
+  if (Object.keys(errors).length) {
+    return { step: "email", status: "invalid", submission, email, name, errors, message: "Please fix the highlighted fields." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: result, error } = await supabase.rpc("claim_invite", { p_token: token, p_name: name, p_email: email });
+  const problem = error ? "Something went wrong. Please try again." : inviteProblem(String(result));
+  if (problem) {
+    return { step: "email", status: "error", submission, email, name, errors: {}, message: problem };
+  }
+
+  const { error: otpError } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  if (otpError) {
+    return { step: "email", status: "error", submission, email, name, errors: {}, message: friendlyAuthError(otpError) };
+  }
+  return {
+    step: "code",
+    status: "sent",
+    submission,
+    email,
+    name,
+    errors: {},
+    message: `We emailed a code to ${email}. Type it here to finish joining. It can take a minute to arrive.`,
+  };
+}
+
+/**
+ * Settings: set (or change) a password, so you can sign in either way. The
+ * emailed code keeps working too. Supabase's "Secure password change" may
+ * ask for a recent sign-in first (friendlyAuthError says so).
+ */
+export async function setPassword(prev: AuthFormState, fd: FormData): Promise<AuthFormState> {
+  const submission = prev.submission + 1;
+  const password = str(fd, "password");
+  const confirm = str(fd, "confirm");
+  const errors = validateNewPassword(password, confirm);
+  if (Object.keys(errors).length) {
+    return { status: "invalid", submission, email: "", errors, message: "Please fix the highlighted fields." };
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return { status: "error", submission, email: "", errors: {}, message: friendlyAuthError(error) };
+  }
+  return { status: "sent", submission, email: "", errors: {}, message: "Password saved. You can sign in with it or with an emailed code." };
 }

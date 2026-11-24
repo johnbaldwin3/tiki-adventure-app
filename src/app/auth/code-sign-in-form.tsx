@@ -9,7 +9,16 @@ import { codeSignIn } from "./actions";
  * Sign in with a one-time code: enter your email, we email a code, type it
  * here. Works in whatever browser or home-screen app you started in.
  */
-export function CodeSignInForm({ next, footer }: { next: string; footer?: ReactNode }) {
+export function CodeSignInForm({
+  next,
+  footer,
+  joinToken,
+}: {
+  next: string;
+  footer?: ReactNode;
+  /** Joining by invite: also asks for a name, and makes the account. */
+  joinToken?: string;
+}) {
   const [state, formAction, pending] = useActionState(codeSignIn, initialCodeState);
   const formRef = useRef<HTMLFormElement>(null);
   const messageRef = useRef<HTMLParagraphElement>(null);
@@ -28,6 +37,7 @@ export function CodeSignInForm({ next, footer }: { next: string; footer?: ReactN
   return (
     <form key={state.submission} ref={formRef} action={formAction} noValidate className="flex flex-col gap-5">
       <input type="hidden" name="next" value={next} />
+      {joinToken && <input type="hidden" name="token" value={joinToken} />}
 
       {state.message && (
         <p
@@ -46,6 +56,16 @@ export function CodeSignInForm({ next, footer }: { next: string; footer?: ReactN
 
       {state.step === "email" ? (
         <>
+          {joinToken && (
+            <FormField
+              id="name"
+              label="Your name"
+              hint="How friends will see you, e.g. Sam Smith."
+              autoComplete="name"
+              defaultValue={state.name ?? ""}
+              error={state.errors.name}
+            />
+          )}
           <FormField
             id="email"
             label="Email"
@@ -56,12 +76,13 @@ export function CodeSignInForm({ next, footer }: { next: string; footer?: ReactN
             error={state.errors.email}
           />
           <button type="submit" name="intent" value="send" disabled={pending} className={buttonClass}>
-            {pending ? "Sending…" : "Email me a sign-in code"}
+            {pending ? "Sending…" : joinToken ? "Join and email me a code" : "Email me a sign-in code"}
           </button>
         </>
       ) : (
         <>
           <input type="hidden" name="email" value={state.email} />
+          {joinToken && <input type="hidden" name="name" value={state.name ?? ""} />}
           <FormField
             id="code"
             label="Sign-in code"
@@ -72,7 +93,7 @@ export function CodeSignInForm({ next, footer }: { next: string; footer?: ReactN
             error={state.errors.code}
           />
           <button type="submit" name="intent" value="verify" disabled={pending} className={buttonClass}>
-            {pending ? "Checking…" : "Sign in"}
+            {pending ? "Checking…" : joinToken ? "Join" : "Sign in"}
           </button>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
             <button type="submit" name="intent" value="send" formNoValidate disabled={pending} className={linkButtonClass}>

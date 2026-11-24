@@ -3,7 +3,7 @@ import { isPublicPath } from "./public-paths";
 
 describe("isPublicPath", () => {
   it("lets visitors reach the landing page and the account pages", () => {
-    for (const p of ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/auth/confirm", "/manifest.webmanifest", "/icon.svg", "/apple-icon.png"]) {
+    for (const p of ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/auth/confirm", "/join/abc123", "/manifest.webmanifest", "/icon.svg", "/apple-icon.png"]) {
       expect(isPublicPath(p)).toBe(true);
     }
   });

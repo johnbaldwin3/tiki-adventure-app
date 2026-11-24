@@ -388,7 +388,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         trial={versions.trial}
         active={active}
         showingOriginal={showingOriginal}
-        canEdit={!!user?.taster}
+        canEdit={!!user?.isAdmin}
         status={sp.tweak}
       />
 
@@ -543,7 +543,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         </section>
       )}
 
-      {user?.taster && !showingOriginal && (
+      {user?.isAdmin && !showingOriginal && (
         <section id="critique" aria-labelledby="critique-heading" className="scroll-mt-4 rounded-2xl bg-card p-4 shadow-sm">
           <details>
             <summary id="critique-heading" className="cursor-pointer text-sm font-bold uppercase tracking-wide text-ink-soft">
@@ -628,7 +628,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
         name={cocktail.name}
         tags={styles}
         computed={computedStyles}
-        canEdit={!!user?.taster}
+        canEdit={!!user?.isAdmin}
         status={sp.styles}
       />
 
@@ -638,7 +638,7 @@ export default async function CocktailPage({ params, searchParams }: PageProps<"
           name={cocktail.name}
           all={cols.all}
           mine={cols.mine}
-          canEdit={!!user?.taster}
+          canEdit={!!user?.isAdmin}
           status={sp.collections}
         />
       )}

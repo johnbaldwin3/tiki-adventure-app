@@ -16,7 +16,7 @@ export default async function SignUpPage() {
     <AuthPage
       eyebrow="Members only"
       title="Create your account"
-      intro="Only emails on the tasters list can sign up. You'll get an email to confirm it's you."
+      intro="New here? Open the invite link you were sent to join. This page is for members adding a password: you'll get an email to confirm it's you."
     >
       <AuthForm
         action={signUp}

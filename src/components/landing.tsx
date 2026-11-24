@@ -58,8 +58,8 @@ export function Landing({ note }: { note?: string }) {
       </section>
 
       <p className="rounded-2xl bg-sand-deep p-4 text-sm text-ink">
-        <strong>{APP_NAME} is invite-only.</strong> If someone invited you, create your account with the email they
-        invited, or sign in with a code we email you.
+        <strong>{APP_NAME} is invite-only.</strong> If someone invited you, open the invite link they sent you to join.
+        Already a member? Sign in with a code we email you, or with your password.
       </p>
     </main>
   );

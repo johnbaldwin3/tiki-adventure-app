@@ -6,6 +6,8 @@ export interface SignedInUser {
   email: string;
   /** The taster this account belongs to, or null if the email isn't linked to one. */
   taster: { id: string; initials: string; displayName: string } | null;
+  /** John and Genny (migration 0017): may change the shared catalog extras and app settings. */
+  isAdmin?: boolean;
   /** True when the taster lookup itself failed (DB unreachable), so a null taster means "unknown", not "none". */
   lookupFailed?: boolean;
 }
@@ -30,7 +32,7 @@ export const getSignedInUser = cache(async (): Promise<SignedInUser | null> => {
 
   const { data: taster, error: tasterError } = await supabase
     .from("tasters")
-    .select("id, initials, display_name")
+    .select("id, initials, display_name, is_admin")
     .eq("id", tasterId)
     .maybeSingle();
   if (tasterError) return { email: user.email, taster: null, lookupFailed: true };
@@ -39,5 +41,6 @@ export const getSignedInUser = cache(async (): Promise<SignedInUser | null> => {
     taster: taster
       ? { id: taster.id, initials: taster.initials, displayName: taster.display_name }
       : null,
+    isAdmin: taster?.is_admin === true,
   };
 });

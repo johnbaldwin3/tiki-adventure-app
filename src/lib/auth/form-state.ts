@@ -36,7 +36,9 @@ export interface CodeFormState {
   status: "idle" | "invalid" | "error" | "sent";
   submission: number;
   email: string;
-  errors: FieldErrors<"email" | "code">;
+  /** Joining by invite: the name they gave. */
+  name?: string;
+  errors: FieldErrors<"email" | "code" | "name">;
   message: string | null;
 }
 

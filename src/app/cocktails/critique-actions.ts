@@ -73,7 +73,8 @@ export async function critiqueRecipe(prev: CritiqueState, formData: FormData): P
   const slug = String(formData.get("slug") ?? "");
   if (!SLUG_PATTERN.test(slug)) return fail("That drink couldn't be found.");
   const user = await getSignedInUser();
-  if (!user?.taster) return fail("Only members can critique recipes.");
+  // Critiques make trial versions, which only admins may save (0017), and each one costs an AI call.
+  if (!user?.taster || !user.isAdmin) return fail("Only John and Genny can critique recipes for now.");
   const critique = readCritiqueForm(formData);
   if (!critique) return fail("Pick what was off, or say it in a few words.");
 

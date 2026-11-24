@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   friendlyAuthError,
+  inviteProblem,
+  validateName,
   normalizeCode,
   normalizeEmail,
   safeNextPath,
@@ -96,5 +98,29 @@ describe("sign-in codes", () => {
   it("explains wrong/expired codes and unknown emails", () => {
     expect(friendlyAuthError({ code: "otp_expired", message: "Token has expired or is invalid" })).toMatch(/wrong or has expired/);
     expect(friendlyAuthError({ code: "otp_disabled", message: "Signups not allowed for otp" })).toMatch(/no account for that email/);
+  });
+});
+
+describe("validateName", () => {
+  it("needs 1-40 characters with a letter", () => {
+    expect(validateName("  Sam ")).toEqual({});
+    expect(validateName("Zoë")).toEqual({});
+    expect(validateName("   ")).toEqual({ name: "Enter your name." });
+    expect(validateName("x".repeat(41))).toEqual({ name: "Use 40 characters or fewer." });
+    expect(validateName("123")).toEqual({ name: "Use at least one letter." });
+  });
+});
+
+describe("inviteProblem", () => {
+  it("is null for ok and plain words otherwise", () => {
+    expect(inviteProblem("ok")).toBeNull();
+    expect(inviteProblem("email_taken")).toMatch(/already has an account/);
+    expect(inviteProblem("used")).toMatch(/already been used/);
+    expect(inviteProblem("expired")).toMatch(/expired/);
+    expect(inviteProblem("revoked")).toMatch(/cancelled/);
+    expect(inviteProblem("closed")).toMatch(/paused/);
+    expect(inviteProblem("full")).toMatch(/full/);
+    expect(inviteProblem("unknown")).toMatch(/isn't valid/);
+    expect(inviteProblem("anything else")).toMatch(/isn't valid/);
   });
 });

@@ -239,8 +239,22 @@ page to sign in and back (`src/lib/auth/public-paths.ts`). So page reads go thro
 (`src/lib/read-client.ts`), not the anon client. The list, averages, ranks
 and stats use your household's first two members as the a/b columns
 (`householdSlots` in `src/lib/people.ts`); friends' ratings show on the
-recipe card under "Friends", read-only. Emails are kept out of git; add
-one with:
+recipe card under "Friends", read-only.
+
+**Joining by invite** (migration 0019): a member makes a link in Settings
+(`create_invite()`; at most `max_open_invites` unused links each, and no
+new links once `max_members` tasters exist or `invites_enabled` is off, all
+in the one-row `app_settings` table). `/join/<token>` works signed out:
+`invite_preview()` says who sent it or why it doesn't work, and
+`claim_invite()` creates the new taster, their household of one, their
+`taster_accounts` row and a connection to the inviter. The app then emails a
+code (`signInWithOtp` with `shouldCreateUser: true`, which the 0003 trigger
+now allows), so the account only exists once they prove the email is
+theirs. Until their first sign-in the same link can correct a mistyped email;
+after that it's spent. The "Confirm signup" email template must include
+`{{ .Token }}`, since a brand-new account's first code is sent with that template.
+
+Emails are kept out of git; add one with:
 
 ```sql
 insert into public.taster_accounts (taster_id, email)
@@ -367,7 +381,8 @@ review pass:
 25. ✅ Sign in with a code — "Email me a sign-in code" is the default on /login (password still available); first step toward the friends & family version
 26. ✅ Households — the bar (cabinet, shopping list, pours) belongs to a household; JB & GM are one household and the admins; tighter database rules ready for more people (migration 0017)
 27. ✅ Friends & private ratings — connections between tasters; ratings, tasters and home-made recipes visible only to your household and friends; signed out, only a landing page (recipes are members-only); the list, stats and card follow the signed-in household instead of fixed JB/GM columns (migration 0018)
-27. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
+28. ✅ Type in a bottle -- add a bottle to our bar by name (no photo), with its style guessed from the catalog's example brands
+29. ✅ Invites — members make personal, single-use invite links in Settings (14-day expiry, cancel any time); a new person joins with their name and email and an emailed code, gets their own household and is connected to whoever invited them, then sees a welcome screen. Settings also lets anyone set a password. Collections, style fixes, our versions and the AI critique are for admins only. Kill switch and caps in `app_settings` (migration 0019)
 
 ## Future ideas (not yet scheduled)
 
